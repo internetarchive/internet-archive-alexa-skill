@@ -1,9 +1,9 @@
     'use strict';
     var https = require('https');
-   
+    var http = require('http');
     var lastPlayedByUser = {};
-    var podcastAPIURL = "https://archive.org/advancedsearch.php?q=collection%3A";
-    var podcastCityAPIURL = "https://archive.org/advancedsearch.php?q=collection%3A";
+    var podcastAPIURL = "https://archive.org/advancedsearch.php?q=collection:";
+    var podcastCityAPIURL = "https://archive.org/advancedsearch.php?q=collection:";
     var podcastAPIURLNEW = "https://archive.org/advancedsearch.php?q=";
     var MusicUrlList = [];
     var page=1;
@@ -16,17 +16,19 @@
     var PlayAudioByRandomCity=false;
     var PlayAudioByRandom=false;
     var city='';
+    var CityName='Los Angeles';
+    var YearName='1971';
     var used =true;
     var collection='';
+    var collectionQuery='';
     var title='';
-    // var lastyear='';
     var APIURL='';
+    var collection=['Disco Biscuits','Keller Williams','Radiators','Blues Traveler','Tea Leaf Green'];
+    var collectionCount=0;
     exports.handler = function(event, context) {
         var player = new MyAudioPlayer(event, context);
         player.handle();
     };
-    
-    
     
     Array.prototype.unique = function() {
       return this.filter(function (value, index, self) { 
@@ -42,14 +44,13 @@
     MyAudioPlayer.prototype.handle = function () {
         var requestType = this.event.request.type;
         var userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
-       console.log(requestType);
        if (requestType === "LaunchRequest") {
-            
             this.Welcome();
-     
         } else  if (requestType === "IntentRequest") {
             var intent = this.event.request.intent;
-            if (intent.name === "PlayAudio") {
+            if(intent.name==='Discovery'){
+                 this.Discovery();
+            }else if (intent.name === "PlayAudio") {
                 page=0;
                 MusicUrlList=[];
                 typeQuery=false;
@@ -125,9 +126,17 @@
                 this.stop();
             }else if (intent.name === "AMAZON.NextIntent") { 
                 counter++;
-                console.log('Next Counter'+counter);
+                console.log('next command');
                 if(counter>MusicUrlList.length-1){
-                    page++;
+                    if(MusicUrlList.length<50){
+                    console.log('next command1');
+                     page=0;
+                     console.log('Page -'+page);
+                     typeQuery=false;
+                      console.log('Counter -'+counter);
+                    }else{
+                     page++;   
+                    }
                     typeQuery=true;
                 }else{
                     typeQuery=false;
@@ -140,7 +149,6 @@
                 }else{
                     counter=0;
                 }
-              // typeQuery=false;
                 this.play(intent, 0);
             }else if (intent.name === "AMAZON.ResumeIntent") {
                 var lastPlayed = this.loadLastPlayed(userId);
@@ -180,33 +188,52 @@
                 counter=0;
                 track=counter+1;
             }
+            var trackcounter=counter;
+           if(PlayAudioByRandomYear==true || PlayAudioByRandomCity==true || PlayAudioByRandom==true){
+                var start=page*50;
+                var end=(page*50)+MusicUrlList.length-1;
+                var x = Math.floor((Math.random() * end) + start);
+                console.log(x);
+                trackcounter=x;
+                audioURL='https://archive.org/download/'+MusicUrlList[x]['identifier']+'/'+MusicUrlList[x]['identifier']+'_vbr.m3u';
+                if(PlayAudioByRandomYear==true){
+                    log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,'random',APIURL,function(status){
+                    });
+                }else if(PlayAudioByRandomCity==true){
+                    log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random',year,APIURL,function(status){
+                    });
+                }else if(PlayAudioByRandom==true){
+                    log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random','random',APIURL,function(status){
+                    });
+                }
+            }else{
+                audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
+                log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,year,APIURL,function(status){
+                });
+            }
             
-            audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
-            console.log(counter); 
-            console.log("Next Url"+audioURL);
             var response = {
-                                    version: "1.0",
-                                    response: {
-                                        shouldEndSession: true,
-                                        directives: [
-                                            {
-                                                type: "AudioPlayer.Play",
-                                                playBehavior: "REPLACE_ENQUEUED", 
-                                                audioItem: {
-                                                    stream: {
-                                                        url: audioURL,
-                                                        token: counter+1,
-                                                        //expectedPreviousToken: prevTrack, 
-                                                        offsetInMilliseconds: offsetInMilliseconds
-                                                    }
-                                                }
+                            version: "1.0",
+                            response: {
+                                shouldEndSession: true,
+                                directives: [
+                                    {
+                                        type: "AudioPlayer.Play",
+                                        playBehavior: "REPLACE_ENQUEUED", 
+                                        audioItem: {
+                                            stream: {
+                                                url: audioURL,
+                                                token: counter+1,
+                                                expectedPreviousToken: prevTrack, 
+                                                offsetInMilliseconds: offsetInMilliseconds
                                             }
-                                        ]
+                                        }
                                     }
-                };
+                                ]
+                            }
+                        };
             this.context.succeed(response);
             
-        
         }else{
             var cardTitle = 'Unable to understand your request. Please Try again by saying. City and Year. or random';
             var repromptText = 'Waiting for your responce.';
@@ -240,34 +267,49 @@
     };
     
     function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
-        console.log('TypeQuery -----'+typeQuery);
-        console.log('Intent -----'+intent.name);
-        console.log('MusicUrlList Lenght -----'+MusicUrlList.length);
-        console.log('counter -----'+counter);console.log('Year ------- '+year);
-        console.log('City ------- '+city);
-        if(collection!='' || searchBYTitle){
+        if(collection !='' || searchBYTitle){
             var track=counter+1;
             if((MusicUrlList.length>0 && intent.name != 'PlayAudio' && intent.name != 'PlayAudioByRandom'  && intent.name != 'PlayAudioByCity' && intent.name != 'PlayAudioByRandomYear'&& intent.name != 'PlayAudioByRandomCity' && intent.name != 'PlayAudioQuery' && typeQuery==false) ){
                 if(track>MusicUrlList.length){
                     counter=0;
                     track=counter+1;
                 }
-                
-                audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
-                // audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'.mp3';
-                console.log('Music List'+MusicUrlList.length); 
-                console.log(audioURL);
+                console.log('test');
+                var trackcounter=counter;
+                if(PlayAudioByRandomYear==true || PlayAudioByRandomCity==true || PlayAudioByRandom==true){
+                    var start=page*50;
+                    var end=(page*50)+MusicUrlList.length-1;
+                    var x = Math.floor((Math.random() * end) + start);
+                    console.log(x);
+                    trackcounter=x;
+                    audioURL='https://archive.org/download/'+MusicUrlList[x]['identifier']+'/'+MusicUrlList[x]['identifier']+'_vbr.m3u';
+                    if(PlayAudioByRandomYear==true){
+                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,'random',APIURL,function(status){
+                        });
+                    }else if(PlayAudioByRandomCity==true){
+                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random',year,APIURL,function(status){
+                        });
+                    }else if(PlayAudioByRandom==true){
+                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random','random',APIURL,function(status){
+                        });
+                    }
+                    
+                }else{
+                    audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
+                    log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,year,APIURL,function(status){
+                    });
+                }
                 var response = {
                                         version: "1.0",
                                         response: {
                                              outputSpeech: {
                                                 type: 'PlainText',
-                                                text: "Playing track - "+ MusicUrlList[counter]['title'] +" . Please Wait ...",
+                                                text: "Playing track - "+ MusicUrlList[trackcounter]['title'] +" . Please Wait ...",
                                             },
                                             card: {
                                                 type: 'Simple',
                                                 title: `${"Playing track number - "+ track}`,
-                                                content: `${"Playing track - "+ MusicUrlList[counter]['title'] +" . Please Wait ..."}`,
+                                                content: `${"Playing track - "+ MusicUrlList[trackcounter]['title'] +" . Please Wait ..."}`,
                                             },
                                             shouldEndSession: true,
                                             directives: [
@@ -285,37 +327,28 @@
                                                 }
                                             ]
                                         }
-                    };
+                };
                 return callback(0,thisOBJ,response);
                 
             }else if(intent.name == 'PlayAudio' || intent.name == 'PlayAudioByCity' || intent.name == 'PlayAudioByRandom'  || intent.name =='PlayAudioByRandomYear' || intent.name =='PlayAudioByRandomCity' || intent.name =='PlayAudioByYearCity' || intent.name =='PlayAudioQuery'  || typeQuery ==true){
+                
                     if(searchBYTitle || intent.name =='PlayAudioQuery'){
-                         if(intent.name === 'PlayAudioQuery' ){
+                        if(intent.name === 'PlayAudioQuery' ){
                             title= intent.slots.TITLE.value;
-                        }else{
-                            console.log('append'+title);
                         }
-                        var APIURL=podcastAPIURLNEW+title+'%20AND(mediatype:audio)&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
-                        console.log('API URL - '+APIURL);
+                        APIURL=podcastAPIURLNEW+title+'%20AND(mediatype:audio)&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
                     }else if(PlayAudioByRandomYear || intent.name =='PlayAudioByRandomYear'){
-                         if(intent.name === 'PlayAudioByRandomYear' ){
+                        if(intent.name === 'PlayAudioByRandomYear' ){
                             city= intent.slots.CITY.value
-                        }else{
-                            console.log('append'+city);
                         }
-                        var APIURL=podcastCityAPIURL+collection+'+AND+coverage%3A'+city+'&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
-                        console.log('API URL - '+APIURL);
+                        APIURL=podcastCityAPIURL+collectionQuery+'+AND+coverage:('+city+')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
                     }else if(PlayAudioByRandom || intent.name =='PlayAudioByRandom'){
-                        var APIURL=podcastCityAPIURL+collection+'&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
-                        console.log('API URL - '+APIURL);
+                        APIURL=podcastCityAPIURL+collectionQuery+'&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
                     } else if(PlayAudioByRandomCity || intent.name =='PlayAudioByRandomCity'){
-                         if(intent.name === 'PlayAudioByRandomCity' ){
+                        if(intent.name === 'PlayAudioByRandomCity' ){
                             year= intent.slots.YEAR.value;
-                        }else{
-                            console.log('append'+year);
                         }
-                        var APIURL=podcastAPIURL+collection+'+AND+year:'+year+'&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
-                        console.log('API URL - '+APIURL);
+                        APIURL=podcastAPIURL+collectionQuery+'+AND+year:('+year+')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
                     }else{
                         if(used){
                             year='';
@@ -329,21 +362,19 @@
                             
                         }else if(intent.name === 'PlayAudio' ){
                           year= intent.slots.YEAR.value;
-                          
-                          APIURL=podcastAPIURL+collection+'+AND+year:'+year;
+                          APIURL=podcastAPIURL+collectionQuery+'+AND+year:('+year+')';
                           
                         }else if(intent.name === 'PlayAudioByCity' ){
                             city= intent.slots.CITY.value;
-                            APIURL=podcastCityAPIURL+collection+'+AND+coverage%3A'+city;
-                       }
+                            APIURL=podcastCityAPIURL+collectionQuery+'+AND+coverage%3A('+city+')';
+                        }
                         
                         if(year !='' && city !=''){
-                           APIURL=podcastCityAPIURL+collection+'+AND+coverage%3A'+city+'+AND+year%3A'+year;
-                             
+                           APIURL=podcastCityAPIURL+collectionQuery+'+AND+coverage%3A('+city+')+AND+year%3A('+year+')';
                         }
                         APIURL=APIURL+'&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
                     }
-                    console.log('API URL - '+APIURL);
+                    console.log('APIURL- '+APIURL);
                     https.get(APIURL, function (res) {
                     var body = '';
                     res.on('data', function (data) {
@@ -364,16 +395,14 @@
                                     }
                                     YearList=YearList.unique();
                                     YearList=YearList.sort();
-                                    console.log(YearList);
-                                    console.log(YearList[i]);
                                     for (var i=0; i< YearList.length; i++) {
                                         YearString=YearString+YearList[i]+'. ';
                                     }
-                                    console.log(YearString);
                                     var cardTitle = 'Please Select Year.';
                                     var repromptText = 'Waiting for your responce.';
                                     var speechOutput = "Ok , Available years for City "+city+" are "+YearString+' Please Select year.';
-                                    
+                                    log("Ok , Available years for artist: "+collection+" and City: "+city+" are "+YearString,collection,city,year,APIURL,function(status){
+                                    });
                                     var response = {
                                             version: '1.0',
                                             response: {
@@ -395,7 +424,7 @@
                                                 shouldEndSession:false,
                                             }
                                     };
-                                  return callback(0,thisOBJ,response);
+                                    return callback(0,thisOBJ,response);
                                 }else if(intent.name==='PlayAudio' && city==''){
                                     for (var i=0; i< result['response']['docs'].length; i++) {
                                         CityList.push(result['response']['docs'][i]['coverage']);
@@ -410,7 +439,8 @@
                                     var cardTitle = 'Please Select City.';
                                     var repromptText = 'Waiting for your responce.';
                                     var speechOutput = "Ok , Available cities for year "+year+" are "+CityString+' Please Select city.';
-                                    
+                                    log("Ok , Available cities for artist: "+collection+" and  year: "+year+" are "+CityString,collection,city,year,APIURL,function(status){
+                                    });
                                     var response = {
                                             version: '1.0',
                                             response: {
@@ -436,130 +466,194 @@
                                 }
                                
                             }else if ((intent.name =='PlayAudioByYearCity') || (city!='' && year !='')){
-                                if(intent.name == 'PlayAudioByYearCity'){
+                                if(intent.name == 'PlayAudioByYearCity' || counter==0){
                                     counter=0;
                                     MusicUrlList=[];
                                 }
-                                track=counter+1;
-                                //MusicUrlList=result['response']['docs'];
+                                //track=counter+1;
                                 for (var i=0; i< result['response']['docs'].length; i++) {
                                     MusicUrlList.push({identifier:result['response']['docs'][i]['identifier'],title:result['response']['docs'][i]['title']});
                                 }
                                 used=true;
-                                console.log('Music List= '+MusicUrlList.length);
-                                audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
-                                //audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'.mp3';
-                                //audioURL="https://ia801403.us.archive.org/22/items/badpanda049/02.DumboGetsMad-PlumyTale.mp3"
-                                console.log(audioURL);
+                                
+                                var trackcounter=counter;
+                                if(PlayAudioByRandomYear==true || PlayAudioByRandomCity==true || PlayAudioByRandom==true){
+                                    var start=page*50;
+                                    var end=(page*50)+MusicUrlList.length-1;
+                                    var x = Math.floor((Math.random() * end) + start);
+                                    console.log(x);
+                                    trackcounter=x;
+                                    audioURL='https://archive.org/download/'+MusicUrlList[x]['identifier']+'/'+MusicUrlList[x]['identifier']+'_vbr.m3u';
+                                    if(PlayAudioByRandomYear==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,'random',APIURL,function(status){
+                                        });
+                                    }else if(PlayAudioByRandomCity==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random',year,APIURL,function(status){
+                                        });
+                                    }else if(PlayAudioByRandom==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random','random',APIURL,function(status){
+                                        });
+                                    }
+                                    
+                                }else{
+                                    audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
+                                    log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,year,APIURL,function(status){
+                                    });
+                                }
+            
                                 var response = {
-                                                    version: "1.0",
-                                                    response: {
-                                                        outputSpeech: {
-                                                            type: 'PlainText',
-                                                            text: "Playing track - " + MusicUrlList[counter]['title'] +" . Please Wait ...",
-                                                        },
-                                                        card: {
-                                                            type: 'Simple',
-                                                            title: `${"Playing track number - "+ track}`,
-                                                            content: `${"Playing track number - "+ track+" " + MusicUrlList[counter]['title'] +" . Please Wait ..."}`,
-                                                        },
-                                                        shouldEndSession: true,
-                                                        directives: [
-                                                            {
-                                                                type: "AudioPlayer.Play",
-                                                                playBehavior: "REPLACE_ALL", 
-                                                                audioItem: {
-                                                                    stream: {
-                                                                        url: audioURL,
-                                                                        token: counter, 
-                                                                        expectedPreviousToken: null, 
-                                                                        offsetInMilliseconds: offsetInMilliseconds
-                                                                    }
-                                                                }
-                                                            }
-                                                        ]
+                                        version: "1.0",
+                                        response: {
+                                            outputSpeech: {
+                                                type: 'PlainText',
+                                                text: "Playing track - " + MusicUrlList[trackcounter]['title'] +" . Please Wait ...",
+                                            },
+                                            card: {
+                                                type: 'Simple',
+                                                title: `${"Playing track number - "+ track}`,
+                                                content: `${"Playing track number - "+ track+" " + MusicUrlList[trackcounter]['title'] +" . Please Wait ..."}`,
+                                            },
+                                            shouldEndSession: true,
+                                            directives: [
+                                                {
+                                                    type: "AudioPlayer.Play",
+                                                    playBehavior: "REPLACE_ALL", 
+                                                    audioItem: {
+                                                        stream: {
+                                                            url: audioURL,
+                                                            token: counter, 
+                                                            expectedPreviousToken: null, 
+                                                            offsetInMilliseconds: offsetInMilliseconds
+                                                        }
                                                     }
+                                                }
+                                            ]
+                                        }
                                 };
+                                log("Result for Collection: "+collection+" ,City: "+city+" ,Year: "+year,collection,city,year,APIURL,function(status){
+                                });
                                 
                                 return callback(0,thisOBJ,response);
                             }
                             else if (intent.name =='PlayAudioQuery' || searchBYTitle){
                                 if(intent.name==='PlayAudioQuery'){
-                                    //var i=0;
+                    
                                     counter=0;
                                     MusicUrlList=[];
                                     track=counter+1;
                                 }
-                                //MusicUrlList=result['response']['docs'];
+                    
                                 for (var i=0; i< result['response']['docs'].length; i++) {
                                     MusicUrlList.push({identifier:result['response']['docs'][i]['identifier'],title:result['response']['docs'][i]['title']});
                                 }
                                 
-                                console.log('Music List= '+MusicUrlList.length);
-                                audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
-                                //audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'.mp3';
-                                //audioURL="https://ia801403.us.archive.org/22/items/badpanda049/02.DumboGetsMad-PlumyTale.mp3"
-                                console.log(audioURL);
-                                var response = {
-                                                    version: "1.0",
-                                                    response: {
-                                                        outputSpeech: {
-                                                            type: 'PlainText',
-                                                            text: "Playing track - " + MusicUrlList[counter]['title'] +" . Please Wait ...",
-                                                        },
-                                                        card: {
-                                                            type: 'Simple',
-                                                            title: `${"Playing track number - "+track}`,
-                                                            content: `${"Playing track number - "+track+" " + MusicUrlList[counter]['title'] +" . Please Wait ..."}`,
-                                                        },
-                                                        shouldEndSession: true,
-                                                        directives: [
-                                                            {
-                                                                type: "AudioPlayer.Play",
-                                                                playBehavior: "REPLACE_ALL", 
-                                                                audioItem: {
-                                                                    stream: {
-                                                                        url: audioURL,
-                                                                        token: counter, 
-                                                                        expectedPreviousToken: null, 
-                                                                        offsetInMilliseconds: offsetInMilliseconds
-                                                                    }
-                                                                }
+                                log("Result for search "+title,collection,null,null,APIURL,function(status){
+                                });
+                                var trackcounter=counter;
+                                if(PlayAudioByRandomYear==true || PlayAudioByRandomCity==true || PlayAudioByRandom==true){
+                                    var start=page*50;
+                                    var end=(page*50)+MusicUrlList.length-1;
+                                    var x = Math.floor((Math.random() * end) + start);
+                                    console.log(x);
+                                    trackcounter=x;
+                                    audioURL='https://archive.org/download/'+MusicUrlList[x]['identifier']+'/'+MusicUrlList[x]['identifier']+'_vbr.m3u';
+                                    if(PlayAudioByRandomYear==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,'random',APIURL,function(status){
+                                        });
+                                    }else if(PlayAudioByRandomCity==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random',year,APIURL,function(status){
+                                        });
+                                    }else if(PlayAudioByRandom==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random','random',APIURL,function(status){
+                                        });
+                                    }
+                                    
+                                }else{
+                                    audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
+                                    log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,year,APIURL,function(status){
+                                    });
+                                }
+                               var response = {
+                                            version: "1.0",
+                                            response: {
+                                                outputSpeech: {
+                                                    type: 'PlainText',
+                                                    text: "Playing track - " + MusicUrlList[trackcounter]['title'] +" . Please Wait ...",
+                                                },
+                                                card: {
+                                                    type: 'Simple',
+                                                    title: `${"Playing track number - "+track}`,
+                                                    content: `${"Playing track number - "+track+" " + MusicUrlList[trackcounter]['title'] +" . Please Wait ..."}`,
+                                                },
+                                                shouldEndSession: true,
+                                                directives: [
+                                                    {
+                                                        type: "AudioPlayer.Play",
+                                                        playBehavior: "REPLACE_ALL", 
+                                                        audioItem: {
+                                                            stream: {
+                                                                url: audioURL,
+                                                                token: counter, 
+                                                                expectedPreviousToken: null, 
+                                                                offsetInMilliseconds: offsetInMilliseconds
                                                             }
-                                                        ]
+                                                        }
                                                     }
+                                                ]
+                                            }
                                 };
                                 
                                 return callback(0,thisOBJ,response);
                             }
                             else if (intent.name =='PlayAudioByRandomYear' || PlayAudioByRandomYear){
                                 if(intent.name==='PlayAudioByRandomYear'){
-                                    //var i=0;
+            
                                     counter=0;
                                     MusicUrlList=[];
                                     track=counter+1;
                                 }
-                                //MusicUrlList=result['response']['docs'];
+            
                                 for (var i=0; i< result['response']['docs'].length; i++) {
                                     MusicUrlList.push({identifier:result['response']['docs'][i]['identifier'],title:result['response']['docs'][i]['title']});
                                 }
                                 
-                                console.log('Music List= '+MusicUrlList.length);
-                                audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
-                                //audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'.mp3';
-                                //audioURL="https://ia801403.us.archive.org/22/items/badpanda049/02.DumboGetsMad-PlumyTale.mp3"
-                                console.log(audioURL);
+                                 log("Result for Collection: "+collection+" ,City: "+city+" ,Year: random",collection,city,'random',APIURL,function(status){
+                                });
+                                var trackcounter=counter;
+                                if(PlayAudioByRandomYear==true || PlayAudioByRandomCity==true || PlayAudioByRandom==true){
+                                    var start=page*50;
+                                    var end=(page*50)+MusicUrlList.length-1;
+                                    var x = Math.floor((Math.random() * end) + start);
+                                    console.log(x);
+                                    trackcounter=x;
+                                    audioURL='https://archive.org/download/'+MusicUrlList[x]['identifier']+'/'+MusicUrlList[x]['identifier']+'_vbr.m3u';
+                                    if(PlayAudioByRandomYear==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,'random',APIURL,function(status){
+                                        });
+                                    }else if(PlayAudioByRandomCity==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random',year,APIURL,function(status){
+                                        });
+                                    }else if(PlayAudioByRandom==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random','random',APIURL,function(status){
+                                        });
+                                    }
+                                    
+                                }else{
+                                    audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
+                                    log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,year,APIURL,function(status){
+                                    });
+                                }
                                 var response = {
                                                     version: "1.0",
                                                     response: {
                                                         outputSpeech: {
                                                             type: 'PlainText',
-                                                            text: "Playing track - " + MusicUrlList[counter]['title'] +" . Please Wait ...",
+                                                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] +" . Please Wait ...",
                                                         },
                                                         card: {
                                                             type: 'Simple',
                                                             title: `${"Playing track number - "+track}`,
-                                                            content: `${"Playing track number - "+track+" " + MusicUrlList[counter]['title'] +" . Please Wait ..."}`,
+                                                            content: `${"Playing track number - "+track+" " + MusicUrlList[trackcounter]['title'] +" . Please Wait ..."}`,
                                                         },
                                                         shouldEndSession: true,
                                                         directives: [
@@ -577,38 +671,58 @@
                                                             }
                                                         ]
                                                     }
-                                };
+                                                };
                                 
                                 return callback(0,thisOBJ,response);
                             }
                             else if (intent.name =='PlayAudioByRandomCity' || PlayAudioByRandomYear){
                                 if(intent.name==='PlayAudioByRandomCity'){
-                                    //var i=0;
+                            
                                     counter=0;
                                     MusicUrlList=[];
                                     track=counter+1;
                                 }
-                                //MusicUrlList=result['response']['docs'];
                                 for (var i=0; i< result['response']['docs'].length; i++) {
                                     MusicUrlList.push({identifier:result['response']['docs'][i]['identifier'],title:result['response']['docs'][i]['title']});
                                 }
-                                
-                                console.log('Music List= '+MusicUrlList.length);
-                                audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
-                                //audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'.mp3';
-                                //audioURL="https://ia801403.us.archive.org/22/items/badpanda049/02.DumboGetsMad-PlumyTale.mp3"
-                                console.log(audioURL);
+                                log("Result for Collection: "+collection+" ,Year "+year +" and City :random",collection,'random',year,APIURL,function(status){
+                                });
+                                var trackcounter=counter;
+                                if(PlayAudioByRandomYear==true || PlayAudioByRandomCity==true || PlayAudioByRandom==true){
+                                    var start=page*50;
+                                    var end=(page*50)+MusicUrlList.length-1;
+                                    var x = Math.floor((Math.random() * end) + start);
+                                    console.log(x);
+                                    trackcounter=x;
+                                    audioURL='https://archive.org/download/'+MusicUrlList[x]['identifier']+'/'+MusicUrlList[x]['identifier']+'_vbr.m3u';
+                                    if(PlayAudioByRandomYear==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,'random',APIURL,function(status){
+                                        });
+                                    }else if(PlayAudioByRandomCity==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random',year,APIURL,function(status){
+                                        });
+                                    }else if(PlayAudioByRandom==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random','random',APIURL,function(status){
+                                        });
+                                    }
+                                    
+                                }else{
+                                    audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
+                                    log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,year,APIURL,function(status){
+                                    });
+                                }
+            
                                 var response = {
                                                     version: "1.0",
                                                     response: {
                                                         outputSpeech: {
                                                             type: 'PlainText',
-                                                            text: "Playing track - " + MusicUrlList[counter]['title'] +" . Please Wait ...",
+                                                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] +" . Please Wait ...",
                                                         },
                                                         card: {
                                                             type: 'Simple',
                                                             title: `${"Playing track number - "+track}`,
-                                                            content: `${"Playing track number - "+track+" " + MusicUrlList[counter]['title'] +" . Please Wait ..."}`,
+                                                            content: `${"Playing track number - "+track+" " + MusicUrlList[trackcounter]['title'] +" . Please Wait ..."}`,
                                                         },
                                                         shouldEndSession: true,
                                                         directives: [
@@ -626,38 +740,61 @@
                                                             }
                                                         ]
                                                     }
-                                };
+                                               };
                                 
                                 return callback(0,thisOBJ,response);
                             }
                             else if (intent.name =='PlayAudioByRandom' || PlayAudioByRandom){
                                 if(intent.name==='PlayAudioByRandom'){
-                                    //var i=0;
+                                    
                                     counter=0;
                                     MusicUrlList=[];
                                     track=counter+1;
                                 }
-                                //MusicUrlList=result['response']['docs'];
+                                
                                 for (var i=0; i< result['response']['docs'].length; i++) {
                                     MusicUrlList.push({identifier:result['response']['docs'][i]['identifier'],title:result['response']['docs'][i]['title']});
                                 }
+                                log("Result for Collection: "+collection+" ,Year :random and City :random",collection,'random','random',APIURL,function(status){
+                                });
                                 
-                                console.log('Music List= '+MusicUrlList.length);
-                                audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
-                                //audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'.mp3';
-                                //audioURL="https://ia801403.us.archive.org/22/items/badpanda049/02.DumboGetsMad-PlumyTale.mp3"
-                                console.log(audioURL);
+                                var trackcounter=counter;
+                                if(PlayAudioByRandomYear==true || PlayAudioByRandomCity==true || PlayAudioByRandom==true){
+                                    var start=page*50;
+                                    var end=(page*50)+MusicUrlList.length-1;
+                                    var x = Math.floor((Math.random() * end) + start);
+                                    console.log(x);
+                                    trackcounter=x;
+                                    audioURL='https://archive.org/download/'+MusicUrlList[x]['identifier']+'/'+MusicUrlList[x]['identifier']+'_vbr.m3u';
+                                    if(PlayAudioByRandomYear==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,'random',APIURL,function(status){
+                                        });
+                                    }else if(PlayAudioByRandomCity==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random',year,APIURL,function(status){
+                                        });
+                                    }else if(PlayAudioByRandom==true){
+                                        log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random','random',APIURL,function(status){
+                                        });
+                                    }
+                                    
+                                }else{
+                                    audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
+                                    log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,year,APIURL,function(status){
+                                    });
+                                }
+            
+                                
                                 var response = {
                                                     version: "1.0",
                                                     response: {
                                                         outputSpeech: {
                                                             type: 'PlainText',
-                                                            text: "Playing track - " + MusicUrlList[counter]['title'] +" . Please Wait ...",
+                                                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] +" . Please Wait ...",
                                                         },
                                                         card: {
                                                             type: 'Simple',
                                                             title: `${"Playing track number - "+track}`,
-                                                            content: `${"Playing track number - "+track+" " + MusicUrlList[counter]['title'] +" . Please Wait ..."}`,
+                                                            content: `${"Playing track number - "+track+" " + MusicUrlList[trackcounter]['title'] +" . Please Wait ..."}`,
                                                         },
                                                         shouldEndSession: true,
                                                         directives: [
@@ -675,13 +812,22 @@
                                                             }
                                                         ]
                                                     }
-                                };
+                                                };
                                 
                                 return callback(0,thisOBJ,response);
                             }
                             
                                             
                         }else{
+                            
+                            if(PlayAudioByRandom){
+                                log("Sorry , No result found for command play "+collection+" random  ",collection,'random','random',APIURL,function(status){
+                                });
+                            
+                            }else{
+                               log("Sorry , No result found for command play "+collection +" "+city +" "+year +"   ",collection,city,year,APIURL,function(status){
+                                }); 
+                            }
                             year ='';
                             city='';
                             var cardTitle = 'No Result Found';
@@ -710,7 +856,7 @@
                                     };
                                     return callback(0,thisOBJ,response);
                             
-                        }
+                                }
                        
                     });
                 }).on('error', function (e) {
@@ -772,9 +918,9 @@
                 
             }
         }else{
-            var cardTitle = "<speak>Please select a collection by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
-                var repromptText = 'Please select collection';
-                var speechOutput = "<speak>Please select a collection by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+            var cardTitle = "<speak>Please select a artist by saying.<break time='.5s'/> play artist name.<break time='.5s'/> Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+                var repromptText = 'Please select artist';
+                var speechOutput = "<speak>Please select a artist by saying.<break time='.5s'/> play artist name.<break time='.5s'/> Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
                 
                 var response = {
                         version: '1.0',
@@ -804,8 +950,8 @@
     
     MyAudioPlayer.prototype.handleSessionEndRequest = function () {
         var cardTitle = 'Good bye';
-        var speechOutput = "<speak>Thank you for trying The Grateful Dead Collection from The Internet Archive .<break time='1s'/> Have a nice day!</speak>";
-        var repromptText = "<speak>Thank you for trying The Grateful Dead Collection from The Internet Archive .<break time='1s'/> Have a nice day!</speak>";
+        var speechOutput = "<speak>Thanks for rocking with the internet archive’s live music collection!</speak>";
+        var repromptText = "<speak>Thanks for rocking with the internet archive’s live music collection!</speak>";
         var response = {
             version: '1.0',
             response: {
@@ -835,25 +981,75 @@
             this.context.succeed(response);
     }
     
+    function log(Title,Collection,City,Year,Url,callback){
+         var url= "http://alexa.appunison.in:5557/admin/savelog?identifierName="+Collection+"&title="+Title+"&city="+City+"&year="+Year+"&url="+Url+"&resltJson=null";
+                    console.log(url);                    
+                    http.get(url, function (res) {
+                    var body = '';
+                    res.on('data', function (data) {
+                        body += data;
+                    });
+                    res.on('end', function () {
+                      callback(true);   
+                    
+                     });
+                    }).on('error', function (e) {
+                         callback(true);
+                    });
+    }
+    
     MyAudioPlayer.prototype.getCollection=function(intent){
         var CurrentObject=this;
         collection= intent.slots.COLLECTION.value;
         if(collection !='' || collection !=undefined){
-            collection=collection.replace(' ','');
-            var checkCollectionUrl=podcastAPIURL+collection+'&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
-            console.log("Collection URL : "+checkCollectionUrl);
+            
+            collectionQuery='';
+            var collectionArray=collection.split(/[ ,]+/);
+            
+            if(collectionArray.length>1){
+                collectionQuery=collectionQuery+'(';
+                
+                for(var i=1;i<collectionArray.length;i++){
+                    collectionQuery=collectionQuery+collectionArray[i];
+                }
+                
+                collectionQuery=collectionQuery+')+OR+collection:(';
+                for(var i=0;i<collectionArray.length-1;i++){
+                    collectionQuery=collectionQuery+collectionArray[i];
+                }
+                
+                collection=collection.replace(/ /g ,'');
+                collectionQuery=collectionQuery+')+OR+collection:('+collection+')';
+            }else{
+               collection=collection.replace(/ /g ,'');
+                collectionQuery=collectionQuery+'('+collection+')'; 
+            }
+            
+            var checkCollectionUrl=podcastAPIURL+collectionQuery+'&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
+            console.log(checkCollectionUrl);
              https.get(checkCollectionUrl, function (res) {
                 var body = '';
                 res.on('data', function (data) {
                     body += data;
                 });
-                
+                CityName='Los Angeles';
+                YearName='1971';
                 res.on('end', function () {
                     var result = JSON.parse(body);
+                    console.log(result['response']['docs'].length);
                     if(result != null && result['response']['docs'].length>0){
+                        //http to node server collection title city =null year=null url=checkCollectionUrl result =result
+                        for (var i=0; i< result['response']['docs'].length; i++) {
+                            if(result['response']['docs'][i]['coverage']!='' &&result['response']['docs'][i]['coverage']!=undefined && result['response']['docs'][i]['year']!='' && result['response']['docs'][i]['year']!=undefined){
+                                var res = result['response']['docs'][i]['coverage'].split(",");
+                                CityName=res[0];
+                                YearName=result['response']['docs'][i]['year'];
+                                break;
+                            }
+                        }
                         var cardTitle = 'Provide City and Year';
-                        var repromptText = "<speak>Please select a collection.<break time='.5s'/> Like Los Angeles 1971.</speak>";
-                        var speechOutput = "<speak>The Collection "+collection+" has been selected.<break time='.5s'/> Now Please select City and Year or random.<break time='.5s'/> Like Los Angeles 1971 or random.</speak>";
+                        var repromptText = "<speak>Please select a City and year.<break time='.5s'/> Like "+CityName+" "+YearName+"  or random.</speak>";
+                        var speechOutput = "<speak>The artist "+collection+" has been selected.<break time='.5s'/> Now Please select City and Year or random.<break time='.5s'/> Like "+CityName+" "+YearName+" or random.</speak>";
                         var response = {
                             version: '1.0',
                             response: {
@@ -875,13 +1071,18 @@
                                         shouldEndSession:false,
                                     }
                             };
-                            CurrentObject.context.succeed(response);   
+                            
+                                     
+                    log("The Collection "+collection+" has been selected.",collection,null,null,checkCollectionUrl,function(status){
+                        
+                    });
+                    CurrentObject.context.succeed(response);      
+                             
                     }else{
-                        
                         var cardTitle = 'Collection not exists';
-                        var repromptText = "<speak>Collection "+collection+" has no record.<break time='.5s'/> Please Try again by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
-                        var speechOutput = "<speak>Sorry,<break time='.5s'/> Collection "+collection+" has no record. Please Try again by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
-                        collection='';
+                        var repromptText = "<speak>artist "+collection+" has no songs.<break time='.5s'/> Please Try again by saying.<break time='.5s'/> play artist name.<break time='.5s'/> Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+                        var speechOutput = "<speak>Sorry,<break time='.5s'/> artist "+collection+" has no songs. Please Try again by saying.<break time='.5s'/> play artist name.<break time='.5s'/> Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+                        
                         var response = {
                             version: '1.0',
                             response: {
@@ -903,16 +1104,19 @@
                                         shouldEndSession:false,
                                     }
                             };
-                            CurrentObject.context.succeed(response);
+                            log("Sorry Collection: "+collection+" has no songs.",collection,null,null,checkCollectionUrl,function(status){
                         
+                            });
+                            collection='';
+                            CurrentObject.context.succeed(response);
                     }
                    
                 });
             }).on('error', function (e) {
-                collection='';
-                var cardTitle = "<speak>Unable to understand your request. Please Try again by saying. play Collection name. Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+                
+                var cardTitle = "<speak>Unable to understand your request. Please Try again by saying. play artist name. Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
                 var repromptText = 'Waiting for your responce.';
-                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by saying. play Collection name. Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by saying. play artist name. Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
                 var response = {
                     version: '1.0',
                     response: {
@@ -934,12 +1138,15 @@
                                 shouldEndSession:false,
                             }
                     };
+                    log("Sorry, Unable to understand your request for collection: "+collection+" request ",collection,null,null,checkCollectionUrl,function(status){
+                      });
+                      collection='';
                     CurrentObject.context.succeed(response);
             });
         }else{
-            var cardTitle = 'Please provide valid collection';
+            var cardTitle = 'Please provide valid artist';
             var repromptText = "<speak>Waiting for your responce.</speak>";
-            var speechOutput = "<speak>Please provide a collection name.</speak>";
+            var speechOutput = "<speak>Please provide a artist name.</speak>";
             var response = {
                 version: '1.0',
                 response: {
@@ -965,13 +1172,42 @@
         }
     }
     
+    MyAudioPlayer.prototype.Discovery = function () {
+        
+        var cardTitle = 'Discover more';
+        var repromptText = "<speak>Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  Like , Disco Biscuits, Hot Buttered Rum, or Keller Williams.</speak>";
+        // var speechOutput = "<speak>Welcome To The Internet Archive,<break time='1s'/> Please select a collection by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+        var speechOutput = "<speak>We have more collection.<break time='.5s'/> Like , Disco Biscuits, Hot Buttered Rum, or Keller Williams.</speak>";
+        var response = {
+            version: '1.0',
+            response: {
+                        outputSpeech: {
+                            type: 'SSML',
+                            ssml: speechOutput,
+                        },
+                        card: {
+                            type: 'Simple',
+                            title: `${cardTitle}`,
+                            content: `${speechOutput}`,
+                        },
+                        reprompt: {
+                            outputSpeech: {
+                                type: 'SSML',
+                                ssml: repromptText,
+                            }
+                        },
+                        shouldEndSession:false,
+                    }
+            };
+            this.context.succeed(response);
+    }
+    
     MyAudioPlayer.prototype.Welcome = function () {
         
         var cardTitle = 'Welcome';
-        // var repromptText = "<speak>Waiting for your responce.<break time='.5s'/>Please select a collection by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> like Play The Ditty Bops.<break time='.5s'/> Or Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.<break time='.5s'/> Or serach songs by saying search keyword. <break time='.5s'/> Like search peter gabriel</speak>";
-        // var speechOutput = "<speak>Welcome To The Internet Archive,<break time='1s'/> Please select a collection by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.<break time='.5s'/> Or serach songs by saying search keyword. <break time='.5s'/> Like search peter gabriel</speak>";
-         var repromptText = "<speak>Waiting for your responce.<break time='.5s'/>Please select a collection by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> like Play The Ditty Bops.<break time='.5s'/> Or Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
-        var speechOutput = "<speak>Welcome To The Internet Archive,<break time='1s'/> Please select a collection by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+        var repromptText = "<speak>Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.</speak>";
+        // var speechOutput = "<speak>Welcome To The Internet Archive,<break time='1s'/> Please select a collection by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+        var speechOutput = "<speak>Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.</speak>";
         var response = {
             version: '1.0',
             response: {
@@ -998,15 +1234,13 @@
     
     
     MyAudioPlayer.prototype.play = function (intent, offsetInMilliseconds) {
-       
-        getAudioPlayList(intent,counter,this,offsetInMilliseconds,function(err,Obj,response){
+       getAudioPlayList(intent,counter,this,offsetInMilliseconds,function(err,Obj,response){
             if(!err){
                 Obj.context.succeed(response);
             }else{
               Obj.context.succeed(response);
             }
         })
-           
     };
      
     MyAudioPlayer.prototype.stop = function () {
