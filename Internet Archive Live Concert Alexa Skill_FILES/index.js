@@ -23,7 +23,7 @@
     var collectionQuery='';
     var title='';
     var APIURL='';
-    var collection=['Disco Biscuits','Keller Williams','Radiators','Blues Traveler','Tea Leaf Green'];
+    var CollectionsArray=['Disco Biscuits','Keller Williams','Radiators','Blues Traveler','Tea Leaf Green'];
     var collectionCount=0;
     exports.handler = function(event, context) {
         var player = new MyAudioPlayer(event, context);
@@ -126,20 +126,21 @@
                 this.stop();
             }else if (intent.name === "AMAZON.NextIntent") { 
                 counter++;
-                console.log('next command');
                 if(counter>MusicUrlList.length-1){
                     if(MusicUrlList.length<50){
-                    console.log('next command1');
-                     page=0;
-                     console.log('Page -'+page);
-                     typeQuery=false;
+                        page=0;
+                        typeQuery=false;
                       console.log('Counter -'+counter);
+                      
                     }else{
-                     page++;   
+                        page++;  
+                        typeQuery=true;
+                        
                     }
-                    typeQuery=true;
+                    
                 }else{
                     typeQuery=false;
+                    
                 }
                 
                 this.play(intent, 0);
@@ -164,18 +165,19 @@
             this.saveLastPlayed(userId, this.event);
             this.context.succeed(true);
         }
-        else if (requestType === "AudioPlayer.PlaybackFailed") {
-            counter++;
-            this.play(requestType, 0);
-            counter--;
-        }
+        // else if (requestType === "AudioPlayer.PlaybackFailed") {
+        //     counter++;
+        //     this.play(requestType, 0);
+        //     counter--;
+        // }
          else if (requestType === "AudioPlayer.PlaybackNearlyFinished") {
+             console.log('PlaybackNearlyFinished');
             counter++;
             this.PlayNext(requestType, 0);
             
         } else if (requestType === "System.ExceptionEncountered") {
-            console.log('Error');
-            console.log( this.event.request.error);
+            // console.log('Error');
+            // console.log( this.event.request.error);
         }
         
     };
@@ -197,21 +199,21 @@
                 trackcounter=x;
                 audioURL='https://archive.org/download/'+MusicUrlList[x]['identifier']+'/'+MusicUrlList[x]['identifier']+'_vbr.m3u';
                 if(PlayAudioByRandomYear==true){
-                    log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,'random',APIURL,function(status){
+                    log("Auto Next Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,'random',APIURL,function(status){
                     });
                 }else if(PlayAudioByRandomCity==true){
-                    log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random',year,APIURL,function(status){
+                    log("Auto Next Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random',year,APIURL,function(status){
                     });
                 }else if(PlayAudioByRandom==true){
-                    log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random','random',APIURL,function(status){
+                    log("Auto Next Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,'random','random',APIURL,function(status){
                     });
                 }
             }else{
                 audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['identifier']+'_vbr.m3u';
-                log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,year,APIURL,function(status){
+                log("Auto Next Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,year,APIURL,function(status){
                 });
             }
-            
+            console.log('Auto Next -'+audioURL);
             var response = {
                             version: "1.0",
                             response: {
@@ -269,7 +271,8 @@
     function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
         if(collection !='' || searchBYTitle){
             var track=counter+1;
-            if((MusicUrlList.length>0 && intent.name != 'PlayAudio' && intent.name != 'PlayAudioByRandom'  && intent.name != 'PlayAudioByCity' && intent.name != 'PlayAudioByRandomYear'&& intent.name != 'PlayAudioByRandomCity' && intent.name != 'PlayAudioQuery' && typeQuery==false) ){
+            console.log('check'+MusicUrlList.length);
+            if((MusicUrlList.length>0 && intent.name != 'PlayAudio' && intent.name != 'PlayAudioByRandom'  && intent.name != 'PlayAudioByCity' && intent.name != 'PlayAudioByRandomYear'&& intent.name != 'PlayAudioByRandomCity' && intent.name != 'PlayAudioQuery' && typeQuery===false) ){
                 if(track>MusicUrlList.length){
                     counter=0;
                     track=counter+1;
@@ -280,7 +283,7 @@
                     var start=page*50;
                     var end=(page*50)+MusicUrlList.length-1;
                     var x = Math.floor((Math.random() * end) + start);
-                    console.log(x);
+                    console.log('counter'+x);
                     trackcounter=x;
                     audioURL='https://archive.org/download/'+MusicUrlList[x]['identifier']+'/'+MusicUrlList[x]['identifier']+'_vbr.m3u';
                     if(PlayAudioByRandomYear==true){
@@ -330,7 +333,7 @@
                 };
                 return callback(0,thisOBJ,response);
                 
-            }else if(intent.name == 'PlayAudio' || intent.name == 'PlayAudioByCity' || intent.name == 'PlayAudioByRandom'  || intent.name =='PlayAudioByRandomYear' || intent.name =='PlayAudioByRandomCity' || intent.name =='PlayAudioByYearCity' || intent.name =='PlayAudioQuery'  || typeQuery ==true){
+            }else if(intent.name == 'PlayAudio' || intent.name == 'PlayAudioByCity' || intent.name == 'PlayAudioByRandom'  || intent.name =='PlayAudioByRandomYear' || intent.name =='PlayAudioByRandomCity' || intent.name =='PlayAudioByYearCity' || intent.name =='PlayAudioQuery'  || typeQuery ===true){
                 
                     if(searchBYTitle || intent.name =='PlayAudioQuery'){
                         if(intent.name === 'PlayAudioQuery' ){
@@ -466,7 +469,7 @@
                                 }
                                
                             }else if ((intent.name =='PlayAudioByYearCity') || (city!='' && year !='')){
-                                if(intent.name == 'PlayAudioByYearCity' || counter==0){
+                                if(intent.name == 'PlayAudioByYearCity' || page==0){
                                     counter=0;
                                     MusicUrlList=[];
                                 }
@@ -474,10 +477,12 @@
                                 for (var i=0; i< result['response']['docs'].length; i++) {
                                     MusicUrlList.push({identifier:result['response']['docs'][i]['identifier'],title:result['response']['docs'][i]['title']});
                                 }
-                                used=true;
+                                if(MusicUrlList.length<50){
+                                  used=true;
+                                }
                                 
                                 var trackcounter=counter;
-                                if(PlayAudioByRandomYear==true || PlayAudioByRandomCity==true || PlayAudioByRandom==true){
+                                if(PlayAudioByRandomYear===true || PlayAudioByRandomCity===true || PlayAudioByRandom===true){
                                     var start=page*50;
                                     var end=(page*50)+MusicUrlList.length-1;
                                     var x = Math.floor((Math.random() * end) + start);
@@ -830,9 +835,9 @@
                             }
                             year ='';
                             city='';
-                            var cardTitle = 'No Result Found';
-                                var repromptText = 'No result found. Please Try again by saying. City and Year. or random';
-                                var speechOutput = "Sorry , No result found. Please Try again by saying. City and Year. or random";
+                            var cardTitle = 'No Songs Found';
+                                var repromptText = 'No songs found. Please Try again by saying. City and Year. or random';
+                                var speechOutput = "Sorry , No songs found. Please Try again by saying. City and Year. or random";
                                 var response = {
                                     version: '1.0',
                                     response: {
@@ -918,9 +923,9 @@
                 
             }
         }else{
-            var cardTitle = "<speak>Please select a artist by saying.<break time='.5s'/> play artist name.<break time='.5s'/> Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+            var cardTitle = "<speak>Please select a artist by saying.<break time='.5s'/> artist name.<break time='.5s'/> Like The Ditty Bops.<break time='.5s'/> Or  Cowboy Junkies.<break time='.5s'/> Or  GratefulDead.</speak>";
                 var repromptText = 'Please select artist';
-                var speechOutput = "<speak>Please select a artist by saying.<break time='.5s'/> play artist name.<break time='.5s'/> Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+                var speechOutput = "<speak>Please select a artist by saying.<break time='.5s'/> artist name.<break time='.5s'/> Like The Ditty Bops.<break time='.5s'/> Or  Cowboy Junkies.<break time='.5s'/> Or  GratefulDead.</speak>";
                 
                 var response = {
                         version: '1.0',
@@ -1019,10 +1024,10 @@
                 }
                 
                 collection=collection.replace(/ /g ,'');
-                collectionQuery=collectionQuery+')+OR+collection:('+collection+')';
+                collectionQuery=collectionQuery+')+OR+collection:('+collection+')+OR+collection:(the'+collection+')';
             }else{
                collection=collection.replace(/ /g ,'');
-                collectionQuery=collectionQuery+'('+collection+')'; 
+               collectionQuery=collectionQuery+'('+collection+')+OR+collection:(the'+collection+')';
             }
             
             var checkCollectionUrl=podcastAPIURL+collectionQuery+'&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
@@ -1041,10 +1046,12 @@
                         //http to node server collection title city =null year=null url=checkCollectionUrl result =result
                         for (var i=0; i< result['response']['docs'].length; i++) {
                             if(result['response']['docs'][i]['coverage']!='' &&result['response']['docs'][i]['coverage']!=undefined && result['response']['docs'][i]['year']!='' && result['response']['docs'][i]['year']!=undefined){
-                                var res = result['response']['docs'][i]['coverage'].split(",");
-                                CityName=res[0];
-                                YearName=result['response']['docs'][i]['year'];
-                                break;
+                                if(result['response']['docs'][i]['coverage'].includes(",")){
+                                    var res = result['response']['docs'][i]['coverage'].split(",");
+                                    CityName=res[0];
+                                    YearName=result['response']['docs'][i]['year'];
+                                    break;
+                                }
                             }
                         }
                         var cardTitle = 'Provide City and Year';
@@ -1080,8 +1087,8 @@
                              
                     }else{
                         var cardTitle = 'Collection not exists';
-                        var repromptText = "<speak>artist "+collection+" has no songs.<break time='.5s'/> Please Try again by saying.<break time='.5s'/> play artist name.<break time='.5s'/> Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
-                        var speechOutput = "<speak>Sorry,<break time='.5s'/> artist "+collection+" has no songs. Please Try again by saying.<break time='.5s'/> play artist name.<break time='.5s'/> Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+                        var repromptText = "<speak>artist "+collection+" has no songs.<break time='.5s'/> Please Try again by saying.<break time='.5s'/> artist name.<break time='.5s'/> Like The Ditty Bops.<break time='.5s'/> Or   Cowboy Junkies.<break time='.5s'/> Or  GratefulDead.</speak>";
+                        var speechOutput = "<speak>Sorry,<break time='.5s'/> artist "+collection+" has no songs. Please Try again by saying.<break time='.5s'/> artist name.<break time='.5s'/> Like The Ditty Bops.<break time='.5s'/> Or  Cowboy Junkies.<break time='.5s'/> Or GratefulDead.</speak>";
                         
                         var response = {
                             version: '1.0',
@@ -1114,9 +1121,9 @@
                 });
             }).on('error', function (e) {
                 
-                var cardTitle = "<speak>Unable to understand your request. Please Try again by saying. play artist name. Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+                var cardTitle = "<speak>Unable to understand your request. Please Try again by saying. artist name. Like  The Ditty Bops.<break time='.5s'/> Or  Cowboy Junkies.<break time='.5s'/> Or GratefulDead.</speak>";
                 var repromptText = 'Waiting for your responce.';
-                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by saying. play artist name. Like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by saying. artist name. Like The Ditty Bops.<break time='.5s'/> Or  Cowboy Junkies.<break time='.5s'/> Or GratefulDead.</speak>";
                 var response = {
                     version: '1.0',
                     response: {
@@ -1207,7 +1214,8 @@
         var cardTitle = 'Welcome';
         var repromptText = "<speak>Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.</speak>";
         // var speechOutput = "<speak>Welcome To The Internet Archive,<break time='1s'/> Please select a collection by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
-        var speechOutput = "<speak>Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.</speak>";
+        var speechOutput = "<speak><audio src='https://s3.amazonaws.com/gratefulerrorlogs/CrowdNoise.mp3' />  Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.  </speak>";
+        // var speechOutput = "<speak>Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies. </speak>";
         var response = {
             version: '1.0',
             response: {
