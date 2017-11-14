@@ -23,8 +23,7 @@
     var collectionQuery='';
     var title='';
     var APIURL='';
-    var CollectionsArray=['Disco Biscuits','Keller Williams','Radiators','Blues Traveler','Tea Leaf Green'];
-    var collectionCount=0;
+
     exports.handler = function(event, context) {
         var player = new MyAudioPlayer(event, context);
         player.handle();
@@ -176,8 +175,8 @@
             this.PlayNext(requestType, 0);
             
         } else if (requestType === "System.ExceptionEncountered") {
-            // console.log('Error');
-            // console.log( this.event.request.error);
+            console.log('Error');
+            console.log( this.event.request.error);
         }
         
     };
@@ -1024,10 +1023,10 @@
                 }
                 
                 collection=collection.replace(/ /g ,'');
-                collectionQuery=collectionQuery+')+OR+collection:('+collection+')+OR+collection:(the'+collection+')';
+                collectionQuery='('+collectionQuery+')+OR+collection:('+collection+')+OR+collection:(the'+collection+'))';
             }else{
                collection=collection.replace(/ /g ,'');
-               collectionQuery=collectionQuery+'('+collection+')+OR+collection:(the'+collection+')';
+               collectionQuery='('+collectionQuery+'('+collection+')+OR+collection:(the'+collection+'))';
             }
             
             var checkCollectionUrl=podcastAPIURL+collectionQuery+'&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page='+page+'&indent=yes&output=json';
@@ -1056,6 +1055,8 @@
                         }
                         var cardTitle = 'Provide City and Year';
                         var repromptText = "<speak>Please select a City and year.<break time='.5s'/> Like "+CityName+" "+YearName+"  or random.</speak>";
+                        var cardOutput = "The artist "+collection+" has been selected. Now, please select CITY and YEAR or RANDOM. Like "+CityName+" "+YearName+" or random.";
+        
                         var speechOutput = "<speak>The artist "+collection+" has been selected.<break time='.5s'/> Now Please select City and Year or random.<break time='.5s'/> Like "+CityName+" "+YearName+" or random.</speak>";
                         var response = {
                             version: '1.0',
@@ -1067,7 +1068,7 @@
                                         card: {
                                             type: 'Simple',
                                             title: `${cardTitle}`,
-                                            content: `${speechOutput}`,
+                                            content: `${cardOutput}`,
                                         },
                                         reprompt: {
                                             outputSpeech: {
@@ -1087,9 +1088,10 @@
                              
                     }else{
                         var cardTitle = 'Collection not exists';
-                        var repromptText = "<speak>artist "+collection+" has no songs.<break time='.5s'/> Please Try again by saying.<break time='.5s'/> artist name.<break time='.5s'/> Like The Ditty Bops.<break time='.5s'/> Or   Cowboy Junkies.<break time='.5s'/> Or  GratefulDead.</speak>";
-                        var speechOutput = "<speak>Sorry,<break time='.5s'/> artist "+collection+" has no songs. Please Try again by saying.<break time='.5s'/> artist name.<break time='.5s'/> Like The Ditty Bops.<break time='.5s'/> Or  Cowboy Junkies.<break time='.5s'/> Or GratefulDead.</speak>";
-                        
+                        var repromptText = "<speak>artist "+collection+" has no song.<break time='.5s'/> Please Try again by saying.<break time='.5s'/> artist name.<break time='.5s'/> Like The Ditty Bops.<break time='.5s'/> Or   Cowboy Junkies.<break time='.5s'/> Or  GratefulDead.</speak>";
+                        var speechOutput = "<speak>Sorry,<break time='.5s'/> artist "+collection+" has no song. Please Try again by saying.<break time='.5s'/> artist name.<break time='.5s'/> Like The Ditty Bops.<break time='.5s'/> Or  Cowboy Junkies.<break time='.5s'/> Or GratefulDead.</speak>";
+                        var cardOutput = "Sorry, artist "+collection+" has no song. Please try again by saying ARTIST NAME like The Ditty Bops, Cowboy Junkies Or GratefulDead.";
+        
                         var response = {
                             version: '1.0',
                             response: {
@@ -1100,7 +1102,7 @@
                                         card: {
                                             type: 'Simple',
                                             title: `${cardTitle}`,
-                                            content: `${speechOutput}`,
+                                            content: `${cardOutput}`,
                                         },
                                         reprompt: {
                                             outputSpeech: {
@@ -1124,6 +1126,7 @@
                 var cardTitle = "<speak>Unable to understand your request. Please Try again by saying. artist name. Like  The Ditty Bops.<break time='.5s'/> Or  Cowboy Junkies.<break time='.5s'/> Or GratefulDead.</speak>";
                 var repromptText = 'Waiting for your responce.';
                 var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by saying. artist name. Like The Ditty Bops.<break time='.5s'/> Or  Cowboy Junkies.<break time='.5s'/> Or GratefulDead.</speak>";
+                var cardOutput = "Sorry, unable to understand your request. Please Try again by saying, ARTIST NAME like The Ditty Bops, Cowboy Junkies, Or GratefulDead.";
                 var response = {
                     version: '1.0',
                     response: {
@@ -1134,7 +1137,7 @@
                                 card: {
                                     type: 'Simple',
                                     title: `${cardTitle}`,
-                                    content: `${speechOutput}`,
+                                    content: `${cardOutput}`,
                                 },
                                 reprompt: {
                                     outputSpeech: {
@@ -1154,6 +1157,7 @@
             var cardTitle = 'Please provide valid artist';
             var repromptText = "<speak>Waiting for your responce.</speak>";
             var speechOutput = "<speak>Please provide a artist name.</speak>";
+            var cardOutput = "Please provide a ARTIST NAME.";
             var response = {
                 version: '1.0',
                 response: {
@@ -1164,7 +1168,7 @@
                             card: {
                                 type: 'Simple',
                                 title: `${cardTitle}`,
-                                content: `${speechOutput}`,
+                                content: `${cardOutput}`,
                             },
                             reprompt: {
                                 outputSpeech: {
@@ -1184,6 +1188,7 @@
         var cardTitle = 'Discover more';
         var repromptText = "<speak>Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  Like , Disco Biscuits, Hot Buttered Rum, or Keller Williams.</speak>";
         // var speechOutput = "<speak>Welcome To The Internet Archive,<break time='1s'/> Please select a collection by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+        var cardOutput = "We have more collection like Disco Biscuits, Hot Buttered Rum or Keller Williams.";
         var speechOutput = "<speak>We have more collection.<break time='.5s'/> Like , Disco Biscuits, Hot Buttered Rum, or Keller Williams.</speak>";
         var response = {
             version: '1.0',
@@ -1195,7 +1200,7 @@
                         card: {
                             type: 'Simple',
                             title: `${cardTitle}`,
-                            content: `${speechOutput}`,
+                            content: `${cardOutput}`,
                         },
                         reprompt: {
                             outputSpeech: {
@@ -1213,7 +1218,7 @@
         
         var cardTitle = 'Welcome';
         var repromptText = "<speak>Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.</speak>";
-        // var speechOutput = "<speak>Welcome To The Internet Archive,<break time='1s'/> Please select a collection by saying.<break time='.5s'/> play Collection name.<break time='.5s'/> like Play The Ditty Bops.<break time='.5s'/> Or  Play Cowboy Junkies.<break time='.5s'/> Or Play GratefulDead.</speak>";
+        var cardOutput = "Welcome to the live music collection at the Internet Archive. What artist would you like to listen to? For example The Ditty Bops, The Grateful Dead or The Cowboy Junkies.";
         var speechOutput = "<speak><audio src='https://s3.amazonaws.com/gratefulerrorlogs/CrowdNoise.mp3' />  Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.  </speak>";
         // var speechOutput = "<speak>Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies. </speak>";
         var response = {
@@ -1226,7 +1231,7 @@
                         card: {
                             type: 'Simple',
                             title: `${cardTitle}`,
-                            content: `${speechOutput}`,
+                            content: `${cardOutput}`,
                         },
                         reprompt: {
                             outputSpeech: {
