@@ -47,8 +47,7 @@ var MyAudioPlayer = function (event, context) {
 
 MyAudioPlayer.prototype.handle = function () {
   var requestType = (this.event.request!=undefined)?this.event.request.type:null;
-  var userId = this.event.context ? this.event.context.System.user.userId :this.event.session.user.userId;
-   
+  
   if (requestType === "LaunchRequest") {
     this.Welcome();
   } else  if (requestType === "IntentRequest") {
@@ -69,6 +68,7 @@ MyAudioPlayer.prototype.handle = function () {
       counter=0;
       this.play(intent, 0);
     }else if (intent.name === "SearchCollection"){
+      TotalTrack=0;
       console.log('SearchCollection');
       this.getCollection(intent);
     }else if (intent.name === "PlayAudioByCity") {
@@ -152,19 +152,46 @@ MyAudioPlayer.prototype.handle = function () {
     }else if (intent.name === "AMAZON.PauseIntent") {
       this.stop();
     }else if (intent.name === "AMAZON.NextIntent") {
-      counter++;
-      if(counter>(TotalTrack-1)){
-        page++;
-        typeQuery=true;
+      if(TotalTrack==0){
+          var response = {
+                    version: '1.0',
+                    response: {
+                      outputSpeech: {
+                        type: 'SSML',
+                        ssml: "<speak>Please Select City and year first</speak>",
+                      },
+                      card: {
+                        type: 'Simple',
+                        title: "Select City and Year",
+                        content: "Please Select City and year first",
+                      },
+                      reprompt: {
+                        outputSpeech: {
+                          type: 'SSML',
+                          ssml: "<speak>Please Select City and year first</speak>",
+                        }
+                      },
+                      shouldEndSession:false,
+                      directives: [
+                        {
+                          type: "AudioPlayer.Stop"
+                        }
+                      ]
+                    }
+                  };
+                  this.context.succeed(response);
+          this.context.succeed({});
       }else{
-        typeQuery=false;
+          counter++;
+          if(counter>(TotalTrack-1) && TotalTrack>0){
+            page++;
+            typeQuery=true;
+          }else{
+            typeQuery=false;
+          }
+         
+          this.play(intent, 0);
       }
-      console.log('Next Count -'+counter);
-      console.log('Total Count -'+TotalTrack);
-      
-      console.log('typeQuery -'+typeQuery);
-      console.log('Total array -'+MusicUrlList.length);
-      this.play(intent, 0);
     }else if (intent.name === "AMAZON.PreviousIntent") {
       if(counter>0){
         counter--;
@@ -173,6 +200,8 @@ MyAudioPlayer.prototype.handle = function () {
       }
       this.play(intent, 0);
     }else if (intent.name === "AMAZON.ResumeIntent") {
+        var userId = this.event.context ? this.event.context.System.user.userId :this.event.session.user.userId;
+   
       var lastPlayed = this.loadLastPlayed(userId);
       var offsetInMilliseconds = 0;
       if (lastPlayed !== null) {
@@ -181,9 +210,13 @@ MyAudioPlayer.prototype.handle = function () {
       this.play(intent, offsetInMilliseconds);
     }else if (intent.name === 'AMAZON.StopIntent' || intent.name === 'AMAZON.CancelIntent') {
       this.handleSessionEndRequest();
+    }else{
+        this.context.succeed({});
     }
   }else if (requestType === "AudioPlayer.PlaybackStopped") {
        console.log('PlaybackStopped');
+       var userId = this.event.context ? this.event.context.System.user.userId :this.event.session.user.userId;
+   
     this.saveLastPlayed(userId, this.event);
     this.context.succeed({});
   }
@@ -222,6 +255,12 @@ MyAudioPlayer.prototype.handle = function () {
   else if (requestType === "System.ExceptionEncountered") {
     console.log('Error');
     console.log( this.event.request.error);
+  
+      
+  }
+  else{
+    //   this.saveLastPlayed(userId, this.event);
+        this.context.succeed({});
   }
 
 };
@@ -284,8 +323,8 @@ MyAudioPlayer.prototype.PlayNext = function (requestType, offsetInMilliseconds) 
   }else{
       console.log('Auto Next - Not Found');
     var cardTitle = 'Unable to understand your request.';
-    var repromptText = '<speak>Waiting for your responce.Please Try again by saying. City and Year. or <break time=".5s"/>  random.</speak>';
-    var speechOutput = "<speak>Sorry , Error Occured.Please Try again. Please Try again by saying. City and Year. or <break time='.5s'/> random.</speak>";
+    var repromptText = '<speak>Waiting for your responce.Please Try again by saying. City and Year. or <break time=".1s"/>  random.</speak>';
+    var speechOutput = "<speak>Sorry , Error Occured.Please Try again. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
 
     var response = {
       version: '1.0',
@@ -326,7 +365,7 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
         // console.log('test');
         var trackcounter=counter;
         if(PlayAudioByRandomYear===true || PlayAudioByRandomCity===true || PlayAudioByRandom===true){
-          var start=TotalTrack-MusicUrlList.length-1;
+          var start=TotalTrack-(MusicUrlList.length-1);
           var end=TotalTrack;
           var x = Math.floor((Math.random() * end) + start);
         //   console.log(x);
@@ -344,7 +383,7 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
           }
     
         }else{
-          audioURL='https://archive.org/download/'+MusicUrlList[counter]['identifier']+'/'+MusicUrlList[counter]['trackName'];
+          audioURL='https://archive.org/download/'+MusicUrlList[trackcounter]['identifier']+'/'+MusicUrlList[trackcounter]['trackName'];
           log("Playing Track URL - "+audioURL+" And Track Name - "+MusicUrlList[trackcounter]['title'],collection,city,year,APIURL,function(status){
           });
         }
@@ -463,7 +502,7 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
 
         res.on('end', function () {
           var result = JSON.parse(body);
-          if(result != null && result['response']['docs'].length>0){  console.log('check'+MusicUrlList.length);
+          if(result != null && result['response']['docs'].length>0){  
             if((intent.name==='PlayAudioByCity' || intent.name == 'PlayAudio') && (year =='' || city =='')){
               var YearList=[];
               var YearString='';
@@ -588,7 +627,7 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
 
                     var trackcounter=counter;
                     if(PlayAudioByRandomYear===true || PlayAudioByRandomCity===true || PlayAudioByRandom===true){
-                      var start=TotalTrack-MusicUrlList.length-1;
+                      var start=TotalTrack-(MusicUrlList.length-1);
                       var end=TotalTrack;
                       var x = Math.floor((Math.random() * end) + start);
                       console.log(x);
@@ -645,8 +684,8 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
                     return callback(0,thisOBJ,response);
                   }else{
                     var cardTitle = 'No Songs Found';
-                    var repromptText = '<speak> No songs found. Please Try again by saying. City and Year. or <break time=".5s"/> random.</speak>';
-                    var speechOutput = "<speak>  Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.5s'/> random </speak>";
+                    var repromptText = '<speak> No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+                    var speechOutput = "<speak>  Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/> random </speak>";
                     var response = {
                       version: '1.0',
                       response: {
@@ -673,9 +712,9 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
 
                 });
               }).on('error', function (e) {
-                var cardTitle = '<speak>Unable to understand your request. Please Try again by select. City and Year. or <break time=".5s"/> random.</speak>';
+                var cardTitle = '<speak>Unable to understand your request. Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
                 var repromptText = 'Waiting for your responce.';
-                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.5s'/> random.</speak>";
+                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
                 var response = {
                   version: '1.0',
                   response: {
@@ -805,10 +844,10 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
 
                       var trackcounter=counter;
                       if(PlayAudioByRandomYear===true || PlayAudioByRandomCity===true || PlayAudioByRandom===true){
-                        var start=TotalTrack-MusicUrlList.length-1;
+                        var start=TotalTrack-(MusicUrlList.length-1);
                         var end=TotalTrack;
                         var x = Math.floor((Math.random() * end) + start);
-                        console.log(x);
+                        console.log(start);
                         trackcounter=x;
                         audioURL='https://archive.org/download/'+MusicUrlList[x]['identifier']+'/'+MusicUrlList[x]['trackName'];
                         if(PlayAudioByRandomYear==true){
@@ -863,8 +902,8 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
               }
                 else{
                   var cardTitle = 'No Songs Found';
-                  var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".5s"/> random.</speak>';
-                  var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.5s'/> random.</speak>";
+                  var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+                  var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
                   var response = {
                     version: '1.0',
                     response: {
@@ -891,9 +930,9 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
 
               });
             }).on('error', function (e) {
-              var cardTitle = '<speak>Unable to understand your request. Please Try again by select. City and Year. or <break time=".5s"/> random.</speak>';
+              var cardTitle = '<speak>Unable to understand your request. Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
               var repromptText = 'Waiting for your responce.';
-              var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.5s'/> random.</speak>";
+              var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
               var response = {
                 version: '1.0',
                 response: {
@@ -955,7 +994,7 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
 
                     var trackcounter=counter;
                     if(PlayAudioByRandomYear===true || PlayAudioByRandomCity===true || PlayAudioByRandom===true){
-                      var start=TotalTrack-MusicUrlList.length-1;
+                      var start=TotalTrack-(MusicUrlList.length-1);
                       var end=TotalTrack;
                       var x = Math.floor((Math.random() * end) + start);
                       console.log(x);
@@ -1012,8 +1051,8 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
                 }
                 else{
                   var cardTitle = 'No Songs Found';
-                  var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".5s"/> random.</speak>';
-                  var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.5s'/> random.</speak>";
+                  var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+                  var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
                   var response = {
                     version: '1.0',
                     response: {
@@ -1040,9 +1079,9 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
 
               });
               }).on('error', function (e) {
-                var cardTitle = '<speak>Unable to understand your request. Please Try again by select. City and Year. or <break time=".5s"/> random.</speak>';
+                var cardTitle = '<speak>Unable to understand your request. Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
                 var repromptText = 'Waiting for your responce.';
-                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.5s'/> random.</speak>";
+                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
                 var response = {
                   version: '1.0',
                   response: {
@@ -1100,13 +1139,14 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
                       }
                     }
                     // TotalTrack=TotalTrack+MusicUrlList.length-1;
-
+                    console.log('TrackCount -'+trackcounter);
+                    console.log('Array Size -'+MusicUrlList.length-1);
                     var trackcounter=counter;
                     if(PlayAudioByRandomYear===true || PlayAudioByRandomCity===true || PlayAudioByRandom===true){
-                      var start=TotalTrack-MusicUrlList.length-1;
+                      var start=TotalTrack-(MusicUrlList.length-1);
                       var end=TotalTrack;
                       var x = Math.floor((Math.random() * end) + start);
-                      console.log(x);
+                      console.log(start);
                       trackcounter=x;
                       audioURL='https://archive.org/download/'+MusicUrlList[x]['identifier']+'/'+MusicUrlList[x]['trackName'];
                       if(PlayAudioByRandomYear==true){
@@ -1161,8 +1201,8 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
                   }
                   else{
                     var cardTitle = 'No Songs Found';
-                    var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".5s"/> random.</speak>';
-                    var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.5s'/> random.</speak>";
+                    var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+                    var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
                     var response = {
                       version: '1.0',
                       response: {
@@ -1189,9 +1229,9 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
 
                 });
               }).on('error', function (e) {
-                var cardTitle = '<speak>Unable to understand your request. Please Try again by select. City and Year. or <break time=".5s"/> random.</speak>';
+                var cardTitle = '<speak>Unable to understand your request. Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
                 var repromptText = 'Waiting for your responce.';
-                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.5s'/> random.</speak>";
+                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
                 var response = {
                   version: '1.0',
                   response: {
@@ -1231,8 +1271,8 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
             year ='';
             city='';
             var cardTitle = 'No Songs Found';
-            var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".5s"/> random.</speak>';
-            var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.5s'/>  random.</speak>";
+            var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+            var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/>  random.</speak>";
             var response = {
               version: '1.0',
               response: {
@@ -1262,9 +1302,9 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
       }).on('error', function (e) {
         year='';
         city='';
-        var cardTitle = '<speak>Unable to understand your request. Please Try again by select. City and Year. or <break time=".5s"/> random.</speak>';
+        var cardTitle = '<speak>Unable to understand your request. Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
         var repromptText = 'Waiting for your responce.';
-        var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.5s'/> random.</speak>";
+        var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
         var response = {
           version: '1.0',
           response: {
@@ -1289,9 +1329,9 @@ function getAudioPlayList(intent,counter,thisOBJ,offsetInMilliseconds,callback){
         return callback(0,thisOBJ,response);
       });
     }else{
-      var cardTitle = '<speak>Unable to understand your request. Please Try again by select. City and Year. or <break time=".5s"/> random.</speak>';
+      var cardTitle = '<speak>Unable to understand your request. Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
       var repromptText = 'Waiting for your responce.';
-      var speechOutput = "<speak>Sorry, Unable to understand your request. Please Try again by select. City and Year. or <break time='.5s'/> random.</speak>";
+      var speechOutput = "<speak>Sorry, Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
 
       var response = {
         version: '1.0',
@@ -1435,25 +1475,25 @@ MyAudioPlayer.prototype.getCollection=function(intent){
       CityName='Los Angeles';
       YearName='1971';
       res.on('end', function () {
-        var result = JSON.parse(body);
-        console.log(result['response']['docs'].length);
-        if(result != null && result['response']['docs'].length>0){
-          //http to node server collection title city =null year=null url=checkCollectionUrl result =result
-          for (var i=0; i< result['response']['docs'].length; i++) {
-            if(result['response']['docs'][i]['coverage']!='' &&result['response']['docs'][i]['coverage']!=undefined && result['response']['docs'][i]['year']!='' && result['response']['docs'][i]['year']!=undefined){
-              if(result['response']['docs'][i]['coverage'].includes(",")){
-                var res = result['response']['docs'][i]['coverage'].split(",");
-                CityName=res[0];
-                YearName=result['response']['docs'][i]['year'];
+        var resultCollection = JSON.parse(body);
+        console.log(resultCollection['response']['docs'].length);
+        if(resultCollection != null && resultCollection['response']['docs'].length>0){
+          //http to node server collection title city =null year=null url=checkCollectionUrl resultCollection =result
+          for (var i=0; i< resultCollection['response']['docs'].length; i++) {
+            if(resultCollection['response']['docs'][i]['coverage']!='' && resultCollection['response']['docs'][i]['coverage']!=undefined && resultCollection['response']['docs'][i]['year']!='' && resultCollection['response']['docs'][i]['year']!=undefined){
+              if(resultCollection['response']['docs'][i]['coverage'].includes(",")){
+                var resCity = resultCollection['response']['docs'][i]['coverage'].split(",");
+                CityName=resCity[0];
+                YearName=resultCollection['response']['docs'][i]['year'];
                 break;
               }
             }
           }
           var cardTitle = 'Provide City and Year';
-          var repromptText = "<speak>Please select a City and year.<break time='.5s'/> Like "+CityName+" "+YearName+"  or <break time='.5s'/>  random.</speak>";
+          var repromptText = "<speak>Please select a City and year.<break time='.5s'/> Like "+CityName+" "+YearName+"  or <break time='.1s'/>  random.</speak>";
           var cardOutput = "The artist "+collection+" has been selected. Now, please select CITY and YEAR or RANDOM. Like "+CityName+" "+YearName+" or random.";
 
-          var speechOutput = "<speak>The artist "+collection+" has been selected.<break time='.5s'/> Now Please select City and Year or <break time='.5s'/>  random. <break time='.5s'/> Like "+CityName+" "+YearName+" or <break time='.5s'/> random.</speak>";
+          var speechOutput = "<speak>The artist "+collection+" has been selected.<break time='.5s'/> Now Please select City and Year or <break time='.1s'/>  random. <break time='.5s'/> Like "+CityName+" "+YearName+" or <break time='.1s'/> random.</speak>";
           var response = {
             version: '1.0',
             response: {
@@ -1678,3 +1718,4 @@ MyAudioPlayer.prototype.loadLastPlayed = function (userId) {
   }
   return lastPlayed;
 };
+
