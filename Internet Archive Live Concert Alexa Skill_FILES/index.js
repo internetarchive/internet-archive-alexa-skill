@@ -14,6 +14,7 @@ var audioURL;
 var year = '';
 var typeQuery = false;
 var searchBYTitle = false;
+var IdentifierCounter = 0;
 var PlayAudioByRandomYear = false;
 var PlayAudioByRandomCity = false;
 var PlayAudioByRandom = false;
