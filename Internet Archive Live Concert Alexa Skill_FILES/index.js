@@ -14,7 +14,6 @@ var audioURL;
 var year = '';
 var typeQuery = false;
 var searchBYTitle = false;
-var IdentifierCounter = 0;
 var PlayAudioByRandomYear = false;
 var PlayAudioByRandomCity = false;
 var PlayAudioByRandom = false;
@@ -52,6 +51,7 @@ MyAudioPlayer.prototype.handle = function () {
   var requestType = (this.event.request != undefined) ? this.event.request.type : null;
 
   if (requestType === "LaunchRequest") {
+    console.log('LaunchRequest');
     SeventyEights = false;
     this.Welcome();
 
@@ -59,6 +59,7 @@ MyAudioPlayer.prototype.handle = function () {
     var intent = this.event.request.intent;
     if (intent.name === 'Discovery') {
       SeventyEights = false;
+      console.log('Discovery');
       this.Discovery();
 
     }
@@ -183,6 +184,7 @@ MyAudioPlayer.prototype.handle = function () {
 
     }
     else if (intent.name === "AMAZON.PauseIntent") {
+      console.log('PauseIntent');
       this.stop();
     }
     else if (intent.name === "SeventyEights") {
@@ -213,6 +215,7 @@ MyAudioPlayer.prototype.handle = function () {
 
     }
     else if (intent.name === "AMAZON.NextIntent") {
+      console.log('NextIntent');
       if (SeventyEights == true) {
         if (TotalTrack < 0) {
           var response = {
@@ -299,6 +302,7 @@ MyAudioPlayer.prototype.handle = function () {
       }
     }
     else if (intent.name === "AMAZON.PreviousIntent") {
+      console.log('PreviousIntent');
       if (SeventyEights == true) {
         if (counter > 0) {
           counter--;
@@ -317,7 +321,7 @@ MyAudioPlayer.prototype.handle = function () {
 
     }
     else if (intent.name === "AMAZON.ResumeIntent") {
-
+      console.log('ResumeIntent');
       if (SeventyEights == true) {
         var userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
 
@@ -357,11 +361,7 @@ MyAudioPlayer.prototype.handle = function () {
      response: {}
     });
   }
-  // else if (requestType === "AudioPlayer.PlaybackFailed") {
-  //     counter++;
-  //     this.play(requestType, 0);
-  //     counter--;
-  // }
+ 
   else if (requestType === "AudioPlayer.PlaybackNearlyFinished") {
     console.log('PlaybackNearlyFinished');
     // counter++;
@@ -376,8 +376,6 @@ MyAudioPlayer.prototype.handle = function () {
     console.log('page -' + page);
     console.log('Type -' + typeQuery);
 
-    //   console.log('typeQuery -'+typeQuery);
-    //   console.log('Total array -'+MusicUrlList.length);
     var intent = {name: 'autoNext'};
     if (SeventyEights == true) {
       this.playSeventyEights(intent, 0);
@@ -388,19 +386,13 @@ MyAudioPlayer.prototype.handle = function () {
 
 
   }
-//else if (requestType === "AudioPlayer.PlaybackFinished") {
-//     // console.log('PlaybackFinished');
-//     // counter++;
-//     // this.PlayNext(requestType, 0);
-
-
-//   }
+  
   else if (requestType === "System.ExceptionEncountered") {
     console.log('Error');
     console.log(this.event.request.error);
   }
   else {
-    //this.saveLastPlayed(userId, this.event);
+    console.log(requestType);
     this.context.succeed({
       version: "1.0",
       response: {}
@@ -545,7 +537,9 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
       topicName = topicName.replace(/ /g, '');
       topicName = topicName.replace("#", " ");
       topicName = topicName.replace(/[^a-zA-Z0-9 ]/g, "");
-      APIURL = SeventyEightsAPIURL + '(' + topicName + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+      var SeventyEightsSort=['titleSorter desc','date desc','downloads desc','date asc','creatorSorter desc','creatorSorter asc','downloads asc','titleSorter asc'];
+      var sortRandom = Math.floor((Math.random() * 7) + 0);
+      APIURL = SeventyEightsAPIURL + '(' + topicName + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]='+SeventyEightsSort[sortRandom]+'&rows=1&page=' + page + '&indent=yes&output=json';
       console.log(APIURL);
       https.get(APIURL, function (res) {
         var body = '';
@@ -953,7 +947,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                   stream: {
                     url: audioURL,
                     token: counter,
-                    expectedPreviousToken: counter - 1,
+                    expectedPreviousToken:counter - 1,
                     offsetInMilliseconds: offsetInMilliseconds
                   }
                 }
@@ -1011,7 +1005,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
         if (intent.name === 'PlayAudioByRandomYear') {
           city = intent.slots.CITY.value
         }
-        APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage:(' + city + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page=' + page + '&indent=yes&output=json';
+        APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage:(' + city + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
       } else if (PlayAudioByRandom || intent.name == 'PlayAudioByRandom') {
         APIURL = podcastCityAPIURL + collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
       } else if (PlayAudioByRandomCity || intent.name == 'PlayAudioByRandomCity') {
@@ -1042,7 +1036,11 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
         if (year != '' && city != '') {
           APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage%3A(' + city + ')+AND+year%3A(' + year + ')';
         }
-        APIURL = APIURL + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+        if (intent.name === 'PlayAudioByCity') {
+          APIURL = APIURL + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page=' + page + '&indent=yes&output=json';
+        }else{
+          APIURL = APIURL + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+        }
       }
       console.log('APIURL- ' + APIURL);
       https.get(APIURL, function (res) {
@@ -1211,39 +1209,69 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                       log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, year, APIURL, function (status) {
                       });
                     }
-
-                    var response = {
-                      version: "1.0",
-                      response: {
-                        outputSpeech: {
-                          type: 'PlainText',
-                          text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
-                        },
-                        card: {
-                          type: 'Simple',
-                          title: "Playing track number - " + track,
-                          content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
-                        },
-                        shouldEndSession: true,
-                        directives: [
-                          {
-                            type: "AudioPlayer.Play",
-                            playBehavior: "REPLACE_ALL",
-                            audioItem: {
-                              stream: {
-                                url: audioURL,
-                                token: counter,
-                                expectedPreviousToken: null,
-                                offsetInMilliseconds: offsetInMilliseconds
+                    
+                    if (intent.name == 'autoNext') {
+                       var response = {
+                        version: "1.0",
+                        response: {
+                          shouldEndSession: true,
+                          directives: [
+                            {
+                              type: "AudioPlayer.Play",
+                              playBehavior: "ENQUEUE",
+                              audioItem: {
+                                stream: {
+                                  url: audioURL,
+                                  token: counter,
+                                  expectedPreviousToken: counter - 1,
+                                  offsetInMilliseconds: offsetInMilliseconds
+                                }
                               }
                             }
-                          }
-                        ]
-                      }
-                    };
-                    log("Result for Collection: " + collection + " ,City: " + city + " ,Year: " + year, collection, city, year, APIURL, function (status) {
-                    });
-                    return callback(0, thisOBJ, response);
+                          ]
+                        }
+                      };
+                       log("Result for Collection: " + collection + " ,City: " + city + " ,Year: " + year, collection, city, year, APIURL, function (status) {
+                      });
+                       return callback(0, thisOBJ, response);
+                    }else{
+                      var response = {
+                        version: "1.0",
+                        response: {
+                          outputSpeech: {
+                            type: 'PlainText',
+                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                          },
+                          card: {
+                            type: 'Simple',
+                            title: "Playing track number - " + track,
+                            content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                          },
+                          shouldEndSession: true,
+                          directives: [
+                            {
+                              type: "AudioPlayer.Play",
+                              playBehavior: "REPLACE_ALL",
+                              audioItem: {
+                                stream: {
+                                  url: audioURL,
+                                  token: counter,
+                                  expectedPreviousToken: null,
+                                  offsetInMilliseconds: offsetInMilliseconds
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      };
+                       log("Result for Collection: " + collection + " ,City: " + city + " ,Year: " + year, collection, city, year, APIURL, function (status) {
+                        });
+                       return callback(0, thisOBJ, response);
+                    }
+
+                   
+                   
+                   
                   } else {
                     var cardTitle = 'No Songs Found';
                     var repromptText = '<speak> No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
@@ -1346,37 +1374,65 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                 log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, year, APIURL, function (status) {
                 });
               }
-              var response = {
-                version: "1.0",
-                response: {
-                  outputSpeech: {
-                    type: 'PlainText',
-                    text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
-                  },
-                  card: {
-                    type: 'Simple',
-                    title: "Playing track number - " + track,
-                    content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
-                  },
-                  shouldEndSession: true,
-                  directives: [
-                    {
-                      type: "AudioPlayer.Play",
-                      playBehavior: "REPLACE_ALL",
-                      audioItem: {
-                        stream: {
-                          url: audioURL,
-                          token: counter,
-                          expectedPreviousToken: null,
-                          offsetInMilliseconds: offsetInMilliseconds
+              
+               if (intent.name == 'autoNext') {
+                 var response = {
+                    version: "1.0",
+                    response: {
+                      shouldEndSession: true,
+                      directives: [
+                        {
+                          type: "AudioPlayer.Play",
+                          playBehavior: "ENQUEUE",
+                          audioItem: {
+                            stream: {
+                              url: audioURL,
+                              token: counter,
+                              expectedPreviousToken: counter-1,
+                              offsetInMilliseconds: offsetInMilliseconds
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
-                  ]
-                }
-              };
-
-              return callback(0, thisOBJ, response);
+                  };
+    
+                  return callback(0, thisOBJ, response);
+               }else{
+                 var response = {
+                    version: "1.0",
+                    response: {
+                      outputSpeech: {
+                        type: 'PlainText',
+                        text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                      },
+                      card: {
+                        type: 'Simple',
+                        title: "Playing track number - " + track,
+                        content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                      },
+                      shouldEndSession: true,
+                      directives: [
+                        {
+                          type: "AudioPlayer.Play",
+                          playBehavior: "REPLACE_ALL",
+                          audioItem: {
+                            stream: {
+                              url: audioURL,
+                              token: counter,
+                              expectedPreviousToken: null,
+                              offsetInMilliseconds: offsetInMilliseconds
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  };
+    
+                  return callback(0, thisOBJ, response);
+                 
+               }
+              
             }
             else if (intent.name == 'PlayAudioByRandomYear' || PlayAudioByRandomYear) {
               if (intent.name === 'PlayAudioByRandomYear') {
@@ -1445,38 +1501,66 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                       log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, year, APIURL, function (status) {
                       });
                     }
-
-                    var response = {
-                      version: "1.0",
-                      response: {
-                        outputSpeech: {
-                          type: 'PlainText',
-                          text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
-                        },
-                        card: {
-                          type: 'Simple',
-                          title: "Playing track number - " + track,
-                          content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
-                        },
-                        shouldEndSession: true,
-                        directives: [
-                          {
-                            type: "AudioPlayer.Play",
-                            playBehavior: "REPLACE_ALL",
-                            audioItem: {
-                              stream: {
-                                url: audioURL,
-                                token: counter,
-                                expectedPreviousToken: null,
-                                offsetInMilliseconds: offsetInMilliseconds
+                    
+                    if (intent.name == 'autoNext') {
+                      var response = {
+                        version: "1.0",
+                        response: {
+                          shouldEndSession: true,
+                          directives: [
+                            {
+                              type: "AudioPlayer.Play",
+                              playBehavior: "ENQUEUE",
+                              audioItem: {
+                                stream: {
+                                  url: audioURL,
+                                  token: counter,
+                                  expectedPreviousToken: counter - 1,
+                                  offsetInMilliseconds: offsetInMilliseconds
+                                }
                               }
                             }
-                          }
-                        ]
-                      }
-                    };
+                          ]
+                        }
+                      };
+  
+                      return callback(0, thisOBJ, response);
+                      
+                    }else{
+                       var response = {
+                        version: "1.0",
+                        response: {
+                          outputSpeech: {
+                            type: 'PlainText',
+                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                          },
+                          card: {
+                            type: 'Simple',
+                            title: "Playing track number - " + track,
+                            content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                          },
+                          shouldEndSession: true,
+                          directives: [
+                            {
+                              type: "AudioPlayer.Play",
+                              playBehavior: "REPLACE_ALL",
+                              audioItem: {
+                                stream: {
+                                  url: audioURL,
+                                  token: counter,
+                                  expectedPreviousToken: null,
+                                  offsetInMilliseconds: offsetInMilliseconds
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      };
+  
+                      return callback(0, thisOBJ, response);
+                    }
 
-                    return callback(0, thisOBJ, response);
+                    
 
                   }
                   else {
@@ -1606,38 +1690,63 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                       log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, year, APIURL, function (status) {
                       });
                     }
-
-                    var response = {
-                      version: "1.0",
-                      response: {
-                        outputSpeech: {
-                          type: 'PlainText',
-                          text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
-                        },
-                        card: {
-                          type: 'Simple',
-                          title: "Playing track number - " + track,
-                          content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
-                        },
-                        shouldEndSession: true,
-                        directives: [
-                          {
-                            type: "AudioPlayer.Play",
-                            playBehavior: "REPLACE_ALL",
-                            audioItem: {
-                              stream: {
-                                url: audioURL,
-                                token: counter,
-                                expectedPreviousToken: null,
-                                offsetInMilliseconds: offsetInMilliseconds
+                    
+                     if (intent.name == 'autoNext') {
+                        var response = {
+                          version: "1.0",
+                          response: {
+                            shouldEndSession: true,
+                            directives: [
+                              {
+                                type: "AudioPlayer.Play",
+                                playBehavior: "ENQUEUE",
+                                audioItem: {
+                                  stream: {
+                                    url: audioURL,
+                                    token: counter,
+                                    expectedPreviousToken: counter - 1,
+                                    offsetInMilliseconds: offsetInMilliseconds
+                                  }
+                                }
                               }
-                            }
+                            ]
                           }
-                        ]
-                      }
-                    };
-
-                    return callback(0, thisOBJ, response);
+                        };
+    
+                        return callback(0, thisOBJ, response);
+                     }else{
+                       var response = {
+                          version: "1.0",
+                          response: {
+                            outputSpeech: {
+                              type: 'PlainText',
+                              text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                            },
+                            card: {
+                              type: 'Simple',
+                              title: "Playing track number - " + track,
+                              content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                            },
+                            shouldEndSession: true,
+                            directives: [
+                              {
+                                type: "AudioPlayer.Play",
+                                playBehavior: "REPLACE_ALL",
+                                audioItem: {
+                                  stream: {
+                                    url: audioURL,
+                                    token: counter,
+                                    expectedPreviousToken: null,
+                                    offsetInMilliseconds: offsetInMilliseconds
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        };
+    
+                        return callback(0, thisOBJ, response);
+                     }
                   }
                   else {
                     var cardTitle = 'No Songs Found';
@@ -1766,38 +1875,66 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                       log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, year, APIURL, function (status) {
                       });
                     }
-
-                    var response = {
-                      version: "1.0",
-                      response: {
-                        outputSpeech: {
-                          type: 'PlainText',
-                          text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
-                        },
-                        card: {
-                          type: 'Simple',
-                          title: "Playing track number - " + track,
-                          content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
-                        },
-                        shouldEndSession: true,
-                        directives: [
-                          {
-                            type: "AudioPlayer.Play",
-                            playBehavior: "REPLACE_ALL",
-                            audioItem: {
-                              stream: {
-                                url: audioURL,
-                                token: counter,
-                                expectedPreviousToken: null,
-                                offsetInMilliseconds: offsetInMilliseconds
+                    
+                     if (intent.name == 'autoNext') {
+                       
+                       var response = {
+                          version: "1.0",
+                          response: {
+                            shouldEndSession: true,
+                            directives: [
+                              {
+                                type: "AudioPlayer.Play",
+                                playBehavior: "ENQUEUE",
+                                audioItem: {
+                                  stream: {
+                                    url: audioURL,
+                                    token: counter,
+                                    expectedPreviousToken: counter - 1,
+                                    offsetInMilliseconds: offsetInMilliseconds
+                                  }
+                                }
                               }
-                            }
+                            ]
                           }
-                        ]
-                      }
-                    };
+                        };
+    
+                        return callback(0, thisOBJ, response);
+                     }else{
+                       var response = {
+                          version: "1.0",
+                          response: {
+                            outputSpeech: {
+                              type: 'PlainText',
+                              text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                            },
+                            card: {
+                              type: 'Simple',
+                              title: "Playing track number - " + track,
+                              content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                            },
+                            shouldEndSession: true,
+                            directives: [
+                              {
+                                type: "AudioPlayer.Play",
+                                playBehavior: "REPLACE_ALL",
+                                audioItem: {
+                                  stream: {
+                                    url: audioURL,
+                                    token: counter,
+                                    expectedPreviousToken: null,
+                                    offsetInMilliseconds: offsetInMilliseconds
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        };
+    
+                        return callback(0, thisOBJ, response);
+                     }
 
-                    return callback(0, thisOBJ, response);
+                    
 
                   }
                   else {
