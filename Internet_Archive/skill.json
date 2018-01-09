@@ -1,0 +1,57 @@
+{
+  "skillManifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-US": {
+          "summary": "Discover and stream music from the Internet Archive's Live Music and 78s Collections",
+          "examplePhrases": [
+            "Alexa, Internet Archive"
+          ],
+          "keywords": [
+            "Grateful",
+            "Dead",
+            "Internet",
+            "Archive"
+          ],
+          "name": "Internet Archive",
+          "smallIconUri": "https://api.amazonalexa.com/v0/skills/amzn1.ask.skill.fc01cf61-ad69-483f-a8ef-c94ff434a459/images/eyJkIjoiazBad0lza0w4T1dBem1xUWFYZVpPMFJCT0dibmR2RFJ2TER6b2FhbUF6cjc1UEY3cmJmaWcrNDFKZ1RFY3o4UStMczBKMGpyRU9sQ20zMHhid1pwS25IZVZHZjJMYWh4ektDNzZMR2h6SGFic1Z1dW5Db3BYbitPS3NlWXlCN0wiLCJpdiI6ImZva1pUVjhpWW1XL2ZURWJodFdNWnc9PSIsInYiOjF9",
+          "description": "Discover and stream music from the Internet Archive's Live Music and 78s Collections",
+          "largeIconUri": "https://api.amazonalexa.com/v0/skills/amzn1.ask.skill.fc01cf61-ad69-483f-a8ef-c94ff434a459/images/eyJkIjoiUVVWenY3S0FDNnNZTFdvM2dRWFZhVGZxUWxKWU1ZRFFGVS9UbUFpZ2VpNmhNbEwxWmE2djdHVWNqWUpnUlgxekJyK25mWFRnVFJhR1ZNMzJUNTNRN1FFWFZrMm05TitYeHRQdXFYNHpzRGhHeGtidnlCVE1KM2Z6Nks3TFNrRll2TGlVbHBvNEsrUGpqbm9jQlNyYmFBPT0iLCJpdiI6ImpGWmpjcFNaL29sNUNJaW1LbVhmK0E9PSIsInYiOjF9"
+        }
+      },
+      "isAvailableWorldwide": true,
+      "testingInstructions": "Please help us make this better!",
+      "category": "STREAMING_SERVICE",
+      "distributionCountries": []
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "sourceDir": "lambda/custom"
+        },
+        "interfaces": [
+          {
+            "type": "AUDIO_PLAYER"
+          },
+          {
+            "type": "RENDER_TEMPLATE"
+          }
+        ]
+      }
+    },
+    "manifestVersion": "1.0",
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "locales": {
+        "en-US": {
+          "termsOfUseUrl": "https://archive.org/about/terms.php",
+          "privacyPolicyUrl": "https://archive.org/about/terms.php"
+        }
+      },
+      "isExportCompliant": true,
+      "containsAds": false,
+      "isChildDirected": false,
+      "usesPersonalInfo": false
+    }
+  }
+}

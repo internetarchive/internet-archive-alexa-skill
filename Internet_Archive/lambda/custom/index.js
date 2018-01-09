@@ -27,6 +27,7 @@ var title = '';
 var APIURL = '';
 var APIURLIDENTIFIER = '';
 var SeventyEights = false;
+var OneGoPlayAudioStatus=false;
 var topicName = '';
 var TotalTrack = -1;
 var IdentifierCount = 0;
@@ -49,7 +50,8 @@ var MyAudioPlayer = function (event, context) {
 
 MyAudioPlayer.prototype.handle = function () {
   var requestType = (this.event.request != undefined) ? this.event.request.type : null;
-
+ // console.log('Support Diatplay');
+ // console.log(this.event.context.System.device.supportedInterfaces);
   if (requestType === "LaunchRequest") {
     console.log('LaunchRequest');
     SeventyEights = false;
@@ -215,6 +217,35 @@ MyAudioPlayer.prototype.handle = function () {
       this.playSeventyEights(intent, 0);
 
     }
+    else if (intent.name === "OneGoSeventyEights") {
+      console.log('OneGoSeventyEights');
+      page = 0;
+      TotalTrack = -1;
+      IdentifierCount = 0;
+      MusicUrlList = [];
+      typeQuery = false;
+      searchBYTitle = false;
+      counter = 0;
+      SeventyEights = true;
+      this.playSeventyEights(intent, 0);
+
+    }else if (intent.name === "OneGoPlayAudio") {
+      console.log('OneGoPlayAudio');
+      page = 0;
+      TotalTrack = -1;
+      IdentifierCount = 0;
+      MusicUrlList = [];
+      typeQuery = false;
+      searchBYTitle = false;
+      PlayAudioByRandomYear = false;
+      PlayAudioByRandomCity = false;
+      PlayAudioByRandom = false;
+      counter = 0;
+      SeventyEights = false;
+      OneGoPlayAudioStatus=true;
+      this.OneGoPlayAudio(intent, 0);
+
+    }
     else if (intent.name === "AMAZON.NextIntent") {
       console.log('NextIntent');
       if (SeventyEights == true) {
@@ -302,8 +333,12 @@ MyAudioPlayer.prototype.handle = function () {
           else {
             typeQuery = false;
           }
-
-          this.play(intent, 0);
+          if(OneGoPlayAudioStatus){
+            this.OneGoPlayAudio(intent, 0);
+          }else{
+            this.play(intent, 0);
+          }
+          
         }
       }
     }
@@ -325,7 +360,11 @@ MyAudioPlayer.prototype.handle = function () {
         else {
           counter = 0;
         }
-        this.play(intent, 0);
+        if(OneGoPlayAudioStatus){
+          this.OneGoPlayAudio(intent, 0);
+        }else{
+          this.play(intent, 0);
+        }
       }
 
     }
@@ -349,7 +388,12 @@ MyAudioPlayer.prototype.handle = function () {
         if (lastPlayed !== null) {
           offsetInMilliseconds = lastPlayed.request.offsetInMilliseconds;
         }
-        this.play(intent, offsetInMilliseconds);
+        if(OneGoPlayAudioStatus){
+          this.OneGoPlayAudio(intent, offsetInMilliseconds);
+        }else{
+          this.play(intent, offsetInMilliseconds);
+        }
+        // this.play(intent, offsetInMilliseconds);
       }
     }
     else if (intent.name === 'AMAZON.StopIntent' || intent.name === 'AMAZON.CancelIntent') {
@@ -423,7 +467,12 @@ MyAudioPlayer.prototype.handle = function () {
       this.playSeventyEights(intent, 0);
     }
     else {
-      this.play(intent, 0);
+      // this.play(intent, 0);
+      if(OneGoPlayAudioStatus){
+        this.OneGoPlayAudio(intent, 0);
+      }else{
+        this.play(intent, 0);
+      }
 
     }
 
@@ -460,7 +509,7 @@ MyAudioPlayer.prototype.playSeventyEights = function (intent, offsetInMillisecon
 
 function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMilliseconds, callback) {
   var track = counter + 1;
-  if ((MusicUrlList.length > 0 && intent.name != 'SeventyEights' && intent.name != 'PlaByTopic' && typeQuery === false)) {
+  if ((MusicUrlList.length > 0 && intent.name != 'SeventyEights' && intent.name !='OneGoSeventyEights' && intent.name != 'PlaByTopic' && typeQuery === false)) {
     if (track > MusicUrlList.length) {
       counter = 0;
       track = counter + 1;
@@ -547,14 +596,15 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
     }
 
   }
-  else if (intent.name == 'SeventyEights' || intent.name == 'PlaByTopic' || typeQuery === true) {
+  else if (intent.name == 'SeventyEights' || intent.name == 'PlaByTopic' || intent.name =='OneGoSeventyEights' || typeQuery === true) {
 
     if (intent.name == 'SeventyEights') {
       console.log('into Seventy Eights');
       console.log(intent.name);
       var cardTitle = 'Collection Seventy Eights Has Been Selected.';
       var repromptText = "<speak>Waiting for your responce.<break time='.1s'/>  Please select Topics like Jazz <break time='.5s'/> Instrumental or <break time='.5s'/> Dance</speak>";
-      var speechOutput = "<speak>Collection Seventy Eights Has Been Selected.<break time='.1s'/> Please select Topics like Jazz <break time='.5s'/> Instrumental or <break time='.5s'/> Dance</speak>";
+      var speechOutput = "<speak>Collection Seventy Eights Has Been Selected.<break time='.1s'/> Please select topics like Jazz <break time='.5s'/> Instrumental or <break time='.5s'/> Dance</speak>";
+      var cardOutput = "Collection Seventy Eights Has Been Selected. Please select topics like Jazz, Instrumental or Dance";
 
       var response = {
         version: '1.0',
@@ -566,7 +616,7 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
           card: {
             type: 'Simple',
             title: cardTitle,
-            content: speechOutput,
+            content: cardOutput,
           },
           reprompt: {
             outputSpeech: {
@@ -581,8 +631,8 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
       return callback(0, thisOBJ, response);
 
     }
-    else if (intent.name == 'PlaByTopic' || typeQuery === true) {
-      if (intent.name == 'PlaByTopic') {
+    else if (intent.name == 'PlaByTopic' || typeQuery === true || intent.name =='OneGoSeventyEights') {
+      if (intent.name == 'PlaByTopic' || intent.name =='OneGoSeventyEights') {
         topicName = title = intent.slots.TOPIC.value;
       }
 
@@ -685,9 +735,13 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
                             text: "Playing track - " + MusicUrlList[counter]['title'] + " . ",
                           },
                           card: {
-                            type: 'Simple',
+                            type: 'Standard',
                             title: "Playing track number - " + track,
-                            content: "Playing track number - " + track + " " + MusicUrlList[counter]['title'] + " . ",
+                            text: "Playing track number - " + track + " " + MusicUrlList[counter]['title'] + " . ",
+                            // image: {
+                            //   "smallImageUrl": "https://archive.org/services/img/"+MusicUrlList[counter]['identifier'],
+                            //   "largeImageUrl": "https://archive.org/services/img/"+MusicUrlList[counter]['identifier']
+                            // }
                           },
                           shouldEndSession: true,
                           directives: [
@@ -706,6 +760,7 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
                         ]
                         }
                       };
+                      console.log(response);
                       return callback(0, thisOBJ, response);
                     }
                   }
@@ -720,8 +775,9 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
                 }
                 else {
                   var cardTitle = 'No Songs Found';
-                  var repromptText = "<speak>No songs found. Please select Topics like Jazz <break time='.5s'/> Instrumental or <break time='.5s'/> Dance.</speak>";
-                  var speechOutput = "<speak>Sorry , No songs found. Please select Topics like Jazz <break time='.5s'/> Instrumental or <break time='.5s'/> Dance.</speak>";
+                  var repromptText = "<speak>No songs found. Please select topics like Jazz <break time='.5s'/> Instrumental or <break time='.5s'/> Dance.</speak>";
+                  var speechOutput = "<speak>Sorry , No songs found. Please select topics like Jazz <break time='.5s'/> Instrumental or <break time='.5s'/> Dance.</speak>";
+                  var cardOutput = "Sorry, No songs found. Please select topics like Jazz, Instrumental or dance.>";
                   var response = {
                     version: '1.0',
                     response: {
@@ -732,7 +788,7 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
                       card: {
                         type: 'Simple',
                         title: cardTitle,
-                        content: speechOutput,
+                        content: cardOutput,
                       },
                       reprompt: {
                         outputSpeech: {
@@ -751,6 +807,7 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
               var cardTitle = 'Unable to understand your request. Please Try again.';
               var repromptText = '<speak>Waiting for your responce.</speak>';
               var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again.</speak>";
+              var cardOutput = "Sorry, Unable to understand your request. Please Try again.";
               var response = {
                 version: '1.0',
                 response: {
@@ -761,7 +818,7 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
                   card: {
                     type: 'Simple',
                     title: cardTitle,
-                    content: speechOutput,
+                    content: cardOutput,
                   },
                   reprompt: {
                     outputSpeech: {
@@ -782,6 +839,7 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
                 var cardTitle = 'No Songs Found';
                 var repromptText = '<speak>No songs found. Please Try again.</speak>';
                 var speechOutput = "<speak>Sorry , No songs found. Please Try again.</speak>";
+                var cardOutput = "Sorry, No songs found. Please Try again.";
                 var response = {
                   version: '1.0',
                   response: {
@@ -792,7 +850,7 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
                     card: {
                       type: 'Simple',
                       title: cardTitle,
-                      content: speechOutput,
+                      content: cardOutput,
                     },
                     reprompt: {
                       outputSpeech: {
@@ -820,6 +878,7 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
               var cardTitle = 'Unable to understand your request. Please Try again.';
               var repromptText = '<speak>Waiting for your responce.</speak>';
               var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again.</speak>";
+              var cardOutput = "Sorry, Unable to understand your request. Please Try again.";
               var response = {
                 version: '1.0',
                 response: {
@@ -830,7 +889,7 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
                   card: {
                     type: 'Simple',
                     title: cardTitle,
-                    content: speechOutput,
+                    content: cardOutput,
                   },
                   reprompt: {
                     outputSpeech: {
@@ -857,7 +916,9 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
   else {
     var cardTitle = 'Unable to understand your request.';
     var repromptText = '<speak>Waiting for your responce.</speak>';
-    var speechOutput = "<speak>Sorry, Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
+  
+    var speechOutput = "<speak>Sorry, Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
+    var cardOutput = "Sorry, Unable to understand your request. Please Try again. By saying City and Year or Random.";
 
     var response = {
       version: '1.0',
@@ -869,7 +930,7 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
         card: {
           type: 'Simple',
           title: cardTitle,
-          content: speechOutput,
+          content: cardOutput,
         },
         reprompt: {
           outputSpeech: {
@@ -948,7 +1009,8 @@ MyAudioPlayer.prototype.PlayNext = function (requestType, offsetInMilliseconds) 
     console.log('Auto Next - Not Found');
     var cardTitle = 'Unable to understand your request.';
     var repromptText = '<speak>Waiting for your responce.Please Try again by saying. City and Year. or <break time=".1s"/>  random.</speak>';
-    var speechOutput = "<speak>Sorry , Error Occured.Please Try again. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
+    var speechOutput = "<speak>Sorry , Error Occured.Please Try again. By saying. City and Year. or <break time='.1s'/> random.</speak>";
+    var cradOutput = "Sorry, Error Occured Please Try again. By saying City and Year or Random.";
 
     var response = {
       version: '1.0',
@@ -960,7 +1022,7 @@ MyAudioPlayer.prototype.PlayNext = function (requestType, offsetInMilliseconds) 
         card: {
           type: 'Simple',
           title: cardTitle,
-          content: speechOutput,
+          content: cradOutput,
         },
         reprompt: {
           outputSpeech: {
@@ -1156,6 +1218,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                 var cardTitle = 'Please Select Year.';
                 var repromptText = '<speak> Waiting for your responce.</speak>';
                 var speechOutput = "<speak> Ok , Available years for City " + city + " are " + YearString + " Please Select year.</speak>";
+                var cardOutput = "Ok , Available years for City " + city + " are " + YearString + " Please Select year.";
                 log("Ok , Available years for artist: " + collection + " and City: " + city + " are " + YearString, collection, city, year, APIURL, function (status) {});
                 var response = {
                   version: '1.0',
@@ -1167,7 +1230,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                     card: {
                       type: 'Simple',
                       title: cardTitle,
-                      content: speechOutput,
+                      content: cardOutput,
                     },
                     reprompt: {
                       outputSpeech: {
@@ -1194,6 +1257,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                 var cardTitle = 'Please Select City.';
                 var repromptText = '<speak> Waiting for your responce.</speak>';
                 var speechOutput = "<speak>  Ok , Available cities for year " + year + " are " + CityString + ' Please Select city.</speak> ';
+                var cardOutput = "Ok , Available cities for year " + year + " are " + CityString + ' Please Select city.';
                 log("Ok , Available cities for artist: " + collection + " and  year: " + year + " are " + CityString, collection, city, year, APIURL, function (status) {});
                 var response = {
                   version: '1.0',
@@ -1205,7 +1269,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                     card: {
                       type: 'Simple',
                       title: cardTitle,
-                      content: speechOutput,
+                      content: cardOutput,
                     },
                     reprompt: {
                       outputSpeech: {
@@ -1363,6 +1427,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                     var cardTitle = 'No Songs Found';
                     var repromptText = '<speak> No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
                     var speechOutput = "<speak>  Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/> random </speak>";
+                    var cardOutput = "Sorry, No songs found. Please Try again by saying City and Year or Random";
                     var response = {
                       version: '1.0',
                       response: {
@@ -1373,7 +1438,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                         card: {
                           type: 'Simple',
                           title: cardTitle,
-                          content: speechOutput,
+                          content: cardOutput,
                         },
                         reprompt: {
                           outputSpeech: {
@@ -1392,6 +1457,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                 var cardTitle = 'Unable to understand your request. ';
                 var repromptText = '<speak>Waiting for your responce.Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
                 var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
+                var cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
                 var response = {
                   version: '1.0',
                   response: {
@@ -1402,7 +1468,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                     card: {
                       type: 'Simple',
                       title: cardTitle,
-                      content: speechOutput,
+                      content: cardOutput,
                     },
                     reprompt: {
                       outputSpeech: {
@@ -1654,6 +1720,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                     var cardTitle = 'No Songs Found';
                     var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
                     var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
+                    var cardOutput = "Sorry, No songs found. Please Try again by saying City and Year or Random.";
                     var response = {
                       version: '1.0',
                       response: {
@@ -1664,7 +1731,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                         card: {
                           type: 'Simple',
                           title: cardTitle,
-                          content: speechOutput,
+                          content: cardOutput,
                         },
                         reprompt: {
                           outputSpeech: {
@@ -1681,8 +1748,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                 });
               }).on('error', function (e) {
                 var cardTitle = 'Unable to understand your request.';
-                var repromptText = '<speak>Waiting for your responce. Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
-                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
+                var repromptText = '<speak>Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
+                var cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
                 var response = {
                   version: '1.0',
                   response: {
@@ -1693,7 +1761,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                     card: {
                       type: 'Simple',
                       title: cardTitle,
-                      content: speechOutput,
+                      content: cardOutput,
                     },
                     reprompt: {
                       outputSpeech: {
@@ -1840,6 +1908,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                     var cardTitle = 'No Songs Found';
                     var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
                     var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
+                    var cardOutput = "Sorry, No songs found. Please Try again by saying City and Year or Random.";
                     var response = {
                       version: '1.0',
                       response: {
@@ -1850,7 +1919,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                         card: {
                           type: 'Simple',
                           title: cardTitle,
-                          content: speechOutput,
+                          content: cardOutput,
                         },
                         reprompt: {
                           outputSpeech: {
@@ -1867,8 +1936,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                 });
               }).on('error', function (e) {
                 var cardTitle = 'Unable to understand your request.';
-                var repromptText = '<speak>Waiting for your responce. Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
-                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
+                var repromptText = '<speak>Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
+                var cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
                 var response = {
                   version: '1.0',
                   response: {
@@ -1879,7 +1949,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                     card: {
                       type: 'Simple',
                       title: cardTitle,
-                      content: speechOutput,
+                      content: cardOutput,
                     },
                     reprompt: {
                       outputSpeech: {
@@ -2030,6 +2100,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                     var cardTitle = 'No Songs Found';
                     var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
                     var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
+                    var cardOutput = "Sorry, No songs found. Please Try again by saying City and Year or Random.";
                     var response = {
                       version: '1.0',
                       response: {
@@ -2040,7 +2111,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                         card: {
                           type: 'Simple',
                           title: cardTitle,
-                          content: speechOutput,
+                          content: cardOutput,
                         },
                         reprompt: {
                           outputSpeech: {
@@ -2057,8 +2128,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                 });
               }).on('error', function (e) {
                 var cardTitle = 'Unable to understand your request.';
-                var repromptText = '<speak>Waiting for your responce. Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
-                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
+                var repromptText = '<speak>Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
+                var cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
                 var response = {
                   version: '1.0',
                   response: {
@@ -2069,7 +2141,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                     card: {
                       type: 'Simple',
                       title: cardTitle,
-                      content: speechOutput,
+                      content: cardOutput,
                     },
                     reprompt: {
                       outputSpeech: {
@@ -2100,6 +2172,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
             var cardTitle = 'No Songs Found';
             var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
             var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/>  random.</speak>";
+            var cardOutput = "Sorry, No songs found. Please Try again by saying City and Year or random.";
             var response = {
               version: '1.0',
               response: {
@@ -2110,7 +2183,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                 card: {
                   type: 'Simple',
                   title: cardTitle,
-                  content: speechOutput,
+                  content: cardOutput,
                 },
                 reprompt: {
                   outputSpeech: {
@@ -2130,8 +2203,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
         year = '';
         city = '';
         var cardTitle = 'Unable to understand your request.';
-        var repromptText = '<speak>Waiting for your responce. Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
-        var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
+        var repromptText = '<speak>Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+        var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
+        var cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
         var response = {
           version: '1.0',
           response: {
@@ -2142,7 +2216,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
             card: {
               type: 'Simple',
               title: cardTitle,
-              content: speechOutput,
+              content: cardOutput,
             },
             reprompt: {
               outputSpeech: {
@@ -2158,8 +2232,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
     }
     else {
       var cardTitle = 'Unable to understand your request.';
-      var repromptText = '<speak>Waiting for your responce. Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
-      var speechOutput = "<speak>Sorry, Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
+      var repromptText = '<speak>Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+      var speechOutput = "<speak>Sorry, Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
+      var cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
 
       var response = {
         version: '1.0',
@@ -2171,7 +2246,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
           card: {
             type: 'Simple',
             title: cardTitle,
-            content: speechOutput,
+            content: cardOutput,
           },
           reprompt: {
             outputSpeech: {
@@ -2190,6 +2265,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
     var cardTitle = 'Please select artist';
     var repromptText = "<speak>Please select an artist by saying.<break time='.5s'/> artist name.<break time='.5s'/> Like The Ditty Bops.<break time='.5s'/> Or  Cowboy Junkies.<break time='.5s'/> Or  GratefulDead.</speak>";
     var speechOutput = "<speak>Please select an artist by saying.<break time='.5s'/> artist name.<break time='.5s'/> Like The Ditty Bops.<break time='.5s'/> Or  Cowboy Junkies.<break time='.5s'/> Or  GratefulDead.</speak>";
+    var cardOutput = "Please select an artist by saying Artist name. Like The Ditty Bops, Cowboy Junkies or  GratefulDead.";
 
     var response = {
       version: '1.0',
@@ -2201,7 +2277,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
         card: {
           type: 'Simple',
           title: cardTitle,
-          content: speechOutput,
+          content: cardOutput,
         },
         reprompt: {
           outputSpeech: {
@@ -2216,11 +2292,464 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
   }
 }
 
+function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callback) {
+    var track = counter + 1;
+
+    if ((MusicUrlList.length > 0 && intent.name != 'OneGoPlayAudio' && typeQuery === false)) {
+      if (track > MusicUrlList.length) {
+        counter = 0;
+        track = counter + 1;
+      }
+      // console.log('test');
+      var trackcounter = counter;
+      if (PlayAudioByRandomYear === true || PlayAudioByRandomCity === true || PlayAudioByRandom === true) {
+        var start = TotalTrack - (MusicUrlList.length - 1);
+        var end = TotalTrack;
+        var x = Math.floor((Math.random() * end) + start);
+        console.log('Track - ' + x);
+        console.log('Start - ' + start);
+        console.log('End - ' + end);
+        trackcounter = x;
+        audioURL = 'https://archive.org/download/' + MusicUrlList[x]['identifier'] + '/' + MusicUrlList[x]['trackName'];
+        if (PlayAudioByRandomYear == true) {
+          log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, 'random', APIURL, function (status) {});
+        }
+        else if (PlayAudioByRandomCity == true) {
+          log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, 'random', year, APIURL, function (status) {});
+        }
+        else if (PlayAudioByRandom == true) {
+          log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, 'random', 'random', APIURL, function (status) {});
+        }
+
+      }
+      else {
+        audioURL = 'https://archive.org/download/' + MusicUrlList[trackcounter]['identifier'] + '/' + MusicUrlList[trackcounter]['trackName'];
+        log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, year, APIURL, function (status) {});
+      }
+      // console.log(intent.name);
+      if (intent.name == 'autoNext') {
+        var response = {
+          version: "1.0",
+          response: {
+            directives: [
+              {
+                type: "AudioPlayer.Play",
+                playBehavior: "REPLACE_ENQUEUED",
+                audioItem: {
+                  stream: {
+                    url: audioURL,
+                    token: MusicUrlList[trackcounter]['identifier'] + counter,
+                    //expectedPreviousToken: counter - 1,
+                    offsetInMilliseconds: offsetInMilliseconds
+                  }
+                }
+              }
+            ],
+            shouldEndSession: true
+          }
+        };
+        console.log(audioURL);
+        console.log(counter);
+        console.log(offsetInMilliseconds);
+        return callback(0, thisOBJ, response);
+      }
+      else {
+        var response = {
+          version: "1.0",
+          response: {
+            outputSpeech: {
+              type: 'PlainText',
+              text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+            },
+            card: {
+              type: 'Simple',
+              title: "Playing track number - " + track,
+              content: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+            },
+            shouldEndSession: true,
+            directives: [
+              {
+                type: "AudioPlayer.Play",
+                playBehavior: "REPLACE_ALL",
+                audioItem: {
+                  stream: {
+                    url: audioURL,
+                    token: MusicUrlList[trackcounter]['identifier'] + counter,
+                    expectedPreviousToken: null,
+                    offsetInMilliseconds: offsetInMilliseconds
+                  }
+                }
+              }
+            ]
+          }
+        };
+        return callback(0, thisOBJ, response);
+      }
+
+
+    }
+    else if (intent.name == 'OneGoPlayAudio'  || typeQuery === true) {
+
+      if (intent.name == 'OneGoPlayAudio') {
+        
+          city = intent.slots.CITY.value
+          year = intent.slots.YEAR.value;
+          collection = intent.slots.COLLECTION.value;
+          var collection_real_name = intent.slots.COLLECTION.value
+          if (collection != '' || collection != undefined) {
+        
+            collectionQuery = '';
+            var collectionArray = collection.split(/[ ,]+/);
+        
+            if (collectionArray.length > 1) {
+              collectionQuery = collectionQuery + '(';
+        
+              for (var i = 1; i < collectionArray.length; i++) {
+                collectionQuery = collectionQuery + collectionArray[i];
+              }
+        
+              collectionQuery = collectionQuery + ')+OR+collection:(';
+              for (var i = 0; i < collectionArray.length - 1; i++) {
+                collectionQuery = collectionQuery + collectionArray[i];
+              }
+        
+              collection = collection.replace(/ /g, '');
+              collectionQuery = '(' + collectionQuery + ')+OR+collection:(' + collection + ')+OR+collection:(the' + collection + '))';
+            }
+            else {
+              collection = collection.replace(/ /g, '');
+              collectionQuery = '(' + collectionQuery + '(' + collection + ')+OR+collection:(the' + collection + '))';
+            }
+        
+        APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage%3A(' + city + ')+AND+year%3A(' + year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+      }else {
+        if (used) {
+          year = '';
+          city = '';
+          used = false;
+        }
+        APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage%3A(' + city + ')+AND+year%3A(' + year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+        
+      }
+      console.log('APIURL- ' + APIURL);
+      https.get(APIURL, function (res) {
+        var body = '';
+        res.on('data', function (data) {
+          body += data;
+        });
+
+        res.on('end', function () {
+          var result = JSON.parse(body);
+          if (result != null && result['response']['docs'].length > 0) {
+           if ((intent.name == 'OneGoPlayAudio') || (city != '' && year != '' && collectionQuery != '')) {
+
+              if (intent.name == 'OneGoPlayAudio' || page == 0) {
+                counter = 0;
+                MusicUrlList = [];
+              }
+              if (result['response']['numFound'] < IdentifierCount) {
+                used = true;
+              }
+              else {
+                IdentifierCount++;
+              }
+              //New Https Request for mp3 tracks
+              //track=counter+1;
+              APIURLIDENTIFIER = APIURLIdentifier + result['response']['docs'][0]['identifier'] + '/files';
+              console.log(APIURLIDENTIFIER);
+              https.get(APIURLIDENTIFIER, function (responce) {
+                var bodyIdentifier = '';
+                responce.on('data', function (dataIdentifier) {
+                  bodyIdentifier += dataIdentifier;
+                });
+
+                responce.on('end', function () {
+                  var resultIdentifier = JSON.parse(bodyIdentifier);
+                  if (resultIdentifier != null && resultIdentifier['result'].length > 0) {
+                    var trackNumber = 0;
+                    for (var i = 0; i < resultIdentifier['result'].length; i++) {
+                      if (resultIdentifier['result'][i]['format'] == 'VBR MP3') {
+                        if (resultIdentifier['result'][i]['title'] == undefined) {
+                          trackNumber = trackNumber + 1;
+                          MusicUrlList.push({
+                            identifier: result['response']['docs'][0]['identifier'],
+                            trackName: resultIdentifier['result'][i]['name'],
+                            title: 'Track Number ' + trackNumber
+                          });
+                        }
+                        else {
+                          resultIdentifier['result'][i]['title'] = resultIdentifier['result'][i]['title'].replace(/[^a-zA-Z0-9 ]/g, "");
+                          trackNumber = trackNumber + 1;
+                          MusicUrlList.push({
+                            identifier: result['response']['docs'][0]['identifier'],
+                            trackName: resultIdentifier['result'][i]['name'],
+                            title: resultIdentifier['result'][i]['title']
+                          });
+                        }
+                        TotalTrack++;
+                      }
+                    }
+                    console.log('TotalTrack' + TotalTrack);
+                    // TotalTrack=TotalTrack+MusicUrlList.length-1;
+
+                    var trackcounter = counter;
+                    if (PlayAudioByRandomYear === true || PlayAudioByRandomCity === true || PlayAudioByRandom === true) {
+                      var start = TotalTrack - (MusicUrlList.length - 1);
+                      var end = TotalTrack;
+                      var x = Math.floor((Math.random() * end) + start);
+                      console.log('Track - ' + x);
+                      console.log('Start - ' + start);
+                      console.log('End - ' + end);
+                      trackcounter = x;
+                      audioURL = 'https://archive.org/download/' + MusicUrlList[x]['identifier'] + '/' + MusicUrlList[x]['trackName'];
+                      if (PlayAudioByRandomYear == true) {
+                        log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, 'random', APIURL, function (status) {});
+                      }
+                      else if (PlayAudioByRandomCity == true) {
+                        log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, 'random', year, APIURL, function (status) {});
+                      }
+                      else if (PlayAudioByRandom == true) {
+                        log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, 'random', 'random', APIURL, function (status) {});
+                      }
+
+                    }
+                    else {
+                      audioURL = 'https://archive.org/download/' + MusicUrlList[counter]['identifier'] + '/' + MusicUrlList[counter]['trackName'];
+                      log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, year, APIURL, function (status) {});
+                    }
+
+                    if (intent.name == 'autoNext') {
+                      var response = {
+                        version: "1.0",
+                        response: {
+                          shouldEndSession: true,
+                          directives: [
+                            {
+                              type: "AudioPlayer.Play",
+                              playBehavior: "REPLACE_ENQUEUED",
+                              audioItem: {
+                                stream: {
+                                  url: audioURL,
+                                  token: MusicUrlList[trackcounter]['identifier'] + counter,
+                                  //expectedPreviousToken: counter - 1,
+                                  offsetInMilliseconds: offsetInMilliseconds
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      };
+                      log("Result for Collection: " + collection + " ,City: " + city + " ,Year: " + year, collection, city, year, APIURL, function (status) {});
+                      return callback(0, thisOBJ, response);
+                    }
+                    else {
+                      var response = {
+                        version: "1.0",
+                        response: {
+                          outputSpeech: {
+                            type: 'PlainText',
+                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                          },
+                          card: {
+                            type: 'Simple',
+                            title: "Playing track number - " + track,
+                            content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                          },
+                          shouldEndSession: true,
+                          directives: [
+                            {
+                              type: "AudioPlayer.Play",
+                              playBehavior: "REPLACE_ALL",
+                              audioItem: {
+                                stream: {
+                                  url: audioURL,
+                                  token: MusicUrlList[trackcounter]['identifier'] + counter,
+                                  expectedPreviousToken: null,
+                                  offsetInMilliseconds: offsetInMilliseconds
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      };
+                      log("Result for Collection: " + collection + " ,City: " + city + " ,Year: " + year, collection, city, year, APIURL, function (status) {});
+                      return callback(0, thisOBJ, response);
+                    }
+
+
+
+
+                  }
+                  else {
+                    var cardTitle = 'No Songs Found';
+                    var repromptText = '<speak> No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+                    var speechOutput = "<speak>  Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/> random </speak>";
+                    var cardOutput = "Sorry, No songs found. Please Try again by saying City and Year or Random";
+                    var response = {
+                      version: '1.0',
+                      response: {
+                        outputSpeech: {
+                          type: 'SSML',
+                          ssml: speechOutput,
+                        },
+                        card: {
+                          type: 'Simple',
+                          title: cardTitle,
+                          content: cardOutput,
+                        },
+                        reprompt: {
+                          outputSpeech: {
+                            type: 'SSML',
+                            ssml: repromptText,
+                          }
+                        },
+                        shouldEndSession: false,
+                      }
+                    };
+                    return callback(0, thisOBJ, response);
+                  }
+
+                });
+              }).on('error', function (e) {
+                var cardTitle = 'Unable to understand your request. ';
+                var repromptText = '<speak>Waiting for your responce.Please Try again by select. City and Year. or <break time=".1s"/> random.</speak>';
+                var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.</speak>";
+                var cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
+                var response = {
+                  version: '1.0',
+                  response: {
+                    outputSpeech: {
+                      type: 'SSML',
+                      ssml: speechOutput,
+                    },
+                    card: {
+                      type: 'Simple',
+                      title: cardTitle,
+                      content: cardOutput,
+                    },
+                    reprompt: {
+                      outputSpeech: {
+                        type: 'SSML',
+                        ssml: repromptText,
+                      }
+                    },
+                    shouldEndSession: false,
+                  }
+                };
+                return callback(0, thisOBJ, response);
+              });
+
+            }
+          }
+          else {
+
+            if (PlayAudioByRandom) {
+              log("Sorry , No result found for command play " + collection + " random  ", collection, 'random', 'random', APIURL, function (status) {});
+
+            }
+            else {
+              log("Sorry , No result found for command play " + collection + " " + city + " " + year + "   ", collection, city, year, APIURL, function (status) {});
+            }
+            year = '';
+            city = '';
+            var cardTitle = 'No Songs Found';
+            var repromptText = '<speak>No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+            var speechOutput = "<speak>Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/>  random.</speak>";
+            var cardOutput = "Sorry, No songs found. Please Try again by saying City and Year or random.";
+            var response = {
+              version: '1.0',
+              response: {
+                outputSpeech: {
+                  type: 'SSML',
+                  ssml: speechOutput,
+                },
+                card: {
+                  type: 'Simple',
+                  title: cardTitle,
+                  content: cardOutput,
+                },
+                reprompt: {
+                  outputSpeech: {
+                    type: 'SSML',
+                    ssml: repromptText,
+                  }
+                },
+                shouldEndSession: false,
+              }
+            };
+            return callback(0, thisOBJ, response);
+
+          }
+
+        });
+      }).on('error', function (e) {
+        year = '';
+        city = '';
+        var cardTitle = 'Unable to understand your request.';
+        var repromptText = '<speak>Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+        var speechOutput = "<speak>Sorry , Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
+        var cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
+        var response = {
+          version: '1.0',
+          response: {
+            outputSpeech: {
+              type: 'SSML',
+              ssml: speechOutput,
+            },
+            card: {
+              type: 'Simple',
+              title: cardTitle,
+              content: cardOutput,
+            },
+            reprompt: {
+              outputSpeech: {
+                type: 'SSML',
+                ssml: repromptText,
+              }
+            },
+            shouldEndSession: false,
+          }
+        };
+        return callback(0, thisOBJ, response);
+      });
+      }else {
+        var cardTitle = 'Unable to understand your request.';
+        var repromptText = '<speak>Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.</speak>';
+        var speechOutput = "<speak>Sorry, Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.</speak>";
+        var cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
+  
+        var response = {
+          version: '1.0',
+          response: {
+            outputSpeech: {
+              type: 'SSML',
+              ssml: speechOutput,
+            },
+            card: {
+              type: 'Simple',
+              title: cardTitle,
+              content: cardOutput,
+            },
+            reprompt: {
+              outputSpeech: {
+                type: 'SSML',
+                ssml: repromptText,
+              }
+            },
+            shouldEndSession: false,
+          }
+        };
+        return callback(0, thisOBJ, response);
+  
+      }
+    }
+  
+}
 
 MyAudioPlayer.prototype.handleSessionEndRequest = function () {
   var cardTitle = 'Good bye';
   var speechOutput = "<speak>Thanks for rocking with the internet archive’s live music collection!</speak>";
-  var repromptText = "<speak>Thanks for rocking with the internet archive’s live music collection!</speak>";
+  var cradOutput = "Thanks for rocking with the internet archive’s live music collection!";
   var response = {
     version: '1.0',
     response: {
@@ -2231,13 +2760,7 @@ MyAudioPlayer.prototype.handleSessionEndRequest = function () {
       card: {
         type: 'Simple',
         title: cardTitle,
-        content: speechOutput,
-      },
-      reprompt: {
-        outputSpeech: {
-          type: 'SSML',
-          ssml: repromptText,
-        }
+        content: cradOutput,
       },
       shouldEndSession: true,
       directives: [
@@ -2321,8 +2844,8 @@ MyAudioPlayer.prototype.getCollection = function (intent) {
             }
           }
           var cardTitle = 'Provide City and Year';
-          var repromptText = "<speak>Please select a City and year.<break time='.5s'/> Like " + CityName + " " + YearName + "  or <break time='.1s'/>  random.</speak>";
-          var cardOutput = collection_real_name + " has been selected. Now, please select CITY and YEAR or RANDOM. Like " + CityName + " " + YearName + " or random.";
+          var repromptText = "<speak>Please tell me what city and year you would like to hear..<break time='.5s'/> for example " + CityName + " " + YearName + "  or <break time='.1s'/>  random.</speak>";
+          var cardOutput = collection_real_name + " has been selected. Now, tell me what city and year you would like to hear. for example " + CityName + " " + YearName + " or random.";
 
           var speechOutput = "<speak>" + collection_real_name + " has been selected.<break time='.5s'/> Now Please select City and Year or <break time='.1s'/>  random. <break time='.5s'/> Like " + CityName + " " + YearName + " or <break time='.1s'/> random.</speak>";
           var response = {
@@ -2487,8 +3010,9 @@ MyAudioPlayer.prototype.Welcome = function () {
   var cardTitle = 'Welcome';
   var repromptText = "<speak>Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.</speak>";
   var cardOutput = "Welcome to the live music collection at the Internet Archive. What artist would you like to listen to? For example The Ditty Bops, The Grateful Dead or The Cowboy Junkies.";
-  var speechOutput = "<speak><audio src='https://s3.amazonaws.com/gratefulerrorlogs/CrowdNoise.mp3' />  Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.  </speak>";
-  // var speechOutput = "<speak>Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies. </speak>";
+  
+  var speechOutput = "<speak> <audio src='https://s3.amazonaws.com/gratefulerrorlogs/CrowdNoise.mp3' />  Welcome to the live music collection at the appunison Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.  </speak>";
+  //var speechOutput = "<speak>Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies. </speak>";
   var response = {
     version: '1.0',
     response: {
@@ -2513,6 +3037,17 @@ MyAudioPlayer.prototype.Welcome = function () {
   this.context.succeed(response);
 }
 
+
+MyAudioPlayer.prototype.OneGoPlayAudio = function (intent, offsetInMilliseconds) {
+  getOneGoPlayAudio(intent, counter, this, offsetInMilliseconds, function (err, Obj, response) {
+    if (!err) {
+      Obj.context.succeed(response);
+    }
+    else {
+      Obj.context.succeed(response);
+    }
+  })
+};
 
 MyAudioPlayer.prototype.play = function (intent, offsetInMilliseconds) {
   getAudioPlayList(intent, counter, this, offsetInMilliseconds, function (err, Obj, response) {
@@ -2551,4 +3086,3 @@ MyAudioPlayer.prototype.loadLastPlayed = function (userId) {
   }
   return lastPlayed;
 };
-
