@@ -28,9 +28,11 @@ var APIURL = '';
 var APIURLIDENTIFIER = '';
 var SeventyEights = false;
 var OneGoPlayAudioStatus=false;
+var OneGoCollectionRandomPlayAudioStatus=false;
 var topicName = '';
 var TotalTrack = -1;
 var IdentifierCount = 0;
+var randomArray=[];
 console.log('Start');
 exports.handler = function (event, context) {
   var player = new MyAudioPlayer(event, context);
@@ -77,6 +79,7 @@ MyAudioPlayer.prototype.handle = function () {
       PlayAudioByRandomYear = false;
       PlayAudioByRandomCity = false;
       PlayAudioByRandom = false;
+      OneGoPlayAudioStatus=false;
       counter = 0;
       SeventyEights = false;
       this.play(intent, 0);
@@ -101,6 +104,7 @@ MyAudioPlayer.prototype.handle = function () {
       PlayAudioByRandomYear = false;
       PlayAudioByRandomCity = false;
       PlayAudioByRandom = false;
+      OneGoPlayAudioStatus=false;
       counter = 0;
       SeventyEights = false;
       this.play(intent, 0);
@@ -117,6 +121,7 @@ MyAudioPlayer.prototype.handle = function () {
       PlayAudioByRandomYear = false;
       PlayAudioByRandomCity = false;
       PlayAudioByRandom = false;
+      OneGoPlayAudioStatus=false;
       counter = 0;
       SeventyEights = false;
       this.play(intent, 0);
@@ -133,6 +138,7 @@ MyAudioPlayer.prototype.handle = function () {
       PlayAudioByRandomYear = false;
       PlayAudioByRandomCity = false;
       PlayAudioByRandom = false;
+      OneGoPlayAudioStatus=false;
       counter = 0;
       SeventyEights = false;
       this.play(intent, 0);
@@ -149,6 +155,7 @@ MyAudioPlayer.prototype.handle = function () {
       typeQuery = false;
       searchBYTitle = false;
       PlayAudioByRandom = false;
+      OneGoPlayAudioStatus=false;
       counter = 0;
       SeventyEights = false;
       this.play(intent, 0);
@@ -165,6 +172,7 @@ MyAudioPlayer.prototype.handle = function () {
       typeQuery = false;
       searchBYTitle = false;
       PlayAudioByRandom = false;
+      OneGoPlayAudioStatus=false;
       counter = 0;
       SeventyEights = false;
       this.play(intent, 0);
@@ -178,6 +186,7 @@ MyAudioPlayer.prototype.handle = function () {
       MusicUrlList = [];
       PlayAudioByRandomYear = false;
       PlayAudioByRandomCity = false;
+      OneGoPlayAudioStatus=false;
       PlayAudioByRandom = true;
       typeQuery = false;
       searchBYTitle = false;
@@ -240,6 +249,24 @@ MyAudioPlayer.prototype.handle = function () {
       PlayAudioByRandomYear = false;
       PlayAudioByRandomCity = false;
       PlayAudioByRandom = false;
+      OneGoCollectionRandomPlayAudioStatus=false;
+      counter = 0;
+      SeventyEights = false;
+      OneGoPlayAudioStatus=true;
+      this.OneGoPlayAudio(intent, 0);
+
+    }else if (intent.name === "OneGoCollectionRandomPlayAudio") {
+      console.log('OneGoCollectionRandomPlayAudio');
+      page = 0;
+      TotalTrack = -1;
+      IdentifierCount = 0;
+      MusicUrlList = [];
+      typeQuery = false;
+      searchBYTitle = false;
+      PlayAudioByRandomYear = false;
+      PlayAudioByRandomCity = false;
+      PlayAudioByRandom = false;
+      OneGoCollectionRandomPlayAudioStatus=true;
       counter = 0;
       SeventyEights = false;
       OneGoPlayAudioStatus=true;
@@ -422,7 +449,11 @@ MyAudioPlayer.prototype.handle = function () {
     console.log('PlaybackStarted');
     var intentForStart = { name: 'PlaybackStarted' };
     if (SeventyEights == true) {
-      this.playSeventyEights(intentForStart, 0);
+     // this.playSeventyEights(intentForStart, 0);
+      this.context.succeed({
+        version: "1.0",
+        response: {}
+      });
     }
     else {
       //this.play(intent, 0);
@@ -642,7 +673,28 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
       topicName = topicName.replace("#", " ");
       topicName = topicName.replace(/[^a-zA-Z0-9 ]/g, "");
       var SeventyEightsSort = ['reviewdate asc', 'titleSorter desc', 'publicdate desc', 'date desc', 'downloads desc', 'reviewdate desc', 'date asc', 'creatorSorter desc', 'publicdate asc', 'creatorSorter asc', 'downloads asc', 'titleSorter asc'];
-      var sortRandom = Math.floor((Math.random() * 11) + 0);
+      var sortRandom =0;
+      for(var icount=0;icount<SeventyEightsSort.length;icount++){
+        sortRandom = Math.floor((Math.random() * 12) + 0);
+        if(randomArray.length==12){
+           randomArray=[];
+        }
+        if(randomArray.indexOf(sortRandom)==-1){
+          randomArray.push(sortRandom);
+          break;
+        }
+        
+       }
+      // while(randomArray.indexOf(sortRandom)==-1){
+      //   randomArray.push(sortRandom);
+      //   sortRandom = Math.floor((Math.random() * 11) + 0);
+      //   if(randomArray.length==12){
+      //     randomArray=[];
+      //   }
+      // }
+     
+      console.log('---------------randomArray----------');
+      console.log(randomArray);
       APIURL = SeventyEightsAPIURL + '(' + topicName + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=' + SeventyEightsSort[sortRandom] + '&rows=1&page=' + page + '&indent=yes&output=json';
       console.log(APIURL);
       https.get(APIURL, function (res) {
@@ -2295,34 +2347,28 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
 function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callback) {
     var track = counter + 1;
 
-    if ((MusicUrlList.length > 0 && intent.name != 'OneGoPlayAudio' && typeQuery === false)) {
+    if ((MusicUrlList.length > 0 && intent.name != 'OneGoPlayAudio' && intent.name != 'OneGoCollectionRandomPlayAudio' && typeQuery === false)) {
       if (track > MusicUrlList.length) {
         counter = 0;
         track = counter + 1;
       }
       // console.log('test');
       var trackcounter = counter;
-      if (PlayAudioByRandomYear === true || PlayAudioByRandomCity === true || PlayAudioByRandom === true) {
-        var start = TotalTrack - (MusicUrlList.length - 1);
-        var end = TotalTrack;
-        var x = Math.floor((Math.random() * end) + start);
-        console.log('Track - ' + x);
-        console.log('Start - ' + start);
-        console.log('End - ' + end);
-        trackcounter = x;
+      if (OneGoCollectionRandomPlayAudioStatus === true) {
+        // var start = TotalTrack - (MusicUrlList.length - 1);
+        // var end = TotalTrack;
+        // var x = Math.floor((Math.random() * end) + start);
+        // console.log('Track - ' + x);
+        // console.log('Start - ' + start);
+        // console.log('End - ' + end);
+        // trackcounter = x;
+        var x= trackcounter;
         audioURL = 'https://archive.org/download/' + MusicUrlList[x]['identifier'] + '/' + MusicUrlList[x]['trackName'];
-        if (PlayAudioByRandomYear == true) {
-          log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, 'random', APIURL, function (status) {});
-        }
-        else if (PlayAudioByRandomCity == true) {
-          log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, 'random', year, APIURL, function (status) {});
-        }
-        else if (PlayAudioByRandom == true) {
+        if (OneGoCollectionRandomPlayAudioStatus == true) {
           log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, 'random', 'random', APIURL, function (status) {});
         }
 
-      }
-      else {
+      }else {
         audioURL = 'https://archive.org/download/' + MusicUrlList[trackcounter]['identifier'] + '/' + MusicUrlList[trackcounter]['trackName'];
         log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, year, APIURL, function (status) {});
       }
@@ -2388,12 +2434,13 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
 
 
     }
-    else if (intent.name == 'OneGoPlayAudio'  || typeQuery === true) {
+    else if (intent.name == 'OneGoPlayAudio'  || typeQuery === true || intent.name == 'OneGoCollectionRandomPlayAudio') {
 
-      if (intent.name == 'OneGoPlayAudio') {
-        
-          city = intent.slots.CITY.value
-          year = intent.slots.YEAR.value;
+      if (intent.name == 'OneGoPlayAudio' || intent.name == 'OneGoCollectionRandomPlayAudio') {
+          if (OneGoCollectionRandomPlayAudioStatus == false) {
+            city = intent.slots.CITY.value
+            year = intent.slots.YEAR.value;
+          }
           collection = intent.slots.COLLECTION.value;
           var collection_real_name = intent.slots.COLLECTION.value
           if (collection != '' || collection != undefined) {
@@ -2420,16 +2467,51 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
               collection = collection.replace(/ /g, '');
               collectionQuery = '(' + collectionQuery + '(' + collection + ')+OR+collection:(the' + collection + '))';
             }
+            
+            if (OneGoCollectionRandomPlayAudioStatus == true) {
+              var SeventyEightsSort = ['reviewdate asc', 'titleSorter desc', 'publicdate desc', 'date desc', 'downloads desc', 'reviewdate desc', 'date asc', 'creatorSorter desc', 'publicdate asc', 'creatorSorter asc', 'downloads asc', 'titleSorter asc'];
+              var sortRandom =0;
+              for(var icount=0;icount<SeventyEightsSort.length;icount++){
+                sortRandom = Math.floor((Math.random() * 12) + 0);
+                if(randomArray.length==12){
+                   randomArray=[];
+                }
+                if(randomArray.indexOf(sortRandom)==-1){
+                  randomArray.push(sortRandom);
+                  break;
+                }
+                
+               }
+              APIURL = podcastCityAPIURL + collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=' + SeventyEightsSort[sortRandom] + '&rows=1&page=' + page + '&indent=yes&output=json';
+            }else{
+              APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage%3A(' + city + ')+AND+year%3A(' + year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+            }
         
-        APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage%3A(' + city + ')+AND+year%3A(' + year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+         
       }else {
         if (used) {
           year = '';
           city = '';
           used = false;
         }
-        APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage%3A(' + city + ')+AND+year%3A(' + year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
-        
+        if (OneGoCollectionRandomPlayAudioStatus == true) {
+          var SeventyEightsSort = ['reviewdate asc', 'titleSorter desc', 'publicdate desc', 'date desc', 'downloads desc', 'reviewdate desc', 'date asc', 'creatorSorter desc', 'publicdate asc', 'creatorSorter asc', 'downloads asc', 'titleSorter asc'];
+          var sortRandom =0;
+          for(var icount=0;icount<SeventyEightsSort.length;icount++){
+            sortRandom = Math.floor((Math.random() * 12) + 0);
+            if(randomArray.length==12){
+               randomArray=[];
+            }
+            if(randomArray.indexOf(sortRandom)==-1){
+              randomArray.push(sortRandom);
+              break;
+            }
+            
+           }
+          APIURL = podcastCityAPIURL + collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=' + SeventyEightsSort[sortRandom] + '&rows=1&page=' + page + '&indent=yes&output=json';
+        }else{
+          APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage%3A(' + city + ')+AND+year%3A(' + year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+        }
       }
       console.log('APIURL- ' + APIURL);
       https.get(APIURL, function (res) {
@@ -2441,9 +2523,9 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
         res.on('end', function () {
           var result = JSON.parse(body);
           if (result != null && result['response']['docs'].length > 0) {
-           if ((intent.name == 'OneGoPlayAudio') || (city != '' && year != '' && collectionQuery != '')) {
+           if ((intent.name == 'OneGoPlayAudio') || (intent.name == 'OneGoCollectionRandomPlayAudio') || (((city != '' && year != '') || OneGoCollectionRandomPlayAudioStatus==true)  && collectionQuery != '')) {
 
-              if (intent.name == 'OneGoPlayAudio' || page == 0) {
+              if (intent.name == 'OneGoPlayAudio' || intent.name == 'OneGoCollectionRandomPlayAudio' || page == 0) {
                 counter = 0;
                 MusicUrlList = [];
               }
@@ -2493,27 +2575,21 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
                     // TotalTrack=TotalTrack+MusicUrlList.length-1;
 
                     var trackcounter = counter;
-                    if (PlayAudioByRandomYear === true || PlayAudioByRandomCity === true || PlayAudioByRandom === true) {
-                      var start = TotalTrack - (MusicUrlList.length - 1);
-                      var end = TotalTrack;
-                      var x = Math.floor((Math.random() * end) + start);
-                      console.log('Track - ' + x);
-                      console.log('Start - ' + start);
-                      console.log('End - ' + end);
-                      trackcounter = x;
+                    if (OneGoCollectionRandomPlayAudioStatus === true) {
+                      // var start = TotalTrack - (MusicUrlList.length - 1);
+                      // var end = TotalTrack;
+                      // var x = Math.floor((Math.random() * end) + start);
+                      // console.log('Track - ' + x);
+                      // console.log('Start - ' + start);
+                      // console.log('End - ' + end);
+                      // trackcounter = x;
+                      var x=trackcounter;
                       audioURL = 'https://archive.org/download/' + MusicUrlList[x]['identifier'] + '/' + MusicUrlList[x]['trackName'];
-                      if (PlayAudioByRandomYear == true) {
-                        log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, 'random', APIURL, function (status) {});
-                      }
-                      else if (PlayAudioByRandomCity == true) {
-                        log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, 'random', year, APIURL, function (status) {});
-                      }
-                      else if (PlayAudioByRandom == true) {
+                      if (OneGoCollectionRandomPlayAudioStatus == true) {
                         log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, 'random', 'random', APIURL, function (status) {});
                       }
 
-                    }
-                    else {
+                    }else {
                       audioURL = 'https://archive.org/download/' + MusicUrlList[counter]['identifier'] + '/' + MusicUrlList[counter]['trackName'];
                       log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, year, APIURL, function (status) {});
                     }
@@ -2539,7 +2615,13 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
                           ]
                         }
                       };
-                      log("Result for Collection: " + collection + " ,City: " + city + " ,Year: " + year, collection, city, year, APIURL, function (status) {});
+                      if (OneGoCollectionRandomPlayAudioStatus == true) {
+                        log("Result for Collection: " + collection + " ,City: random ,Year: random", collection, 'random', 'random', APIURL, function (status) {});
+                      
+                      }else{
+                        log("Result for Collection: " + collection + " ,City: " + city + " ,Year: " + year, collection, city, year, APIURL, function (status) {});
+                      
+                      }
                       return callback(0, thisOBJ, response);
                     }
                     else {
@@ -3011,7 +3093,7 @@ MyAudioPlayer.prototype.Welcome = function () {
   var repromptText = "<speak>Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.</speak>";
   var cardOutput = "Welcome to the live music collection at the Internet Archive. What artist would you like to listen to? For example The Ditty Bops, The Grateful Dead or The Cowboy Junkies.";
   
-  var speechOutput = "<speak> <audio src='https://s3.amazonaws.com/gratefulerrorlogs/CrowdNoise.mp3' />  Welcome to the live music collection at the appunison Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.  </speak>";
+  var speechOutput = "<speak> <audio src='https://s3.amazonaws.com/gratefulerrorlogs/CrowdNoise.mp3' />  Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.  </speak>";
   //var speechOutput = "<speak>Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies. </speak>";
   var response = {
     version: '1.0',
