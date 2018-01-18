@@ -547,13 +547,9 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
     }
     // console.log('test');
     var trackcounter = counter;
-    var start = TotalTrack - (MusicUrlList.length - 1);
-    var end = TotalTrack;
-    var x = Math.floor((Math.random() * end) + start);
-    console.log('Track - ' + x);
-    console.log('Start - ' + start);
-    console.log('End - ' + end);
-    trackcounter = x;
+    
+    var x = trackcounter;
+
     audioURL = 'https://archive.org/download/' + MusicUrlList[counter]['identifier'] + '/' + MusicUrlList[counter]['trackName'];
     console.log(intent);
     console.log(audioURL);
@@ -672,30 +668,9 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
       topicName = topicName.replace(/ /g, '');
       topicName = topicName.replace("#", " ");
       topicName = topicName.replace(/[^a-zA-Z0-9 ]/g, "");
-      var SeventyEightsSort = ['reviewdate asc', 'titleSorter desc', 'publicdate desc', 'date desc', 'downloads desc', 'reviewdate desc', 'date asc', 'creatorSorter desc', 'publicdate asc', 'creatorSorter asc', 'downloads asc', 'titleSorter asc'];
-      var sortRandom =0;
-      for(var icount=0;icount<SeventyEightsSort.length;icount++){
-        sortRandom = Math.floor((Math.random() * 12) + 0);
-        if(randomArray.length==12){
-           randomArray=[];
-        }
-        if(randomArray.indexOf(sortRandom)==-1){
-          randomArray.push(sortRandom);
-          break;
-        }
-        
-       }
-      // while(randomArray.indexOf(sortRandom)==-1){
-      //   randomArray.push(sortRandom);
-      //   sortRandom = Math.floor((Math.random() * 11) + 0);
-      //   if(randomArray.length==12){
-      //     randomArray=[];
-      //   }
-      // }
+      
      
-      console.log('---------------randomArray----------');
-      console.log(randomArray);
-      APIURL = SeventyEightsAPIURL + '(' + topicName + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=' + SeventyEightsSort[sortRandom] + '&rows=1&page=' + page + '&indent=yes&output=json';
+      APIURL = SeventyEightsAPIURL + '(' + topicName + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + page + '&indent=yes&output=json';
       console.log(APIURL);
       https.get(APIURL, function (res) {
         var body = '';
@@ -1103,13 +1078,7 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
       // console.log('test');
       var trackcounter = counter;
       if (PlayAudioByRandomYear === true || PlayAudioByRandomCity === true || PlayAudioByRandom === true) {
-        var start = TotalTrack - (MusicUrlList.length - 1);
-        var end = TotalTrack;
-        var x = Math.floor((Math.random() * end) + start);
-        console.log('Track - ' + x);
-        console.log('Start - ' + start);
-        console.log('End - ' + end);
-        trackcounter = x;
+        var x = trackcounter;
         audioURL = 'https://archive.org/download/' + MusicUrlList[x]['identifier'] + '/' + MusicUrlList[x]['trackName'];
         if (PlayAudioByRandomYear == true) {
           log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, 'random', APIURL, function (status) {});
@@ -1200,16 +1169,16 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
         if (intent.name === 'PlayAudioByRandomYear') {
           city = intent.slots.CITY.value
         }
-        APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage:(' + city + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+        APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage:(' + city + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + page + '&indent=yes&output=json';
       }
       else if (PlayAudioByRandom || intent.name == 'PlayAudioByRandom') {
-        APIURL = podcastCityAPIURL + collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+        APIURL = podcastCityAPIURL + collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + page + '&indent=yes&output=json';
       }
       else if (PlayAudioByRandomCity || intent.name == 'PlayAudioByRandomCity') {
         if (intent.name === 'PlayAudioByRandomCity') {
           year = intent.slots.YEAR.value;
         }
-        APIURL = podcastAPIURL + collectionQuery + '+AND+year:(' + year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+        APIURL = podcastAPIURL + collectionQuery + '+AND+year:(' + year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + page + '&indent=yes&output=json';
       }
       else {
         if (used) {
@@ -1236,8 +1205,8 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
         if (year != '' && city != '') {
           APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage%3A(' + city + ')+AND+year%3A(' + year + ')';
         }
-        if (intent.name === 'PlayAudioByCity') {
-          APIURL = APIURL + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page=' + page + '&indent=yes&output=json';
+        if (intent.name === 'PlayAudioByCity' || year == '' || city == '') {
+          APIURL = APIURL + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + page + '&indent=yes&output=json';
         }
         else {
           APIURL = APIURL + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
@@ -1389,13 +1358,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
 
                     var trackcounter = counter;
                     if (PlayAudioByRandomYear === true || PlayAudioByRandomCity === true || PlayAudioByRandom === true) {
-                      var start = TotalTrack - (MusicUrlList.length - 1);
-                      var end = TotalTrack;
-                      var x = Math.floor((Math.random() * end) + start);
-                      console.log('Track - ' + x);
-                      console.log('Start - ' + start);
-                      console.log('End - ' + end);
-                      trackcounter = x;
+                     
+                      var x = trackcounter;
+                     
                       audioURL = 'https://archive.org/download/' + MusicUrlList[x]['identifier'] + '/' + MusicUrlList[x]['trackName'];
                       if (PlayAudioByRandomYear == true) {
                         log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, 'random', APIURL, function (status) {});
@@ -1554,13 +1519,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
               log("Result for search " + title, collection, null, null, APIURL, function (status) {});
               var trackcounter = counter;
               if (PlayAudioByRandomYear == true || PlayAudioByRandomCity == true || PlayAudioByRandom == true) {
-                var start = page * 50;
-                var end = (page * 50) + MusicUrlList.length - 1;
-                var x = Math.floor((Math.random() * end) + start);
-                console.log('Track - ' + x);
-                console.log('Start - ' + start);
-                console.log('End - ' + end);
-                trackcounter = x;
+                
+                var x = trackcounter;
+               
                 audioURL = 'https://archive.org/download/' + MusicUrlList[counter]['identifier'] + '/' + MusicUrlList[counter]['trackName'];
                 if (PlayAudioByRandomYear == true) {
                   log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, 'random', APIURL, function (status) {});
@@ -1682,13 +1643,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
 
                     var trackcounter = counter;
                     if (PlayAudioByRandomYear === true || PlayAudioByRandomCity === true || PlayAudioByRandom === true) {
-                      var start = TotalTrack - (MusicUrlList.length - 1);
-                      var end = TotalTrack;
-                      var x = Math.floor((Math.random() * end) + start);
-                      console.log('Track - ' + x);
-                      console.log('Start - ' + start);
-                      console.log('End - ' + end);
-                      trackcounter = x;
+                      
+                      var x = trackcounter;
+                     
                       audioURL = 'https://archive.org/download/' + MusicUrlList[x]['identifier'] + '/' + MusicUrlList[x]['trackName'];
                       if (PlayAudioByRandomYear == true) {
                         log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, 'random', APIURL, function (status) {});
@@ -1874,13 +1831,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
 
                     var trackcounter = counter;
                     if (PlayAudioByRandomYear === true || PlayAudioByRandomCity === true || PlayAudioByRandom === true) {
-                      var start = TotalTrack - (MusicUrlList.length - 1);
-                      var end = TotalTrack;
-                      var x = Math.floor((Math.random() * end) + start);
-                      console.log('Track - ' + x);
-                      console.log('Start - ' + start);
-                      console.log('End - ' + end);
-                      trackcounter = x;
+                     
+                      var x = trackcounter;
+                     
                       audioURL = 'https://archive.org/download/' + MusicUrlList[x]['identifier'] + '/' + MusicUrlList[x]['trackName'];
                       if (PlayAudioByRandomYear == true) {
                         log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, 'random', APIURL, function (status) {});
@@ -2062,13 +2015,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                     // console.log('Array Size -'+MusicUrlList.length);
                     var trackcounter = counter;
                     if (PlayAudioByRandomYear === true || PlayAudioByRandomCity === true || PlayAudioByRandom === true) {
-                      var start = TotalTrack - (MusicUrlList.length - 1);
-                      var end = TotalTrack;
-                      var x = Math.floor((Math.random() * end) + start);
-                      console.log('Track - ' + x);
-                      console.log('Start - ' + start);
-                      console.log('End - ' + end);
-                      trackcounter = x;
+                      
+                      var x = trackcounter;
+                     
                       audioURL = 'https://archive.org/download/' + MusicUrlList[x]['identifier'] + '/' + MusicUrlList[x]['trackName'];
                       if (PlayAudioByRandomYear == true) {
                         log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, city, 'random', APIURL, function (status) {});
@@ -2469,20 +2418,8 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
             }
             
             if (OneGoCollectionRandomPlayAudioStatus == true) {
-              var SeventyEightsSort = ['reviewdate asc', 'titleSorter desc', 'publicdate desc', 'date desc', 'downloads desc', 'reviewdate desc', 'date asc', 'creatorSorter desc', 'publicdate asc', 'creatorSorter asc', 'downloads asc', 'titleSorter asc'];
-              var sortRandom =0;
-              for(var icount=0;icount<SeventyEightsSort.length;icount++){
-                sortRandom = Math.floor((Math.random() * 12) + 0);
-                if(randomArray.length==12){
-                   randomArray=[];
-                }
-                if(randomArray.indexOf(sortRandom)==-1){
-                  randomArray.push(sortRandom);
-                  break;
-                }
-                
-               }
-              APIURL = podcastCityAPIURL + collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=' + SeventyEightsSort[sortRandom] + '&rows=1&page=' + page + '&indent=yes&output=json';
+              
+              APIURL = podcastCityAPIURL + collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + page + '&indent=yes&output=json';
             }else{
               APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage%3A(' + city + ')+AND+year%3A(' + year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
             }
@@ -2495,20 +2432,7 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
           used = false;
         }
         if (OneGoCollectionRandomPlayAudioStatus == true) {
-          var SeventyEightsSort = ['reviewdate asc', 'titleSorter desc', 'publicdate desc', 'date desc', 'downloads desc', 'reviewdate desc', 'date asc', 'creatorSorter desc', 'publicdate asc', 'creatorSorter asc', 'downloads asc', 'titleSorter asc'];
-          var sortRandom =0;
-          for(var icount=0;icount<SeventyEightsSort.length;icount++){
-            sortRandom = Math.floor((Math.random() * 12) + 0);
-            if(randomArray.length==12){
-               randomArray=[];
-            }
-            if(randomArray.indexOf(sortRandom)==-1){
-              randomArray.push(sortRandom);
-              break;
-            }
-            
-           }
-          APIURL = podcastCityAPIURL + collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=' + SeventyEightsSort[sortRandom] + '&rows=1&page=' + page + '&indent=yes&output=json';
+          APIURL = podcastCityAPIURL + collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + page + '&indent=yes&output=json';
         }else{
           APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage%3A(' + city + ')+AND+year%3A(' + year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
         }
@@ -2576,14 +2500,8 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
 
                     var trackcounter = counter;
                     if (OneGoCollectionRandomPlayAudioStatus === true) {
-                      // var start = TotalTrack - (MusicUrlList.length - 1);
-                      // var end = TotalTrack;
-                      // var x = Math.floor((Math.random() * end) + start);
-                      // console.log('Track - ' + x);
-                      // console.log('Start - ' + start);
-                      // console.log('End - ' + end);
-                      // trackcounter = x;
                       var x=trackcounter;
+                      console.log(x);
                       audioURL = 'https://archive.org/download/' + MusicUrlList[x]['identifier'] + '/' + MusicUrlList[x]['trackName'];
                       if (OneGoCollectionRandomPlayAudioStatus == true) {
                         log("Playing Track URL - " + audioURL + " And Track Name - " + MusicUrlList[trackcounter]['title'], collection, 'random', 'random', APIURL, function (status) {});

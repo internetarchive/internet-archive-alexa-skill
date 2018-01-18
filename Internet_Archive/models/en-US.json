@@ -241,6 +241,21 @@
             "to play {COLLECTION} {CITY} {YEAR}",
             "to search {COLLECTION} {CITY} {YEAR}"
           ]
+        },
+        {
+          "name": "OneGoCollectionRandomPlayAudio",
+          "slots": [
+            {
+              "name": "COLLECTION",
+              "type": "COLLECTION_LIST"
+            }
+          ],
+          "samples": [
+            "to play {COLLECTION} randomly",
+            "to search {COLLECTION} randomly",
+            "to randomly play {COLLECTION}",
+            "to randomly search {COLLECTION}"
+          ]
         }
       ],
       "types": [
