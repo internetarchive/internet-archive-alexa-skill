@@ -2,11 +2,12 @@
 var https = require('https');
 var http = require('http');
 var lastPlayedByUser = {};
-var podcastAPIURL = "https://archive.org/advancedsearch.php?q=collection:";
-var podcastCityAPIURL = "https://archive.org/advancedsearch.php?q=collection:";
-var podcastAPIURLNEW = "https://archive.org/advancedsearch.php?q=";
-var SeventyEightsAPIURL = " https://archive.org/advancedsearch.php?q=collection:(georgeblood)+AND+subject:";
-var APIURLIdentifier = "https://archive.org/metadata/";
+var host='archive.org';
+var podcastAPIURL = "/advancedsearch.php?q=collection:";
+var podcastCityAPIURL = "/advancedsearch.php?q=collection:";
+var podcastAPIURLNEW = "/advancedsearch.php?q=";
+var SeventyEightsAPIURL = "/advancedsearch.php?q=collection:(georgeblood)+AND+subject:";
+var APIURLIdentifier = "/metadata/";
 var MusicUrlList = [];
 var page = 1;
 var counter = 0;
@@ -587,12 +588,12 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
           response: {
             outputSpeech: {
               type: 'PlainText',
-              text: "Playing track - " + MusicUrlList[counter]['title'] + " . ",
+              text: "Playing track - " + MusicUrlList[counter]['title'] + ", "+ MusicUrlList[counter]['coverage']+ ", "+ MusicUrlList[counter]['year']+".",
             },
             card: {
               type: 'Simple',
               title: "Playing track number - " + track,
-              content: "Playing track - " + MusicUrlList[counter]['title'] + " . ",
+              content: "Playing track - " + MusicUrlList[counter]['title'] + ", "+ MusicUrlList[counter]['coverage']+ ", "+ MusicUrlList[counter]['year']+".",
             },
             shouldEndSession: true,
             directives: [
@@ -671,8 +672,16 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
       
      
       APIURL = SeventyEightsAPIURL + '(' + topicName + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + page + '&indent=yes&output=json';
-      console.log(APIURL);
-      https.get(APIURL, function (res) {
+      var options = {
+        host: host,
+        path: APIURL,
+        method: 'GET',
+        headers: {
+           "User-Agent" : 'Alexa_Skill_Internet_Archive'
+        }
+      };
+      console.log(options);
+      https.get(options, function (res) {
         var body = '';
         res.on('data', function (data) {
           body += data;
@@ -681,7 +690,15 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
           var result = JSON.parse(body);
           if (result != null && result['response']['docs'].length > 0) {
             APIURLIDENTIFIER = APIURLIdentifier + result['response']['docs'][0]['identifier'] + '/files';
-            https.get(APIURLIDENTIFIER, function (responce) {
+            var optionsIdentifier = {
+              host: host,
+              path: APIURLIDENTIFIER,
+              method: 'GET',
+              headers: {
+                  "User-Agent": 'Alexa_Skill_Internet_Archive'
+              }
+            };
+            https.get(optionsIdentifier, function (responce) {
               var bodyIdentifier = '';
               responce.on('data', function (dataIdentifier) {
                 bodyIdentifier += dataIdentifier;
@@ -701,7 +718,9 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
                         MusicUrlList.push({
                           identifier: result['response']['docs'][0]['identifier'],
                           trackName: resultIdentifier['result'][i]['name'],
-                          title: 'Track Number ' + trackNumber
+                          title: 'Track Number ' + trackNumber,
+                          coverage: (result['response']['docs'][0]['coverage'])?result['response']['docs'][0]['coverage']:'Not mentioned',
+                          year: (result['response']['docs'][0]['year'])?result['response']['docs'][0]['year']:'Not mentioned',
                         });
                       }
                       else {
@@ -710,7 +729,9 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
                         MusicUrlList.push({
                           identifier: result['response']['docs'][0]['identifier'],
                           trackName: resultIdentifier['result'][i]['name'],
-                          title: resultIdentifier['result'][i]['title']
+                          title: resultIdentifier['result'][i]['title'],
+                          coverage: (result['response']['docs'][0]['coverage'])?result['response']['docs'][0]['coverage']:'Coverage Not mentioned',
+                          year: (result['response']['docs'][0]['year'])?result['response']['docs'][0]['year']:'Year Not mentioned',
                         });
                       }
                       TotalTrack++;
@@ -759,12 +780,12 @@ function getAudioPlayListSeventyEights(intent, counter, thisOBJ, offsetInMillise
                         response: {
                           outputSpeech: {
                             type: 'PlainText',
-                            text: "Playing track - " + MusicUrlList[counter]['title'] + " . ",
+                            text: "Playing track - " + MusicUrlList[counter]['title'] + ", "+ MusicUrlList[counter]['coverage']+ ", "+ MusicUrlList[counter]['year']+".",
                           },
                           card: {
                             type: 'Standard',
                             title: "Playing track number - " + track,
-                            text: "Playing track number - " + track + " " + MusicUrlList[counter]['title'] + " . ",
+                            text: "Playing track number - " + track + " " + MusicUrlList[counter]['title']  + ", "+ MusicUrlList[counter]['coverage']+ ", "+ MusicUrlList[counter]['year']+".",
                             // image: {
                             //   "smallImageUrl": "https://archive.org/services/img/"+MusicUrlList[counter]['identifier'],
                             //   "largeImageUrl": "https://archive.org/services/img/"+MusicUrlList[counter]['identifier']
@@ -1209,11 +1230,19 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
           APIURL = APIURL + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + page + '&indent=yes&output=json';
         }
         else {
-          APIURL = APIURL + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+          APIURL = APIURL + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=-downloads&rows=1&page=' + page + '&indent=yes&output=json';
         }
       }
-      console.log('APIURL- ' + APIURL);
-      https.get(APIURL, function (res) {
+      var options = {
+        host: host,
+        path: APIURL,
+        method: 'GET',
+        headers: {
+            "User-Agent": 'Alexa_Skill_Internet_Archive'
+        }
+      };
+      console.log('APIURL- ' + options);
+      https.get(options, function (res) {
         var body = '';
         res.on('data', function (data) {
           body += data;
@@ -1320,8 +1349,16 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
               //New Https Request for mp3 tracks
               //track=counter+1;
               APIURLIDENTIFIER = APIURLIdentifier + result['response']['docs'][0]['identifier'] + '/files';
-              console.log(APIURLIDENTIFIER);
-              https.get(APIURLIDENTIFIER, function (responce) {
+              var optionsIdentifier = {
+                host: host,
+                path: APIURLIDENTIFIER,
+                method: 'GET',
+                headers: {
+                    "User-Agent": 'Alexa_Skill_Internet_Archive'
+                }
+              };
+              console.log(optionsIdentifier);
+              https.get(optionsIdentifier, function (responce) {
                 var bodyIdentifier = '';
                 responce.on('data', function (dataIdentifier) {
                   bodyIdentifier += dataIdentifier;
@@ -1607,7 +1644,15 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
               }
 
               APIURLIDENTIFIER = APIURLIdentifier + result['response']['docs'][0]['identifier'] + '/files';
-              https.get(APIURLIDENTIFIER, function (responce) {
+              var optionsIdentifier = {
+                host: host,
+                path: APIURLIDENTIFIER,
+                method: 'GET',
+                headers: {
+                    "User-Agent": 'Alexa_Skill_Internet_Archive'
+                }
+              };
+              https.get(optionsIdentifier, function (responce) {
                 var bodyIdentifier = '';
                 responce.on('data', function (dataIdentifier) {
                   bodyIdentifier += dataIdentifier;
@@ -1795,7 +1840,15 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
               }
 
               APIURLIDENTIFIER = APIURLIdentifier + result['response']['docs'][0]['identifier'] + '/files';
-              https.get(APIURLIDENTIFIER, function (responce) {
+              var optionsIdentifier = {
+                host: host,
+                path: APIURLIDENTIFIER,
+                method: 'GET',
+                headers: {
+                    "User-Agent": 'Alexa_Skill_Internet_Archive'
+                }
+              };
+              https.get(optionsIdentifier, function (responce) {
                 var bodyIdentifier = '';
                 responce.on('data', function (dataIdentifier) {
                   bodyIdentifier += dataIdentifier;
@@ -1977,7 +2030,15 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
               }
 
               APIURLIDENTIFIER = APIURLIdentifier + result['response']['docs'][0]['identifier'] + '/files';
-              https.get(APIURLIDENTIFIER, function (responce) {
+              var optionsIdentifier = {
+                host: host,
+                path: APIURLIDENTIFIER,
+                method: 'GET',
+                headers: {
+                    "User-Agent": 'Alexa_Skill_Internet_Archive'
+                }
+              };
+              https.get(optionsIdentifier, function (responce) {
                 var bodyIdentifier = '';
                 responce.on('data', function (dataIdentifier) {
                   bodyIdentifier += dataIdentifier;
@@ -2434,11 +2495,19 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
         if (OneGoCollectionRandomPlayAudioStatus == true) {
           APIURL = podcastCityAPIURL + collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + page + '&indent=yes&output=json';
         }else{
-          APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage%3A(' + city + ')+AND+year%3A(' + year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=1&page=' + page + '&indent=yes&output=json';
+          APIURL = podcastCityAPIURL + collectionQuery + '+AND+coverage%3A(' + city + ')+AND+year%3A(' + year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=-downloads&rows=1&page=' + page + '&indent=yes&output=json';
         }
       }
       console.log('APIURL- ' + APIURL);
-      https.get(APIURL, function (res) {
+      var options= {
+        host: host,
+        path: APIURL,
+        method: 'GET',
+        headers: {
+            "User-Agent": 'Alexa_Skill_Internet_Archive'
+        }
+      };
+      https.get(options, function (res) {
         var body = '';
         res.on('data', function (data) {
           body += data;
@@ -2462,8 +2531,16 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
               //New Https Request for mp3 tracks
               //track=counter+1;
               APIURLIDENTIFIER = APIURLIdentifier + result['response']['docs'][0]['identifier'] + '/files';
-              console.log(APIURLIDENTIFIER);
-              https.get(APIURLIDENTIFIER, function (responce) {
+              var optionsIdentifier= {
+                host: host,
+                path: APIURLIDENTIFIER,
+                method: 'GET',
+                headers: {
+                    "User-Agent": 'Alexa_Skill_Internet_Archive'
+                }
+              };
+              console.log(optionsIdentifier);
+              https.get(optionsIdentifier, function (responce) {
                 var bodyIdentifier = '';
                 responce.on('data', function (dataIdentifier) {
                   bodyIdentifier += dataIdentifier;
@@ -2812,16 +2889,26 @@ MyAudioPlayer.prototype.getCollection = function (intent) {
       }
 
       collection = collection.replace(/ /g, '');
-      collectionQuery = '(' + collectionQuery + ')+OR+collection:(' + collection + ')+OR+collection:(the' + collection + '))';
+      collectionQuery = '('+ collectionQuery + ')+OR+collection:(' + collection + ')+OR+collection:(the' + collection + '))';
     }
     else {
       collection = collection.replace(/ /g, '');
-      collectionQuery = '(' + collectionQuery + '(' + collection + ')+OR+collection:(the' + collection + '))';
+      collectionQuery = '(' + collectionQuery + '('+ collection +')+OR+collection:(the' + collection + '))';
     }
 
-    var checkCollectionUrl = podcastAPIURL + collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page=0&indent=yes&output=json';
-    console.log(checkCollectionUrl);
-    https.get(checkCollectionUrl, function (res) {
+   var checkCollectionUrl = podcastAPIURL + collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=-downloads&rows=50&page=0&indent=yes&output=json';
+   //  var checkCollectionUrl = podcastAPIURL + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=downloads desc&rows=50&page=0&indent=yes&output=json';
+    
+    var options= {
+      host: host,
+      path: checkCollectionUrl,
+      method: 'GET',
+      headers: {
+          "User-Agent" : 'Alexa_Skill_Internet_Archive'
+      }
+    };
+    console.log(options);
+    https.get(options, function (res) {
       var body = '';
       res.on('data', function (data) {
         body += data;
