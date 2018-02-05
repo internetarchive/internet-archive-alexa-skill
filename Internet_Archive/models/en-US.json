@@ -256,6 +256,15 @@
             "to randomly play {COLLECTION}",
             "to randomly search {COLLECTION}"
           ]
+        },
+        {
+          "name": "SongDetail",
+          "samples": [
+            "what song is this",
+            "which song is this",
+            "which song i am listening",
+            "what song i am listening"
+          ]
         }
       ],
       "types": [

@@ -14,9 +14,9 @@
             "Archive"
           ],
           "name": "Internet Archive",
-          "smallIconUri": "https://api.amazonalexa.com/v0/skills/amzn1.ask.skill.fc01cf61-ad69-483f-a8ef-c94ff434a459/images/eyJkIjoiazBad0lza0w4T1dBem1xUWFYZVpPMFJCT0dibmR2RFJ2TER6b2FhbUF6cjc1UEY3cmJmaWcrNDFKZ1RFY3o4UStMczBKMGpyRU9sQ20zMHhid1pwS25IZVZHZjJMYWh4ektDNzZMR2h6SGFic1Z1dW5Db3BYbitPS3NlWXlCN0wiLCJpdiI6ImZva1pUVjhpWW1XL2ZURWJodFdNWnc9PSIsInYiOjF9",
+          "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/738c/967d62b0f9204245b3a2bd4b20e91298/APP_ICON?versionId=FYekv0W4fYxLDvPz04b8JdILaAhFcHPt&AWSAccessKeyId=AKIAI3X6PUXD7CU5F5BQ&Expires=1517919227&Signature=H1rM9se7gALB44h8J679eDaG7RY%3D",
           "description": "Discover and stream music from the Internet Archive's Live Music and 78s Collections",
-          "largeIconUri": "https://api.amazonalexa.com/v0/skills/amzn1.ask.skill.fc01cf61-ad69-483f-a8ef-c94ff434a459/images/eyJkIjoiUVVWenY3S0FDNnNZTFdvM2dRWFZhVGZxUWxKWU1ZRFFGVS9UbUFpZ2VpNmhNbEwxWmE2djdHVWNqWUpnUlgxekJyK25mWFRnVFJhR1ZNMzJUNTNRN1FFWFZrMm05TitYeHRQdXFYNHpzRGhHeGtidnlCVE1KM2Z6Nks3TFNrRll2TGlVbHBvNEsrUGpqbm9jQlNyYmFBPT0iLCJpdiI6ImpGWmpjcFNaL29sNUNJaW1LbVhmK0E9PSIsInYiOjF9"
+          "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/c453/a3f0ac72e3c3428082aeaa3bffe39b63/APP_ICON_LARGE?versionId=D_3VGyoUVjdWW6AQ184Kx_i43fJKL0G7&AWSAccessKeyId=AKIAI3X6PUXD7CU5F5BQ&Expires=1517919227&Signature=A0Q6fXhE4CxGVisBSIQmZID2dYE%3D"
         }
       },
       "isAvailableWorldwide": true,

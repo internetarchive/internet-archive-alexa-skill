@@ -2,7 +2,7 @@
 var https = require('https');
 var http = require('http');
 var lastPlayedByUser = {};
-var host='archive.org';
+var host='web.archive.org';
 var podcastAPIURL = "/advancedsearch.php?q=collection:";
 var podcastCityAPIURL = "/advancedsearch.php?q=collection:";
 var podcastAPIURLNEW = "/advancedsearch.php?q=";
@@ -273,8 +273,57 @@ MyAudioPlayer.prototype.handle = function () {
       OneGoPlayAudioStatus=true;
       this.OneGoPlayAudio(intent, 0);
 
-    }
-    else if (intent.name === "AMAZON.NextIntent") {
+    }else if (intent.name === "SongDetail") {
+      if(MusicUrlList.length>=1){
+        var response = {
+            version: '1.0',
+            response: {
+              outputSpeech: {
+                type: 'SSML',
+                ssml: "<speak>You are listening "+MusicUrlList[counter]['title'] + ", "+ MusicUrlList[counter]['coverage']+ ", "+ MusicUrlList[counter]['year']+".</speak>",
+              },
+              card: {
+                type: 'Simple',
+                title: "Song Title",
+                content: "You are listening "+MusicUrlList[counter]['title'] + ", "+ MusicUrlList[counter]['coverage']+ ", "+ MusicUrlList[counter]['year'],
+              },
+              reprompt: {
+                outputSpeech: {
+                  type: 'SSML',
+                  ssml: "<speak>You are listening "+MusicUrlList[counter]['title'] + ", "+ MusicUrlList[counter]['coverage']+ ", "+ MusicUrlList[counter]['year']+".</speak>",
+                }
+              },
+              shouldEndSession: true,
+              
+            }
+          };
+          this.context.succeed(response);
+      }else{
+        var response = {
+            version: '1.0',
+            response: {
+              outputSpeech: {
+                type: 'SSML',
+                ssml: "<speak>No song id Playing now. Please select collection first.</speak>",
+              },
+              card: {
+                type: 'Simple',
+                title: "Please select collection first.",
+                content: "No song id Playing now. Please select collection first.",
+              },
+              reprompt: {
+                outputSpeech: {
+                  type: 'SSML',
+                  ssml: "<speak>No song id Playing now. Please select collection first.</speak>",
+                }
+              },
+              shouldEndSession: false,
+            }
+          };
+          this.context.succeed(response);
+      }
+    
+    }else if (intent.name === "AMAZON.NextIntent") {
       console.log('NextIntent');
       if (SeventyEights == true) {
         if (TotalTrack < 0) {
@@ -1149,13 +1198,22 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
           response: {
             outputSpeech: {
               type: 'PlainText',
-              text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+              text: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
             },
             card: {
               type: 'Simple',
               title: "Playing track number - " + track,
-              content: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+              content: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
             },
+            // outputSpeech: {
+            //   type: 'PlainText',
+            //   text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+            // },
+            // card: {
+            //   type: 'Simple',
+            //   title: "Playing track number - " + track,
+            //   content: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+            // },
             shouldEndSession: true,
             directives: [
               {
@@ -1375,7 +1433,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                           MusicUrlList.push({
                             identifier: result['response']['docs'][0]['identifier'],
                             trackName: resultIdentifier['result'][i]['name'],
-                            title: 'Track Number ' + trackNumber
+                            title: 'Track Number ' + trackNumber,
+                            coverage: (result['response']['docs'][0]['coverage'])?result['response']['docs'][0]['coverage']:'Coverage Not mentioned',
+                            year: (result['response']['docs'][0]['year'])?result['response']['docs'][0]['year']:'Year Not mentioned',
                           });
                         }
                         else {
@@ -1384,7 +1444,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                           MusicUrlList.push({
                             identifier: result['response']['docs'][0]['identifier'],
                             trackName: resultIdentifier['result'][i]['name'],
-                            title: resultIdentifier['result'][i]['title']
+                            title: resultIdentifier['result'][i]['title'],
+                            coverage: (result['response']['docs'][0]['coverage'])?result['response']['docs'][0]['coverage']:'Coverage Not mentioned',
+                            year: (result['response']['docs'][0]['year'])?result['response']['docs'][0]['year']:'Year Not mentioned',
                           });
                         }
                         TotalTrack++;
@@ -1445,13 +1507,22 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                         response: {
                           outputSpeech: {
                             type: 'PlainText',
-                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
                           },
                           card: {
                             type: 'Simple',
                             title: "Playing track number - " + track,
-                            content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                            content: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
                           },
+                          // outputSpeech: {
+                          //   type: 'PlainText',
+                          //   text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                          // },
+                          // card: {
+                          //   type: 'Simple',
+                          //   title: "Playing track number - " + track,
+                          //   content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                          // },
                           shouldEndSession: true,
                           directives: [
                             {
@@ -1549,7 +1620,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                 MusicUrlList.push({
                   identifier: result['response']['docs'][i]['identifier'],
                   trackName: result['response']['docs'][i]['identifier']+ '_vbr.m3u',
-                  title: result['response']['docs'][i]['title']
+                  title: result['response']['docs'][i]['title'],
+                  coverage: (result['response']['docs'][i]['coverage'])?result['response']['docs'][i]['coverage']:'Coverage Not mentioned',
+                  year: (result['response']['docs'][i]['year'])?result['response']['docs'][i]['year']:'Year Not mentioned',
                 });
               }
 
@@ -1606,13 +1679,22 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                   response: {
                     outputSpeech: {
                       type: 'PlainText',
-                      text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                      text: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
                     },
                     card: {
                       type: 'Simple',
                       title: "Playing track number - " + track,
-                      content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                      content: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
                     },
+                    // outputSpeech: {
+                    //   type: 'PlainText',
+                    //   text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                    // },
+                    // card: {
+                    //   type: 'Simple',
+                    //   title: "Playing track number - " + track,
+                    //   content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                    // },
                     shouldEndSession: true,
                     directives: [
                       {
@@ -1669,7 +1751,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                           MusicUrlList.push({
                             identifier: result['response']['docs'][0]['identifier'],
                             trackName: resultIdentifier['result'][i]['name'],
-                            title: 'Track Number ' + trackNumber
+                            title: 'Track Number ' + trackNumber,
+                            coverage: (result['response']['docs'][0]['coverage'])?result['response']['docs'][0]['coverage']:'Coverage Not mentioned',
+                            year: (result['response']['docs'][0]['year'])?result['response']['docs'][0]['year']:'Year Not mentioned',
                           });
                         }
                         else {
@@ -1678,7 +1762,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                           MusicUrlList.push({
                             identifier: result['response']['docs'][0]['identifier'],
                             trackName: resultIdentifier['result'][i]['name'],
-                            title: resultIdentifier['result'][i]['title']
+                            title: resultIdentifier['result'][i]['title'],
+                            coverage: (result['response']['docs'][0]['coverage'])?result['response']['docs'][0]['coverage']:'Coverage Not mentioned',
+                            year: (result['response']['docs'][0]['year'])?result['response']['docs'][0]['year']:'Year Not mentioned',
                           });
                         }
                         TotalTrack++;
@@ -1739,13 +1825,22 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                         response: {
                           outputSpeech: {
                             type: 'PlainText',
-                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
                           },
                           card: {
                             type: 'Simple',
                             title: "Playing track number - " + track,
-                            content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                            content: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
                           },
+                          // outputSpeech: {
+                          //   type: 'PlainText',
+                          //   text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                          // },
+                          // card: {
+                          //   type: 'Simple',
+                          //   title: "Playing track number - " + track,
+                          //   content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                          // },
                           shouldEndSession: true,
                           directives: [
                             {
@@ -1865,7 +1960,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                           MusicUrlList.push({
                             identifier: result['response']['docs'][0]['identifier'],
                             trackName: resultIdentifier['result'][i]['name'],
-                            title: 'Track Number ' + trackNumber
+                            title: 'Track Number ' + trackNumber,
+                            coverage: (result['response']['docs'][0]['coverage'])?result['response']['docs'][0]['coverage']:'Coverage Not mentioned',
+                            year: (result['response']['docs'][0]['year'])?result['response']['docs'][0]['year']:'Year Not mentioned',
                           });
                         }
                         else {
@@ -1874,7 +1971,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                           MusicUrlList.push({
                             identifier: result['response']['docs'][0]['identifier'],
                             trackName: resultIdentifier['result'][i]['name'],
-                            title: resultIdentifier['result'][i]['title']
+                            title: resultIdentifier['result'][i]['title'],
+                            coverage: (result['response']['docs'][0]['coverage'])?result['response']['docs'][0]['coverage']:'Coverage Not mentioned',
+                            year: (result['response']['docs'][0]['year'])?result['response']['docs'][0]['year']:'Year Not mentioned',
                           });
                         }
                         TotalTrack++;
@@ -1934,13 +2033,22 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                         response: {
                           outputSpeech: {
                             type: 'PlainText',
-                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
                           },
                           card: {
                             type: 'Simple',
                             title: "Playing track number - " + track,
-                            content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                            content: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
                           },
+                          // outputSpeech: {
+                          //   type: 'PlainText',
+                          //   text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                          // },
+                          // card: {
+                          //   type: 'Simple',
+                          //   title: "Playing track number - " + track,
+                          //   content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                          // },
                           shouldEndSession: true,
                           directives: [
                             {
@@ -2056,7 +2164,9 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                           MusicUrlList.push({
                             identifier: result['response']['docs'][0]['identifier'],
                             trackName: resultIdentifier['result'][i]['name'],
-                            title: 'Track Number ' + trackNumber
+                            title: 'Track Number ' + trackNumber,
+                            coverage: (result['response']['docs'][0]['coverage'])?result['response']['docs'][0]['coverage']:'Coverage Not mentioned',
+                            year: (result['response']['docs'][0]['year'])?result['response']['docs'][0]['year']:'Year Not mentioned',
                           });
                         }
                         else {
@@ -2065,13 +2175,15 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                           MusicUrlList.push({
                             identifier: result['response']['docs'][0]['identifier'],
                             trackName: resultIdentifier['result'][i]['name'],
-                            title: resultIdentifier['result'][i]['title']
+                            title: resultIdentifier['result'][i]['title'],
+                            coverage: (result['response']['docs'][0]['coverage'])?result['response']['docs'][0]['coverage']:'Coverage Not mentioned',
+                            year: (result['response']['docs'][0]['year'])?result['response']['docs'][0]['year']:'Year Not mentioned',
                           });
                         }
                         TotalTrack++;
                       }
                     }
-                    // TotalTrack=TotalTrack+MusicUrlList.length-1;
+                    // TotalTrack=TotalTrack+length-1;
                     // console.log('TrackCount -'+TotalTrack);
                     // console.log('Array Size -'+MusicUrlList.length);
                     var trackcounter = counter;
@@ -2127,13 +2239,22 @@ function getAudioPlayList(intent, counter, thisOBJ, offsetInMilliseconds, callba
                         response: {
                           outputSpeech: {
                             type: 'PlainText',
-                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
                           },
                           card: {
                             type: 'Simple',
                             title: "Playing track number - " + track,
-                            content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                            content: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
                           },
+                          // outputSpeech: {
+                          //   type: 'PlainText',
+                          //   text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                          // },
+                          // card: {
+                          //   type: 'Simple',
+                          //   title: "Playing track number - " + track,
+                          //   content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                          // },
                           shouldEndSession: true,
                           directives: [
                             {
@@ -2415,13 +2536,22 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
           response: {
             outputSpeech: {
               type: 'PlainText',
-              text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+              text: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
             },
             card: {
               type: 'Simple',
               title: "Playing track number - " + track,
-              content: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+              content: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
             },
+            // outputSpeech: {
+            //   type: 'PlainText',
+            //   text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+            // },
+            // card: {
+            //   type: 'Simple',
+            //   title: "Playing track number - " + track,
+            //   content: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+            // },
             shouldEndSession: true,
             directives: [
               {
@@ -2557,7 +2687,9 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
                           MusicUrlList.push({
                             identifier: result['response']['docs'][0]['identifier'],
                             trackName: resultIdentifier['result'][i]['name'],
-                            title: 'Track Number ' + trackNumber
+                            title: 'Track Number ' + trackNumber,
+                            coverage: (result['response']['docs'][0]['coverage'])?result['response']['docs'][0]['coverage']:'Coverage Not mentioned',
+                            year: (result['response']['docs'][0]['year'])?result['response']['docs'][0]['year']:'Year Not mentioned',
                           });
                         }
                         else {
@@ -2566,7 +2698,9 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
                           MusicUrlList.push({
                             identifier: result['response']['docs'][0]['identifier'],
                             trackName: resultIdentifier['result'][i]['name'],
-                            title: resultIdentifier['result'][i]['title']
+                            title: resultIdentifier['result'][i]['title'],
+                            coverage: (result['response']['docs'][0]['coverage'])?result['response']['docs'][0]['coverage']:'Coverage Not mentioned',
+                            year: (result['response']['docs'][0]['year'])?result['response']['docs'][0]['year']:'Year Not mentioned',
                           });
                         }
                         TotalTrack++;
@@ -2625,13 +2759,22 @@ function getOneGoPlayAudio(intent, counter, thisOBJ, offsetInMilliseconds, callb
                         response: {
                           outputSpeech: {
                             type: 'PlainText',
-                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                            text: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
                           },
                           card: {
                             type: 'Simple',
                             title: "Playing track number - " + track,
-                            content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                            content: "Playing track - " + MusicUrlList[trackcounter]['title'] + ", "+ MusicUrlList[trackcounter]['coverage']+ ", "+ MusicUrlList[trackcounter]['year']+".",
                           },
+                          // outputSpeech: {
+                          //   type: 'PlainText',
+                          //   text: "Playing track - " + MusicUrlList[trackcounter]['title'] + " . ",
+                          // },
+                          // card: {
+                          //   type: 'Simple',
+                          //   title: "Playing track number - " + track,
+                          //   content: "Playing track number - " + track + " " + MusicUrlList[trackcounter]['title'] + " . ",
+                          // },
                           shouldEndSession: true,
                           directives: [
                             {
@@ -3098,7 +3241,7 @@ MyAudioPlayer.prototype.Welcome = function () {
   var repromptText = "<speak>Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.</speak>";
   var cardOutput = "Welcome to the live music collection at the Internet Archive. What artist would you like to listen to? For example The Ditty Bops, The Grateful Dead or The Cowboy Junkies.";
   
-  var speechOutput = "<speak> <audio src='https://s3.amazonaws.com/gratefulerrorlogs/CrowdNoise.mp3' />  Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.  </speak>";
+  var speechOutput = "<speak> <audio src='https://s3.amazonaws.com/gratefulerrorlogs/CrowdNoise.mp3' /> Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.  </speak>";
   //var speechOutput = "<speak>Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies. </speak>";
   var response = {
     version: '1.0',
