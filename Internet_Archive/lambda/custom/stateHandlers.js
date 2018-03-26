@@ -4,7 +4,6 @@ var Alexa = require('alexa-sdk');
 var functions = require('./functions');
 var constants = require('./constants');
 
-
 var stateHandlers = {
     startModeIntentHandlers: Alexa.CreateStateHandler(constants.states.START_MODE, {
         /*
@@ -559,46 +558,30 @@ var stateHandlers = {
          */
         'LaunchRequest': function () {
             // Initialize Attributes
-            // Initialize Attributes
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = {};
-                functions.userData[userId][deviceId] = {};
-            } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId]['offsetInMilliseconds'] = 0;
-            functions.userData[userId][deviceId]['IdentifierSongsCount'] = 0;
-            functions.userData[userId][deviceId]['IdentifierSongsCountTotal'] = 0;
-            functions.userData[userId][deviceId]['page'] = 1;
-            functions.userData[userId][deviceId]['TotalTrack'] = -1;
-            functions.userData[userId][deviceId]['IdentifierCount'] = 0;
-            functions.userData[userId][deviceId]['counter'] = 0;
-            functions.userData[userId][deviceId]['year'] = null;
-            functions.userData[userId][deviceId]['city'] = null;
-            functions.userData[userId][deviceId]['typeQuery'] = true;
-            functions.userData[userId][deviceId]['searchBYTitle'] = false;
-            functions.userData[userId][deviceId]['PlayAudioByRandomYear'] = false;
-            functions.userData[userId][deviceId]['PlayAudioByRandomCity'] = false;
-            functions.userData[userId][deviceId]['PlayAudioByRandom'] = false;
-            functions.userData[userId][deviceId]['CityName'] = 'Los Angeles';
-            functions.userData[userId][deviceId]['YearName'] = 'YearName';
-            functions.userData[userId][deviceId]['used'] = false;
-            functions.userData[userId][deviceId]['collection'] = null;
-            functions.userData[userId][deviceId]['collectionQuery'] = null;
-            functions.userData[userId][deviceId]['title'] = null;
-            functions.userData[userId][deviceId]['APIURL'] = null;
-            functions.userData[userId][deviceId]['APIURLIDENTIFIER'] = null;
-            functions.userData[userId][deviceId]['topicName'] = null;
-            functions.userData[userId][deviceId]['OneGoCollectionRandomPlayAudioStatus'] = false;
-            functions.userData[userId][deviceId].lastPlayedByUser = {};
 
-            functions.userData[userId][deviceId]['SeventyEights'] = false;
-            functions.userData[userId][deviceId]['OneGoPlayAudioStatus'] = false;
-            //  Change state to START_MODE
-            this.handler.state = constants.states.START_MODE;
-            controller.welcome.call(this);
+            if (functions.userData[userId][deviceId] == undefined) {
+                controller.welcome.call(this);
+            } else if (!functions.userData[userId][deviceId].playbackFinished || functions.userData[userId][deviceId].MusicUrlList != undefined) {
+
+                this.handler.state = constants.states.RESUME_DECISION_MODE;
+                let message = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
+                    ' Would you like to resume?';
+                let reprompt = 'You can say yes to resume or no to play from the top.';
+                let cardTitle = 'Rest or Resume';
+                let cradOutput = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
+                    ' Would you like to resume?';
+                this.response.cardRenderer(cardTitle, cradOutput, null);
+                this.response.speak(message).listen(reprompt);
+                this.emit(':responseReady');
+            }else{
+                controller.welcome.call(this);
+            }
         },
         'Discovery': function () {
             functions.userData[userId][deviceId].SeventyEights = false;
@@ -1027,46 +1010,28 @@ var stateHandlers = {
          */
 
         'LaunchRequest': function () {
-            // Initialize Attributes
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = {};
-                functions.userData[userId][deviceId] = {};
-            } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId]['offsetInMilliseconds'] = 0;
-            functions.userData[userId][deviceId]['IdentifierSongsCount'] = 0;
-            functions.userData[userId][deviceId]['IdentifierSongsCountTotal'] = 0;
-            functions.userData[userId][deviceId]['page'] = 1;
-            functions.userData[userId][deviceId]['TotalTrack'] = -1;
-            functions.userData[userId][deviceId]['IdentifierCount'] = 0;
-            functions.userData[userId][deviceId]['counter'] = 0;
-            functions.userData[userId][deviceId]['year'] = null;
-            functions.userData[userId][deviceId]['city'] = null;
-            functions.userData[userId][deviceId]['typeQuery'] = true;
-            functions.userData[userId][deviceId]['searchBYTitle'] = false;
-            functions.userData[userId][deviceId]['PlayAudioByRandomYear'] = false;
-            functions.userData[userId][deviceId]['PlayAudioByRandomCity'] = false;
-            functions.userData[userId][deviceId]['PlayAudioByRandom'] = false;
-            functions.userData[userId][deviceId]['CityName'] = 'Los Angeles';
-            functions.userData[userId][deviceId]['YearName'] = 'YearName';
-            functions.userData[userId][deviceId]['used'] = false;
-            functions.userData[userId][deviceId]['collection'] = null;
-            functions.userData[userId][deviceId]['collectionQuery'] = null;
-            functions.userData[userId][deviceId]['title'] = null;
-            functions.userData[userId][deviceId]['APIURL'] = null;
-            functions.userData[userId][deviceId]['APIURLIDENTIFIER'] = null;
-            functions.userData[userId][deviceId]['topicName'] = null;
-            functions.userData[userId][deviceId]['OneGoCollectionRandomPlayAudioStatus'] = false;
-            functions.userData[userId][deviceId].lastPlayedByUser = {};
+            if (functions.userData[userId][deviceId] == undefined) {
+                controller.welcome.call(this);
+            } else if (!functions.userData[userId][deviceId].playbackFinished || functions.userData[userId][deviceId].MusicUrlList != undefined) {
 
-            functions.userData[userId][deviceId]['SeventyEights'] = false;
-            functions.userData[userId][deviceId]['OneGoPlayAudioStatus'] = false;
-            //  Change state to START_MODE
-            this.handler.state = constants.states.START_MODE;
-            controller.welcome.call(this);
+                let message = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
+                    ' Would you like to resume?';
+                let reprompt = 'You can say yes to resume or no to play from the top.';
+                let cardTitle = 'Rest or Resume';
+                let cradOutput = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
+                    ' Would you like to resume?';
+
+                this.response.cardRenderer(cardTitle, cradOutput, null);
+                this.response.speak(message).listen(reprompt);
+                this.emit(':responseReady');
+            }else{
+                controller.welcome.call(this);
+            }
         },
         'Discovery': function () {
             functions.userData[userId][deviceId].SeventyEights = false;
@@ -1474,10 +1439,45 @@ module.exports = stateHandlers;
 let controller = function () {
     return {
         welcome: function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+
+            if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].lastPlayedByUser = {};
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].page = 1;
+            functions.userData[userId][deviceId].TotalTrack = -1;
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId]['offsetInMilliseconds'] = 0;
+            functions.userData[userId][deviceId].counter = 0; //do not loop on the list of podcast
+            functions.userData[userId][deviceId]['year'] = null;
+            functions.userData[userId][deviceId]['city'] = null;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId]['CityName'] = 'Los Angeles';
+            functions.userData[userId][deviceId]['YearName'] = '1971';
+            functions.userData[userId][deviceId]['used'] = true;
+            functions.userData[userId][deviceId]['collection'] = null;
+            functions.userData[userId][deviceId]['collectionQuery'] = null;
+            functions.userData[userId][deviceId]['title'] = null;
+            functions.userData[userId][deviceId]['title'] = null;
+            functions.userData[userId][deviceId]['APIURL'] = null;
+            functions.userData[userId][deviceId]['APIURLIDENTIFIER'] = null;
+            functions.userData[userId][deviceId]['topicName'] = null;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId]['OneGoCollectionRandomPlayAudioStatus'] = false;
+            functions.userData[userId][deviceId].audioURL = null;
             let cardTitle = 'Welcome';
-            let repromptText = "Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.";
-            let cardOutput = "Welcome to the live music collection at the Internet Archive. What artist would you like to listen to? For example The Ditty Bops, The Grateful Dead or The Cowboy Junkies.";
-            let speechOutput = " <audio src='https://s3.amazonaws.com/gratefulerrorlogs/CrowdNoise.mp3' /> Welcome to the live music collection at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.";
+            let repromptText = "Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+            let cardOutput = "Welcome to music at the Internet Archive. What artist would you like to listen to? For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+            let speechOutput = " <audio src='https://s3.amazonaws.com/gratefulerrorlogs/CrowdNoise.mp3' /> Welcome to music at the Internet Archive.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
             this.response.cardRenderer(cardTitle, cardOutput, null);
             this.response.speak(speechOutput).listen(repromptText);
             this.emit(':responseReady');
@@ -1693,9 +1693,9 @@ let controller = function () {
             functions.userData[userId][deviceId]['OneGoCollectionRandomPlayAudioStatus'] = false;
             functions.userData[userId][deviceId].audioURL = null;
             let cardTitle = 'Reset All';
-            let repromptText = "Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.";
-            let cardOutput = "What artist would you like to listen to? For example The Ditty Bops, The Grateful Dead or The Cowboy Junkies.";
-            let speechOutput = " What artist would you like to listen to? <break time='.5s'/>  For example, the ditty bops, the grateful dead, or the cowboy junkies.";
+            let repromptText = "Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+            let cardOutput = "What artist would you like to listen to? For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+            let speechOutput = " What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
             this.response.cardRenderer(cardTitle, cardOutput, null);
             this.response.speak(speechOutput).listen(repromptText);
             this.emit(':responseReady');
@@ -1703,8 +1703,7 @@ let controller = function () {
     }
 }();
 
-
 function loadLastPlayed(userId, deviceId) {
 
     return functions.userData[userId][deviceId].lastPlayedByUser;
-}
+};
