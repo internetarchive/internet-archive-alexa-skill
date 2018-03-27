@@ -100,6 +100,7 @@ var audioEventHandlers = {
             console.log("Playback Failed : %j", this.event.request.error);
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            console.log('Last Song -- ' + functions.userData[userId][deviceId].audioURL);
 
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = [];
@@ -237,6 +238,8 @@ var audioEventHandlers = {
             console.log("Playback Failed : %j", this.event.request.error);
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            console.log('Last Song -- ' + functions.userData[userId][deviceId].audioURL);
+
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = [];
                 functions.userData[userId][deviceId] = [];
@@ -370,7 +373,7 @@ var audioEventHandlers = {
             console.log("Playback Failed : %j", this.event.request.error);
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            console.log('Last Song -- ' + functions.userData[userId][deviceId].audioURL);
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = [];
                 functions.userData[userId][deviceId] = [];

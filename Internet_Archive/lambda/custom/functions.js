@@ -23,22 +23,22 @@ var functions = function () {
                         if (intent.name === 'PlayAudioQuery') {
                             functions.userData[userId][deviceId].title = intent.slots.TITLE.value;
                         }
-                        functions.userData[userId][deviceId].APIURL = constants.podcastAPIURLNEW + functions.userData[userId][deviceId].title + '%20AND(mediatype:audio)&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject&fl[]=title&sort[]=-downloads&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
+                        functions.userData[userId][deviceId].APIURL = constants.podcastAPIURLNEW + functions.userData[userId][deviceId].title + '%20AND(mediatype:audio)+AND+format:(MP3)&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject&fl[]=title&sort[]=-downloads&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
                     }
                     else if (functions.userData[userId][deviceId].PlayAudioByRandomYear || intent.name == 'PlayAudioByRandomYear') {
                         if (intent.name === 'PlayAudioByRandomYear') {
                             functions.userData[userId][deviceId].city = intent.slots.CITY.value
                         }
-                        functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+coverage:(' + functions.userData[userId][deviceId].city + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
+                        functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+coverage:(' + functions.userData[userId][deviceId].city + ')+AND+format:(MP3)&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
                     }
                     else if (functions.userData[userId][deviceId].PlayAudioByRandom || intent.name == 'PlayAudioByRandom') {
-                        functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
+                        functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+format:(MP3)&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
                     }
                     else if (functions.userData[userId][deviceId].PlayAudioByRandomCity || intent.name == 'PlayAudioByRandomCity') {
                         if (intent.name === 'PlayAudioByRandomCity') {
                             functions.userData[userId][deviceId].year = intent.slots.YEAR.value;
                         }
-                        functions.userData[userId][deviceId].APIURL = constants.podcastAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+year:(' + functions.userData[userId][deviceId].year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
+                        functions.userData[userId][deviceId].APIURL = constants.podcastAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+year:(' + functions.userData[userId][deviceId].year + ')+AND+format:(MP3)&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
                     }
                     else {
                         if (functions.userData[userId][deviceId].used) {
@@ -66,10 +66,10 @@ var functions = function () {
                             functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+coverage%3A(' + functions.userData[userId][deviceId].city + ')+AND+year%3A(' + functions.userData[userId][deviceId].year + ')';
                         }
                         if (intent.name === 'PlayAudioByCity' || functions.userData[userId][deviceId].year == null || functions.userData[userId][deviceId].city == null) {
-                            functions.userData[userId][deviceId].APIURL = functions.userData[userId][deviceId].APIURL + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
+                            functions.userData[userId][deviceId].APIURL = functions.userData[userId][deviceId].APIURL + '+AND+format:(MP3)&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
                         }
                         else {
-                            functions.userData[userId][deviceId].APIURL = functions.userData[userId][deviceId].APIURL + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=-downloads&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
+                            functions.userData[userId][deviceId].APIURL = functions.userData[userId][deviceId].APIURL + '+AND+format:(MP3)&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=-downloads&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
                         }
                     }
                     let options = {
@@ -87,6 +87,8 @@ var functions = function () {
                             });
 
                             res.on('end', function () {
+                                if (constants.debug)
+                                    console.log(body);
                                 let result = JSON.parse(body);
                                 if (result != null && result['response']['docs'].length > 0) {
                                     if ((intent.name === 'PlayAudioByCity' || intent.name == 'PlayAudio') && (functions.userData[userId][deviceId].year == null || functions.userData[userId][deviceId].city == null)) {
@@ -183,7 +185,7 @@ var functions = function () {
                                                     functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
                                                     let lastsongsize = '';
                                                     for (let i = 0; i < resultIdentifier['result'].length; i++) {
-                                                        if (((resultIdentifier['result'][i]['format'] == 'Ogg Vorbis' && functions.userData[userId][deviceId].MusicUrlList.length==0)  || resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
+                                                        if (( resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
                                                             lastsongsize = resultIdentifier['result'][i]['length'];
                                                             if (resultIdentifier['result'][i]['title'] == undefined) {
                                                                 functions.userData[userId][deviceId].IdentifierSongsCountTotal = functions.userData[userId][deviceId].IdentifierSongsCountTotal + 1;
@@ -381,7 +383,7 @@ var functions = function () {
                                                     functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
                                                     let lastsongsize = '';
                                                     for (let i = 0; i < resultIdentifier['result'].length; i++) {
-                                                        if (((resultIdentifier['result'][i]['format'] == 'Ogg Vorbis' && functions.userData[userId][deviceId].MusicUrlList.length==0)  || resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
+                                                        if (( resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
                                                             lastsongsize = resultIdentifier['result'][i]['length'];
                                                             if (resultIdentifier['result'][i]['title'] == undefined) {
                                                                 functions.userData[userId][deviceId].IdentifierSongsCountTotal = functions.userData[userId][deviceId].IdentifierSongsCountTotal + 1;
@@ -516,7 +518,7 @@ var functions = function () {
                                                     functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
                                                     let lastsongsize = '';
                                                     for (let i = 0; i < resultIdentifier['result'].length; i++) {
-                                                        if (((resultIdentifier['result'][i]['format'] == 'Ogg Vorbis' && functions.userData[userId][deviceId].MusicUrlList.length==0)  || resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
+                                                        if (( resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
                                                             lastsongsize = resultIdentifier['result'][i]['length'];
                                                             if (resultIdentifier['result'][i]['title'] == undefined) {
                                                                 functions.userData[userId][deviceId].IdentifierSongsCountTotal = functions.userData[userId][deviceId].IdentifierSongsCountTotal + 1;
@@ -650,7 +652,7 @@ var functions = function () {
                                                         functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
                                                         let lastsongsize = '';
                                                         for (let i = 0; i < resultIdentifier['result'].length; i++) {
-                                                            if (((resultIdentifier['result'][i]['format'] == 'Ogg Vorbis' && functions.userData[userId][deviceId].MusicUrlList.length==0)  || resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
+                                                            if (( resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
                                                                 lastsongsize = resultIdentifier['result'][i]['length'];
                                                                 if (resultIdentifier['result'][i]['title'] == undefined) {
 
@@ -864,7 +866,7 @@ var functions = function () {
                     functions.userData[userId][deviceId].collectionQuery = '(' + functions.userData[userId][deviceId].collectionQuery + '(' + functions.userData[userId][deviceId].collection + ')+OR+collection:(the' + functions.userData[userId][deviceId].collection + '))';
                 }
 
-                let checkCollectionUrl = constants.podcastAPIURL + functions.userData[userId][deviceId].collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=-downloads&rows=50&page=0&indent=yes&output=json';
+                let checkCollectionUrl = constants.podcastAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+format:(MP3)&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=-downloads&rows=50&page=0&indent=yes&output=json';
 
                 let options = {
                     host: constants.host,
@@ -874,14 +876,15 @@ var functions = function () {
                         "User-Agent": 'Alexa_Skill_Internet_Archive'
                     }
                 };
-                if (constants.debug)
-                    console.log(options);
+
                 https.get(options, function (res) {
                     let body = '';
                     res.on('data', function (data) {
                         body += data;
                     });
                     res.on('end', function () {
+                        if (constants.debug)
+                            console.log(body);
                         let resultCollection = JSON.parse(body);
                         if (constants.debug)
                             console.log(resultCollection['response']['docs'].length);
@@ -1000,7 +1003,7 @@ var functions = function () {
                     functions.userData[userId][deviceId].topicName = functions.userData[userId][deviceId].topicName.replace(/[^a-zA-Z0-9 ]/g, "");
 
 
-                    functions.userData[userId][deviceId].APIURL = constants.SeventyEightsAPIURL + '(' + functions.userData[userId][deviceId].topicName + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
+                    functions.userData[userId][deviceId].APIURL = constants.SeventyEightsAPIURL + '(' + functions.userData[userId][deviceId].topicName + ')+AND+format:(MP3)&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
                     let options = {
                         host: constants.host,
                         path: functions.userData[userId][deviceId].APIURL,
@@ -1045,7 +1048,7 @@ var functions = function () {
                                             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
                                             let lastsongsize = '';
                                             for (let i = 0; i < resultIdentifier['result'].length; i++) {
-                                                if (((resultIdentifier['result'][i]['format'] == 'Ogg Vorbis' && functions.userData[userId][deviceId].MusicUrlList.length==0)  || resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
+                                                if (( resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
                                                     lastsongsize = resultIdentifier['result'][i]['length'];
                                                     if (resultIdentifier['result'][i]['title'] == undefined) {
                                                         functions.userData[userId][deviceId].IdentifierSongsCountTotal = functions.userData[userId][deviceId].IdentifierSongsCountTotal + 1;
@@ -1236,9 +1239,9 @@ var functions = function () {
 
                         if (functions.userData[userId][deviceId].OneGoCollectionRandomPlayAudioStatus == true) {
 
-                            functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
+                            functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+format:(MP3)&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
                         } else {
-                            functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+coverage%3A(' + functions.userData[userId][deviceId].city + ')+AND+year%3A(' + functions.userData[userId][deviceId].year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=-downloads&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
+                            functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+format:(MP3)+AND+coverage%3A(' + functions.userData[userId][deviceId].city + ')+AND+year%3A(' + functions.userData[userId][deviceId].year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=-downloads&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
                         }
 
 
@@ -1249,9 +1252,9 @@ var functions = function () {
                             functions.userData[userId][deviceId].used = false;
                         }
                         if (functions.userData[userId][deviceId].OneGoCollectionRandomPlayAudioStatus == true) {
-                            functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
+                            functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+format:(MP3)&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=random&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
                         } else {
-                            functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+coverage%3A(' + functions.userData[userId][deviceId].city + ')+AND+year%3A(' + functions.userData[userId][deviceId].year + ')&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=-downloads&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
+                            functions.userData[userId][deviceId].APIURL = constants.podcastCityAPIURL + functions.userData[userId][deviceId].collectionQuery + '+AND+coverage%3A(' + functions.userData[userId][deviceId].city + ')+AND+year%3A(' + functions.userData[userId][deviceId].year + ')+AND+format:(MP3)&fl[]=coverage&fl[]=creator&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=subject,year,location&fl[]=title&sort[]=-downloads&rows=1&page=' + functions.userData[userId][deviceId].page + '&indent=yes&output=json';
                         }
                     }
                     if (constants.debug)
@@ -1318,7 +1321,7 @@ var functions = function () {
                                                 functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
                                                 let lastsongsize = '';
                                                 for (let i = 0; i < resultIdentifier['result'].length; i++) {
-                                                    if (((resultIdentifier['result'][i]['format'] == 'Ogg Vorbis' && functions.userData[userId][deviceId].MusicUrlList.length==0)  || resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
+                                                    if (( resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
                                                         lastsongsize = resultIdentifier['result'][i]['length'];
                                                         if (resultIdentifier['result'][i]['title'] == undefined) {
                                                             functions.userData[userId][deviceId].IdentifierSongsCountTotal = functions.userData[userId][deviceId].IdentifierSongsCountTotal + 1;

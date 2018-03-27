@@ -161,7 +161,12 @@ var stateHandlers = {
         'PlayAudioByRandomYear': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
             functions.userData[userId][deviceId].TotalTrack = -1;
             functions.userData[userId][deviceId].IdentifierCount = 0;
@@ -200,6 +205,12 @@ var stateHandlers = {
         'PlayAudioByRandom': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
             functions.userData[userId][deviceId].TotalTrack = -1;
             functions.userData[userId][deviceId].IdentifierCount = 0;
@@ -567,7 +578,7 @@ var stateHandlers = {
 
             if (functions.userData[userId][deviceId] == undefined) {
                 controller.welcome.call(this);
-            } else if (!functions.userData[userId][deviceId].playbackFinished || functions.userData[userId][deviceId].MusicUrlList != undefined) {
+            } else if (!functions.userData[userId][deviceId].playbackFinished && functions.userData[userId][deviceId].MusicUrlList != undefined) {
 
                 this.handler.state = constants.states.RESUME_DECISION_MODE;
                 let message = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
@@ -724,6 +735,7 @@ var stateHandlers = {
         'PlayAudioByRandom': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+
             functions.userData[userId][deviceId].page = 0;
             functions.userData[userId][deviceId].TotalTrack = -1;
             functions.userData[userId][deviceId].IdentifierCount = 0;
@@ -1017,7 +1029,7 @@ var stateHandlers = {
             }
             if (functions.userData[userId][deviceId] == undefined) {
                 controller.welcome.call(this);
-            } else if (!functions.userData[userId][deviceId].playbackFinished || functions.userData[userId][deviceId].MusicUrlList != undefined) {
+            } else if (!functions.userData[userId][deviceId].playbackFinished && functions.userData[userId][deviceId].MusicUrlList != undefined) {
 
                 let message = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
                     ' Would you like to resume?';
@@ -1337,6 +1349,16 @@ var stateHandlers = {
                 this.emit(':responseReady');
             }
         },
+        'AMAZON.NextIntent': function () {
+            controller.playNext.call(this)
+        },
+        'AMAZON.PreviousIntent': function () {
+            controller.playPrev.call(this)
+        },
+        'AMAZON.PauseIntent': function () {
+            this.response.audioPlayerStop();
+            this.emit(':responseReady');
+        },
         'AMAZON.YesIntent': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
@@ -1541,7 +1563,7 @@ let controller = function () {
             let speechOutput = "Thanks for rocking with the internet archive’s live music collection!";
             let cardOutput = "Thanks for rocking with the internet archive’s live music collection!";
             this.response.cardRenderer(cardTitle, cardOutput, null);
-            this.response.speak(speechOutput).audioPlayerStop();
+            this.response.speak(speechOutput);
             this.emit(':responseReady');
         },
         playNext: function () {
