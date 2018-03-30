@@ -10,6 +10,15 @@ var audioEventHandlers = {
         'PlaybackStarted': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
+            }
+
             functions.userData[userId][deviceId].playbackFinished = false;
             this.attributes[deviceId] = {};
             for (let k in functions.userData[userId][deviceId]) {
@@ -17,6 +26,7 @@ var audioEventHandlers = {
                     this.attributes[deviceId][k] = functions.userData[userId][deviceId][k];
                 }
             }
+
             if (constants.debug) {
                 console.log('Now Playing -- ' + functions.userData[userId][deviceId].audioURL);
                 console.log('IdentifierSongsCount -- ' + functions.userData[userId][deviceId].IdentifierSongsCount);
@@ -28,13 +38,16 @@ var audioEventHandlers = {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
+
             functions.userData[userId][deviceId].playbackFinished = true;
             this.emit(':saveState', true);
             this.context.succeed({
@@ -46,13 +59,16 @@ var audioEventHandlers = {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
+
             functions.userData[userId][deviceId].lastPlayedByUser = this.event.request;
             this.context.succeed({
                 version: "1.0",
@@ -63,12 +79,12 @@ var audioEventHandlers = {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
             functions.userData[userId][deviceId].offsetInMilliseconds = 0;
             functions.userData[userId][deviceId]['counter']++;
@@ -83,6 +99,7 @@ var audioEventHandlers = {
                 console.log('IdentifierSongsCount -- ' + functions.userData[userId][deviceId].IdentifierSongsCount);
                 console.log('IdentifierSongsCountTotal -- ' + functions.userData[userId][deviceId].IdentifierSongsCountTotal);
             }
+
             if (functions.userData[userId][deviceId].SeventyEights == true) {
                 functions.getAudioPlayListSeventyEights.call(this);
             } else {
@@ -103,12 +120,14 @@ var audioEventHandlers = {
             console.log('Last Song -- ' + functions.userData[userId][deviceId].audioURL);
 
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
             functions.userData[userId][deviceId].offsetInMilliseconds = 0;
 
@@ -147,6 +166,16 @@ var audioEventHandlers = {
         'PlaybackStarted': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
+            }
             functions.userData[userId][deviceId].playbackFinished = false;
             this.attributes[deviceId] = {};
             for (let k in functions.userData[userId][deviceId]) {
@@ -154,6 +183,7 @@ var audioEventHandlers = {
                     this.attributes[deviceId][k] = functions.userData[userId][deviceId][k];
                 }
             }
+
             if (constants.debug) {
                 console.log('Now Playing -- ' + functions.userData[userId][deviceId].audioURL);
                 console.log('IdentifierSongsCount -- ' + functions.userData[userId][deviceId].IdentifierSongsCount);
@@ -165,13 +195,14 @@ var audioEventHandlers = {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
+
             functions.userData[userId][deviceId].playbackFinished = true;
             this.emit(':saveState', true);
             this.context.succeed({
@@ -183,15 +214,18 @@ var audioEventHandlers = {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
 
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
 
             }
+
             functions.userData[userId][deviceId].lastPlayedByUser = this.event.request;
             this.context.succeed({
                 version: "1.0",
@@ -202,13 +236,15 @@ var audioEventHandlers = {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
 
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
             functions.userData[userId][deviceId].offsetInMilliseconds = 0;
             functions.userData[userId][deviceId]['counter']++;
@@ -223,6 +259,7 @@ var audioEventHandlers = {
                 console.log('IdentifierSongsCount -- ' + functions.userData[userId][deviceId].IdentifierSongsCount);
                 console.log('IdentifierSongsCountTotal -- ' + functions.userData[userId][deviceId].IdentifierSongsCountTotal);
             }
+
             if (functions.userData[userId][deviceId].SeventyEights == true) {
                 functions.getAudioPlayListSeventyEights.call(this);
             } else {
@@ -241,12 +278,14 @@ var audioEventHandlers = {
             console.log('Last Song -- ' + functions.userData[userId][deviceId].audioURL);
 
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
 
             functions.userData[userId][deviceId].offsetInMilliseconds = 0;
@@ -262,6 +301,7 @@ var audioEventHandlers = {
                 console.log('IdentifierSongsCount -- ' + functions.userData[userId][deviceId].IdentifierSongsCount);
                 console.log('IdentifierSongsCountTotal -- ' + functions.userData[userId][deviceId].IdentifierSongsCountTotal);
             }
+
             if (functions.userData[userId][deviceId].SeventyEights == true) {
                 functions.getAudioPlayListSeventyEights.call(this);
 
@@ -281,6 +321,16 @@ var audioEventHandlers = {
         'PlaybackStarted': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
+            }
             functions.userData[userId][deviceId].playbackFinished = false;
             this.attributes[deviceId] = {};
             for (let k in functions.userData[userId][deviceId]) {
@@ -288,25 +338,30 @@ var audioEventHandlers = {
                     this.attributes[deviceId][k] = functions.userData[userId][deviceId][k];
                 }
             }
+
             if (constants.debug) {
                 console.log('Now Playing -- ' + functions.userData[userId][deviceId].audioURL);
                 console.log('IdentifierSongsCount -- ' + functions.userData[userId][deviceId].IdentifierSongsCount);
                 console.log('IdentifierSongsCountTotal -- ' + functions.userData[userId][deviceId].IdentifierSongsCountTotal);
             }
+
             this.emit(':saveState', true);
         },
         'PlaybackFinished': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
             functions.userData[userId][deviceId].playbackFinished = true;
+
             this.emit(':saveState', true);
             this.context.succeed({
                 version: "1.0",
@@ -317,14 +372,17 @@ var audioEventHandlers = {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
             functions.userData[userId][deviceId].lastPlayedByUser = this.event.request;
+
             this.context.succeed({
                 version: "1.0",
                 response: {}
@@ -334,12 +392,14 @@ var audioEventHandlers = {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
             functions.userData[userId][deviceId].offsetInMilliseconds = 0;
             functions.userData[userId][deviceId]['counter']++;
@@ -354,6 +414,7 @@ var audioEventHandlers = {
                 console.log('IdentifierSongsCount -- ' + functions.userData[userId][deviceId].IdentifierSongsCount);
                 console.log('IdentifierSongsCountTotal -- ' + functions.userData[userId][deviceId].IdentifierSongsCountTotal);
             }
+
             if (functions.userData[userId][deviceId].SeventyEights == true) {
                 functions.getAudioPlayListSeventyEights.call(this);
 
@@ -375,12 +436,14 @@ var audioEventHandlers = {
             let deviceId = this.event.context.System.device.deviceId;
             console.log('Last Song -- ' + functions.userData[userId][deviceId].audioURL);
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
             functions.userData[userId][deviceId].offsetInMilliseconds = 0;
             functions.userData[userId][deviceId]['counter']++;
@@ -395,6 +458,7 @@ var audioEventHandlers = {
                 console.log('IdentifierSongsCount -- ' + functions.userData[userId][deviceId].IdentifierSongsCount);
                 console.log('IdentifierSongsCountTotal -- ' + functions.userData[userId][deviceId].IdentifierSongsCountTotal);
             }
+
             if (functions.userData[userId][deviceId].SeventyEights == true) {
                 functions.getAudioPlayListSeventyEights.call(this);
 

@@ -23,7 +23,7 @@ var stateHandlers = {
             functions.userData[userId][deviceId]['IdentifierSongsCount'] = 0;
             functions.userData[userId][deviceId]['IdentifierSongsCountTotal'] = 0;
             functions.userData[userId][deviceId]['page'] = 1;
-            functions.userData[userId][deviceId]['TotalTrack'] = -1;
+
             functions.userData[userId][deviceId]['IdentifierCount'] = 0;
             functions.userData[userId][deviceId]['counter'] = 0;
             functions.userData[userId][deviceId]['year'] = null;
@@ -54,7 +54,12 @@ var stateHandlers = {
         'Discovery': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
 
             functions.userData[userId][deviceId].SeventyEights = false;
             this.handler.state = constants.states.START_MODE;
@@ -64,9 +69,14 @@ var stateHandlers = {
 
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -84,6 +94,12 @@ var stateHandlers = {
         'SearchCollection': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = {};
@@ -96,9 +112,14 @@ var stateHandlers = {
         'PlayAudioByCity': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -116,9 +137,14 @@ var stateHandlers = {
         'PlayAudioByYearCity': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -143,7 +169,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -168,7 +194,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -186,8 +212,14 @@ var stateHandlers = {
         'PlayAudioByRandomCity': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -212,7 +244,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -237,7 +269,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -259,7 +291,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -280,7 +312,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -303,7 +335,7 @@ var stateHandlers = {
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -330,7 +362,7 @@ var stateHandlers = {
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -349,7 +381,14 @@ var stateHandlers = {
         'SongDetail': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+                functions.userData[userId][deviceId].MusicUrlList = [];
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+                functions.userData[userId][deviceId].MusicUrlList = [];
+            }
             this.handler.state = constants.states.PLAY_MODE;
             if (functions.userData[userId][deviceId].MusicUrlList.length >= 1) {
                 let cardTitle = 'Song Title';
@@ -394,9 +433,9 @@ var stateHandlers = {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
             if (functions.userData[userId][deviceId].SeventyEights == true) {
                 let lastPlayed = loadLastPlayed(userId, deviceId);
@@ -423,7 +462,14 @@ var stateHandlers = {
         'AMAZON.HelpIntent': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+                functions.userData[userId][deviceId].MusicUrlList = [];
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+                functions.userData[userId][deviceId].MusicUrlList = [];
+            }
             // This will called while audio is playing and a user says "ask <invocation_name> for help"
             if (functions.userData[userId][deviceId].MusicUrlList.length >= 1) {
                 let response = {
@@ -497,7 +543,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             if (functions.userData[userId][deviceId].SeventyEights == true) {
-                if (functions.userData[userId][deviceId].TotalTrack < 0) {
+                if (functions.userData[userId][deviceId].IdentifierSongsCountTotal == 0) {
                     let cardTitle = 'Select Topic';
                     let repromptText = "Please Select Topic first.";
                     let cardOutput = "Please Select Topic first.";
@@ -523,7 +569,7 @@ var stateHandlers = {
                     controller.playSeventyEights.call(this);
                 }
             } else {
-                if (functions.userData[userId][deviceId].TotalTrack == 0) {
+                if (functions.userData[userId][deviceId].IdentifierSongsCountTotal == 0) {
                     let cardTitle = 'Select City and Yea';
                     let repromptText = "Please Select City and year first.";
                     let cardOutput = "Please Select City and year first.";
@@ -590,20 +636,31 @@ var stateHandlers = {
                 this.response.cardRenderer(cardTitle, cradOutput, null);
                 this.response.speak(message).listen(reprompt);
                 this.emit(':responseReady');
-            }else{
+            } else {
                 controller.welcome.call(this);
             }
         },
         'Discovery': function () {
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].SeventyEights = false;
             controller.Discovery.call(this);
         },
         'PlayAudio': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -623,6 +680,12 @@ var stateHandlers = {
         'SearchCollection': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = {};
@@ -635,8 +698,14 @@ var stateHandlers = {
         'PlayAudioByCity': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -655,8 +724,14 @@ var stateHandlers = {
         'PlayAudioByYearCity': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -675,8 +750,14 @@ var stateHandlers = {
         'PlayAudioQuery': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -695,8 +776,14 @@ var stateHandlers = {
         'PlayAudioByRandomYear': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -715,8 +802,14 @@ var stateHandlers = {
         'PlayAudioByRandomCity': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -735,9 +828,14 @@ var stateHandlers = {
         'PlayAudioByRandom': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -763,7 +861,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -786,7 +884,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -809,7 +907,7 @@ var stateHandlers = {
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -832,7 +930,7 @@ var stateHandlers = {
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -860,7 +958,7 @@ var stateHandlers = {
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -880,7 +978,14 @@ var stateHandlers = {
         'SongDetail': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+                functions.userData[userId][deviceId].MusicUrlList = [];
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+                functions.userData[userId][deviceId].MusicUrlList = [];
+            }
             this.handler.state = constants.states.PLAY_MODE;
             if (functions.userData[userId][deviceId].MusicUrlList.length >= 1) {
                 let cardTitle = 'Song Title';
@@ -924,12 +1029,12 @@ var stateHandlers = {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
             if (functions.userData[userId] == undefined) {
-                functions.userData[userId] = [];
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] = {};
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             } else if (functions.userData[userId][deviceId] == undefined) {
-                functions.userData[userId][deviceId] = [];
-                functions.userData[userId][deviceId] = this.attributes[deviceId];
+                functions.userData[userId] [deviceId] = {};
+                functions.userData[userId][deviceId] = (this.attributes[deviceId] != undefined) ? this.attributes[deviceId] : {};
             }
             if (functions.userData[userId][deviceId].SeventyEights == true) {
                 let lastPlayed = loadLastPlayed(userId, deviceId);
@@ -956,7 +1061,14 @@ var stateHandlers = {
         'AMAZON.HelpIntent': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+                functions.userData[userId][deviceId].MusicUrlList = [];
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+                functions.userData[userId][deviceId].MusicUrlList = [];
+            }
             // This will called while audio is playing and a user says "ask <invocation_name> for help"
             if (functions.userData[userId][deviceId].MusicUrlList.length >= 1) {
                 let response = {
@@ -1041,20 +1153,31 @@ var stateHandlers = {
                 this.response.cardRenderer(cardTitle, cradOutput, null);
                 this.response.speak(message).listen(reprompt);
                 this.emit(':responseReady');
-            }else{
+            } else {
                 controller.welcome.call(this);
             }
         },
         'Discovery': function () {
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].SeventyEights = false;
             controller.Discovery.call(this);
         },
         'PlayAudio': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -1074,6 +1197,12 @@ var stateHandlers = {
         'SearchCollection': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = {};
@@ -1086,8 +1215,14 @@ var stateHandlers = {
         'PlayAudioByCity': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -1106,8 +1241,14 @@ var stateHandlers = {
         'PlayAudioByYearCity': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -1126,8 +1267,14 @@ var stateHandlers = {
         'PlayAudioQuery': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -1146,8 +1293,14 @@ var stateHandlers = {
         'PlayAudioByRandomYear': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -1166,8 +1319,14 @@ var stateHandlers = {
         'PlayAudioByRandomCity': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -1186,8 +1345,14 @@ var stateHandlers = {
         'PlayAudioByRandom': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -1213,7 +1378,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -1236,7 +1401,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -1259,7 +1424,7 @@ var stateHandlers = {
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -1282,7 +1447,7 @@ var stateHandlers = {
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -1310,7 +1475,7 @@ var stateHandlers = {
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
             functions.userData[userId][deviceId].page = 0;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
@@ -1330,7 +1495,14 @@ var stateHandlers = {
         'SongDetail': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+                functions.userData[userId][deviceId].MusicUrlList = [];
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+                functions.userData[userId][deviceId].MusicUrlList = [];
+            }
             this.handler.state = constants.states.PLAY_MODE;
             if (functions.userData[userId][deviceId].MusicUrlList.length >= 1) {
                 let cardTitle = 'Song Title';
@@ -1362,7 +1534,12 @@ var stateHandlers = {
         'AMAZON.YesIntent': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             if (functions.userData[userId][deviceId].SeventyEights == true) {
                 if (functions.userData[userId][deviceId].counter < 0) {
                     functions.userData[userId][deviceId].counter = 0;
@@ -1387,7 +1564,14 @@ var stateHandlers = {
         'AMAZON.HelpIntent': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
-
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+                functions.userData[userId][deviceId].MusicUrlList = [];
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+                functions.userData[userId][deviceId].MusicUrlList = [];
+            }
             // This will called while audio is playing and a user says "ask <invocation_name> for help"
             if (functions.userData[userId][deviceId].MusicUrlList.length >= 1) {
                 let response = {
@@ -1471,7 +1655,7 @@ let controller = function () {
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
             functions.userData[userId][deviceId].page = 1;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId]['offsetInMilliseconds'] = 0;
             functions.userData[userId][deviceId].counter = 0; //do not loop on the list of podcast
@@ -1552,7 +1736,7 @@ let controller = function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
 
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].SeventyEights = false;
             functions.userData[userId][deviceId]['city'] = null;
             functions.userData[userId][deviceId]['year'] = null;
@@ -1569,9 +1753,15 @@ let controller = function () {
         playNext: function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             this.handler.state = constants.states.PLAY_MODE;
             if (functions.userData[userId][deviceId].SeventyEights == true) {
-                if (functions.userData[userId][deviceId].TotalTrack < 0) {
+                if (functions.userData[userId][deviceId].IdentifierSongsCountTotal == 0) {
                     let cardTitle = 'Select Topic';
                     let repromptText = "Please Select Topic first.";
                     let cardOutput = "Please Select Topic first.";
@@ -1591,7 +1781,7 @@ let controller = function () {
                     controller.playSeventyEights.call(this);
                 }
             } else {
-                if (functions.userData[userId][deviceId].TotalTrack == 0) {
+                if (functions.userData[userId][deviceId].IdentifierSongsCountTotal == 0) {
                     let cardTitle = 'Select City and Year';
                     let repromptText = "Please Select City and year first.";
                     let cardOutput = "Please Select City and year first.";
@@ -1620,9 +1810,15 @@ let controller = function () {
         playPrev: function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
             this.handler.state = constants.states.PLAY_MODE;
             if (functions.userData[userId][deviceId].SeventyEights == true) {
-                if (functions.userData[userId][deviceId].TotalTrack < 0) {
+                if (functions.userData[userId][deviceId].IdentifierSongsCountTotal == 0) {
                     let cardTitle = 'Select Topic';
                     let repromptText = "Please Select Topic first.";
                     let cardOutput = "Please Select Topic first.";
@@ -1646,7 +1842,7 @@ let controller = function () {
                     controller.playSeventyEights.call(this);
                 }
             } else {
-                if (functions.userData[userId][deviceId].TotalTrack == 0) {
+                if (functions.userData[userId][deviceId].IdentifierSongsCountTotal == 0) {
                     let cardTitle = 'Select City and Year';
                     let repromptText = "Please Select City and year first.";
                     let cardOutput = "Please Select City and year first.";
@@ -1689,7 +1885,7 @@ let controller = function () {
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
             functions.userData[userId][deviceId].page = 1;
-            functions.userData[userId][deviceId].TotalTrack = -1;
+
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId]['offsetInMilliseconds'] = 0;
             functions.userData[userId][deviceId].counter = 0; //do not loop on the list of podcast
