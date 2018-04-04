@@ -19,4 +19,5 @@ module.exports = Object.freeze({
     podcastAPIURLNEW: "/advancedsearch.php?q=",
     SeventyEightsAPIURL: "/advancedsearch.php?q=collection:(georgeblood)+AND+subject:",
     APIURLIdentifier: "/metadata/",
+    DASHBOT_API_KEY:"DASHBOT_API_KEY_GOES_HERE"
 });
