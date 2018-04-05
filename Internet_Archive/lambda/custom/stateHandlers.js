@@ -35,7 +35,7 @@ var stateHandlers = {
             functions.userData[userId][deviceId]['PlayAudioByRandom'] = false;
             functions.userData[userId][deviceId]['CityName'] = 'Los Angeles';
             functions.userData[userId][deviceId]['YearName'] = 'YearName';
-            functions.userData[userId][deviceId]['used'] = false;
+            //functions.userData[userId][deviceId]['used'] = false;
             functions.userData[userId][deviceId]['collection'] = null;
             functions.userData[userId][deviceId]['collectionQuery'] = null;
             functions.userData[userId][deviceId]['title'] = null;
@@ -75,7 +75,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -118,7 +118,107 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
+
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId].counter = 0;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].audioURL = null;
+            controller.play.call(this);
+        },
+        'PlayAudioByCityAT': function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].page = 1;
+
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId].counter = 0;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].audioURL = null;
+            controller.play.call(this);
+        },
+        'PlayAudioByCityDE': function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].page = 1;
+
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId].counter = 0;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].audioURL = null;
+            controller.play.call(this);
+        },
+        'PlayAudioByCityEROPE': function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].page = 1;
+
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId].counter = 0;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].audioURL = null;
+            controller.play.call(this);
+        },
+        'PlayAudioByCityGB': function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -143,7 +243,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -168,7 +268,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -193,7 +293,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -218,7 +318,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -243,7 +343,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -268,7 +368,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -290,7 +390,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -311,7 +411,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -334,7 +434,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -361,7 +461,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -558,12 +658,12 @@ var stateHandlers = {
                         functions.userData[userId][deviceId].counter--;
                     }
                     functions.userData[userId][deviceId].IdentifierSongsCount--;
-                    if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page > 0) {
+                    if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page > 1) {
                         functions.userData[userId][deviceId].IdentifierSongsCount = 0;
                         functions.userData[userId][deviceId].page--;
-                    } else if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page == 0) {
+                    } else if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page == 1) {
                         functions.userData[userId][deviceId].IdentifierSongsCount = 0;
-                        functions.userData[userId][deviceId].page = 0;
+                        functions.userData[userId][deviceId].page = 1;
                     }
 
                     controller.playSeventyEights.call(this);
@@ -582,12 +682,12 @@ var stateHandlers = {
                         functions.userData[userId][deviceId].counter--;
                     }
                     functions.userData[userId][deviceId].IdentifierSongsCount--;
-                    if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page > 0) {
+                    if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page > 1) {
                         functions.userData[userId][deviceId].IdentifierSongsCount = 0;
                         functions.userData[userId][deviceId].page--;
-                    } else if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page == 0) {
+                    } else if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page == 1) {
                         functions.userData[userId][deviceId].IdentifierSongsCount = 0;
-                        functions.userData[userId][deviceId].page = 0;
+                        functions.userData[userId][deviceId].page = 1;
                     }
                     if (functions.userData[userId][deviceId].OneGoPlayAudioStatus) {
 
@@ -626,16 +726,20 @@ var stateHandlers = {
                 controller.welcome.call(this);
             } else if (!functions.userData[userId][deviceId].playbackFinished && functions.userData[userId][deviceId].MusicUrlList != undefined) {
 
-                this.handler.state = constants.states.RESUME_DECISION_MODE;
-                let message = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
-                    ' Would you like to resume?';
-                let reprompt = 'You can say yes to resume or no to play from the top.';
-                let cardTitle = 'Rest or Resume';
-                let cradOutput = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
-                    ' Would you like to resume?';
-                this.response.cardRenderer(cardTitle, cradOutput, null);
-                this.response.speak(message).listen(reprompt);
-                this.emit(':responseReady');
+                if(functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]!=undefined) {
+                    this.handler.state = constants.states.RESUME_DECISION_MODE;
+                    let message = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
+                        ' Would you like to resume?';
+                    let reprompt = 'You can say yes to resume or no to play from the top.';
+                    let cardTitle = 'Rest or Resume';
+                    let cradOutput = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
+                        ' Would you like to resume?';
+                    this.response.cardRenderer(cardTitle, cradOutput, null);
+                    this.response.speak(message).listen(reprompt);
+                    this.emit(':responseReady');
+                }else{
+                    controller.welcome.call(this);
+                }
             } else {
                 controller.welcome.call(this);
             }
@@ -659,7 +763,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -704,7 +808,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -721,6 +825,106 @@ var stateHandlers = {
             functions.userData[userId][deviceId]['offsetInMilliseconds'] = 0;
             controller.play.call(this);
         },
+        'PlayAudioByCityAT': function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].page = 1;
+
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId].counter = 0;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].audioURL = null;
+            controller.play.call(this);
+        },
+        'PlayAudioByCityDE': function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].page = 1;
+
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId].counter = 0;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].audioURL = null;
+            controller.play.call(this);
+        },
+        'PlayAudioByCityEROPE': function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].page = 1;
+
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId].counter = 0;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].audioURL = null;
+            controller.play.call(this);
+        },
+        'PlayAudioByCityGB': function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].page = 1;
+
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId].counter = 0;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].audioURL = null;
+            controller.play.call(this);
+        },
         'PlayAudioByYearCity': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
@@ -730,7 +934,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -756,7 +960,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -782,13 +986,13 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
             functions.userData[userId][deviceId].typeQuery = true;
-            functions.userData[userId][deviceId].searchBYTitle = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
             functions.userData[userId][deviceId].PlayAudioByRandomYear = true;
             functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
             functions.userData[userId][deviceId].PlayAudioByRandom = false;
@@ -808,13 +1012,13 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
             functions.userData[userId][deviceId].typeQuery = true;
-            functions.userData[userId][deviceId].searchBYTitle = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
             functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
             functions.userData[userId][deviceId].PlayAudioByRandomCity = true;
             functions.userData[userId][deviceId].PlayAudioByRandom = false;
@@ -834,7 +1038,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -860,7 +1064,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -883,13 +1087,13 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
             functions.userData[userId][deviceId].typeQuery = true;
-            functions.userData[userId][deviceId].searchBYTitle = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
             functions.userData[userId][deviceId].counter = 0;
             functions.userData[userId][deviceId].SeventyEights = true;
             functions.userData[userId][deviceId].audioURL = null;
@@ -906,13 +1110,13 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
             functions.userData[userId][deviceId].typeQuery = true;
-            functions.userData[userId][deviceId].searchBYTitle = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
             functions.userData[userId][deviceId].counter = 0;
             functions.userData[userId][deviceId].SeventyEights = true;
             functions.userData[userId][deviceId].audioURL = null;
@@ -929,7 +1133,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -957,7 +1161,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -1142,17 +1346,21 @@ var stateHandlers = {
             if (functions.userData[userId][deviceId] == undefined) {
                 controller.welcome.call(this);
             } else if (!functions.userData[userId][deviceId].playbackFinished && functions.userData[userId][deviceId].MusicUrlList != undefined) {
+                if(functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]!=undefined) {
 
-                let message = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
-                    ' Would you like to resume?';
-                let reprompt = 'You can say yes to resume or no to play from the top.';
-                let cardTitle = 'Rest or Resume';
-                let cradOutput = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
-                    ' Would you like to resume?';
+                    let message = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
+                        ' Would you like to resume?';
+                    let reprompt = 'You can say yes to resume or no to play from the top.';
+                    let cardTitle = 'Rest or Resume';
+                    let cradOutput = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
+                        ' Would you like to resume?';
 
-                this.response.cardRenderer(cardTitle, cradOutput, null);
-                this.response.speak(message).listen(reprompt);
-                this.emit(':responseReady');
+                    this.response.cardRenderer(cardTitle, cradOutput, null);
+                    this.response.speak(message).listen(reprompt);
+                    this.emit(':responseReady');
+                }else{
+                    controller.welcome.call(this);
+                }
             } else {
                 controller.welcome.call(this);
             }
@@ -1176,7 +1384,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -1221,7 +1429,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -1238,6 +1446,106 @@ var stateHandlers = {
             functions.userData[userId][deviceId]['offsetInMilliseconds'] = 0;
             controller.play.call(this);
         },
+        'PlayAudioByCityAT': function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].page = 1;
+
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId].counter = 0;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].audioURL = null;
+            controller.play.call(this);
+        },
+        'PlayAudioByCityDE': function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].page = 1;
+
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId].counter = 0;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].audioURL = null;
+            controller.play.call(this);
+        },
+        'PlayAudioByCityEROPE': function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].page = 1;
+
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId].counter = 0;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].audioURL = null;
+            controller.play.call(this);
+        },
+        'PlayAudioByCityGB': function () {
+            let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
+            let deviceId = this.event.context.System.device.deviceId;
+            if (functions.userData[userId] == undefined) {
+                functions.userData[userId] = {};
+                functions.userData[userId][deviceId] = {};
+            } else if (functions.userData[userId][deviceId] == undefined) {
+                functions.userData[userId][deviceId] = {};
+            }
+            functions.userData[userId][deviceId].page = 1;
+
+            functions.userData[userId][deviceId].IdentifierCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+            functions.userData[userId][deviceId].typeQuery = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
+            functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
+            functions.userData[userId][deviceId].PlayAudioByRandom = false;
+            functions.userData[userId][deviceId].OneGoPlayAudioStatus = false;
+            functions.userData[userId][deviceId].counter = 0;
+            functions.userData[userId][deviceId].SeventyEights = false;
+            functions.userData[userId][deviceId].audioURL = null;
+            controller.play.call(this);
+        },
         'PlayAudioByYearCity': function () {
             let userId = this.event.context ? this.event.context.System.user.userId : this.event.session.user.userId;
             let deviceId = this.event.context.System.device.deviceId;
@@ -1247,7 +1555,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -1273,7 +1581,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -1299,13 +1607,13 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
             functions.userData[userId][deviceId].typeQuery = true;
-            functions.userData[userId][deviceId].searchBYTitle = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
             functions.userData[userId][deviceId].PlayAudioByRandomYear = true;
             functions.userData[userId][deviceId].PlayAudioByRandomCity = false;
             functions.userData[userId][deviceId].PlayAudioByRandom = false;
@@ -1325,13 +1633,13 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
             functions.userData[userId][deviceId].typeQuery = true;
-            functions.userData[userId][deviceId].searchBYTitle = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
             functions.userData[userId][deviceId].PlayAudioByRandomYear = false;
             functions.userData[userId][deviceId].PlayAudioByRandomCity = true;
             functions.userData[userId][deviceId].PlayAudioByRandom = false;
@@ -1351,7 +1659,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -1377,7 +1685,7 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -1400,13 +1708,13 @@ var stateHandlers = {
             } else if (functions.userData[userId][deviceId] == undefined) {
                 functions.userData[userId][deviceId] = {};
             }
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
             functions.userData[userId][deviceId].typeQuery = true;
-            functions.userData[userId][deviceId].searchBYTitle = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
             functions.userData[userId][deviceId].counter = 0;
             functions.userData[userId][deviceId].SeventyEights = true;
             functions.userData[userId][deviceId].audioURL = null;
@@ -1423,13 +1731,13 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
             functions.userData[userId][deviceId].typeQuery = true;
-            functions.userData[userId][deviceId].searchBYTitle = true;
+            functions.userData[userId][deviceId].searchBYTitle = false;
             functions.userData[userId][deviceId].counter = 0;
             functions.userData[userId][deviceId].SeventyEights = true;
             functions.userData[userId][deviceId].audioURL = null;
@@ -1446,7 +1754,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -1474,7 +1782,7 @@ var stateHandlers = {
                 functions.userData[userId][deviceId] = {};
             }
             functions.userData[userId][deviceId].lastPlayedByUser = {};
-            functions.userData[userId][deviceId].page = 0;
+            functions.userData[userId][deviceId].page = 1;
 
             functions.userData[userId][deviceId].IdentifierCount = 0;
             functions.userData[userId][deviceId].IdentifierSongsCount = 0;
@@ -1668,7 +1976,7 @@ let controller = function () {
             functions.userData[userId][deviceId].PlayAudioByRandom = false;
             functions.userData[userId][deviceId]['CityName'] = 'Los Angeles';
             functions.userData[userId][deviceId]['YearName'] = '1971';
-            functions.userData[userId][deviceId]['used'] = true;
+            //functions.userData[userId][deviceId]['used'] = false;
             functions.userData[userId][deviceId]['collection'] = null;
             functions.userData[userId][deviceId]['collectionQuery'] = null;
             functions.userData[userId][deviceId]['title'] = null;
@@ -1832,12 +2140,12 @@ let controller = function () {
                         functions.userData[userId][deviceId].counter--;
                     }
                     functions.userData[userId][deviceId].IdentifierSongsCount--;
-                    if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page > 0) {
+                    if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page > 1) {
                         functions.userData[userId][deviceId].IdentifierSongsCount = 0;
                         functions.userData[userId][deviceId].page--;
-                    } else if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page == 0) {
+                    } else if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page == 1) {
                         functions.userData[userId][deviceId].IdentifierSongsCount = 0;
-                        functions.userData[userId][deviceId].page = 0;
+                        functions.userData[userId][deviceId].page = 1;
                     }
                     controller.playSeventyEights.call(this);
                 }
@@ -1855,12 +2163,12 @@ let controller = function () {
                         functions.userData[userId][deviceId].counter--;
                     }
                     functions.userData[userId][deviceId].IdentifierSongsCount--;
-                    if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page > 0) {
+                    if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page > 1) {
                         functions.userData[userId][deviceId].IdentifierSongsCount = 0;
                         functions.userData[userId][deviceId].page--;
-                    } else if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page == 0) {
+                    } else if (functions.userData[userId][deviceId].IdentifierSongsCount == -1 && functions.userData[userId][deviceId].page == 1) {
                         functions.userData[userId][deviceId].IdentifierSongsCount = 0;
-                        functions.userData[userId][deviceId].page = 0;
+                        functions.userData[userId][deviceId].page = 1;
                     }
                     if (functions.userData[userId][deviceId].OneGoPlayAudioStatus) {
 
@@ -1898,7 +2206,7 @@ let controller = function () {
             functions.userData[userId][deviceId].PlayAudioByRandom = false;
             functions.userData[userId][deviceId]['CityName'] = 'Los Angeles';
             functions.userData[userId][deviceId]['YearName'] = '1971';
-            functions.userData[userId][deviceId]['used'] = true;
+            //functions.userData[userId][deviceId]['used'] = false;
             functions.userData[userId][deviceId]['collection'] = null;
             functions.userData[userId][deviceId]['collectionQuery'] = null;
             functions.userData[userId][deviceId]['title'] = null;

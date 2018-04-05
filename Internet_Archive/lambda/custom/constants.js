@@ -3,10 +3,10 @@
 module.exports = Object.freeze({
 
     // App-ID. TODO: set to your own Skill App ID from the developer portal.
-    appId: 'amzn1.ask.skill.fc01cf61-ad69-483f-a8ef-c94ff434a459',
+    appId: 'amzn1.ask.skill.6e2850ce-f00f-4870-914e-0b7b5cbceef6',
 
     //  DynamoDB Table name
-    dynamoDBTableName: 'InternetArchive',
+    dynamoDBTableName: 'LongFormAudioArchive',
     states: {
         START_MODE: '',
         PLAY_MODE: '_PLAY_MODE',
@@ -18,6 +18,5 @@ module.exports = Object.freeze({
     podcastCityAPIURL: "/advancedsearch.php?q=collection:",
     podcastAPIURLNEW: "/advancedsearch.php?q=",
     SeventyEightsAPIURL: "/advancedsearch.php?q=collection:(georgeblood)+AND+subject:",
-    APIURLIdentifier: "/metadata/",
-    DASHBOT_API_KEY:"DASHBOT_API_KEY_GOES_HERE"
+    APIURLIdentifier: "/metadata/"
 });
