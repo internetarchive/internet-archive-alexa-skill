@@ -502,9 +502,9 @@ var stateHandlers = {
             } else {
 
                 let cardTitle = 'Please select collection first.';
-                let cardOutput = "No song id Playing now. Please select collection first.";
-                let speechOutput = "No song id Playing now. Please select collection first.";
-                let repromptText = "No song id Playing now. Please select collection first.";
+                let cardOutput = "No song id Playing now. What artist would you like to listen to? For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+                let speechOutput = "No song is Playing now. <break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+                let repromptText = "No song is Playing now. <break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?.";
 
                 this.response.cardRenderer(cardTitle, cardOutput, null);
                 this.response.speak(speechOutput).listen(repromptText);
@@ -572,52 +572,27 @@ var stateHandlers = {
             }
             // This will called while audio is playing and a user says "ask <invocation_name> for help"
             if (functions.userData[userId][deviceId].MusicUrlList.length >= 1) {
-                let response = {
-                    version: '1.0',
-                    response: {
-                        outputSpeech: {
-                            type: 'SSML',
-                            ssml: "<speak>You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".</speak>",
-                        },
-                        card: {
-                            type: 'Simple',
-                            title: "Song Title",
-                            content: "You are listening " + functions.userData[userId][deviceId].MusicUrlList[counter]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'],
-                        },
-                        reprompt: {
-                            outputSpeech: {
-                                type: 'SSML',
-                                ssml: "<speak>You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".</speak>",
-                            }
-                        },
-                        shouldEndSession: true,
 
-                    }
-                };
-                this.context.succeed(response);
+                let cardTitle = 'Song Title.';
+                let cardOutput = "You are listening " + functions.userData[userId][deviceId].MusicUrlList[counter]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
+                let speechOutput = "You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
+                let repromptText = "You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
+
+                this.response.cardRenderer(cardTitle, cardOutput, null);
+                this.response.speak(speechOutput).listen(repromptText);
+                this.emit(':responseReady');
+
             } else {
-                let response = {
-                    version: '1.0',
-                    response: {
-                        outputSpeech: {
-                            type: 'SSML',
-                            ssml: "<speak>No song id Playing now. Please select collection first.</speak>",
-                        },
-                        card: {
-                            type: 'Simple',
-                            title: "Please select collection first.",
-                            content: "No song id Playing now. Please select collection first.",
-                        },
-                        reprompt: {
-                            outputSpeech: {
-                                type: 'SSML',
-                                ssml: "<speak>No song id Playing now. Please select collection first.</speak>",
-                            }
-                        },
-                        shouldEndSession: false,
-                    }
-                };
-                this.context.succeed(response);
+
+                let cardTitle = 'No song is Playing now.';
+                let cardOutput = "No song is Playing now. Please select collection first.";
+                let speechOutput = "No song is Playing now. Please select collection first.";
+                let repromptText = "No song is Playing now. Please select collection first.";
+
+                this.response.cardRenderer(cardTitle, cardOutput, null);
+                this.response.speak(speechOutput).listen(repromptText);
+                this.emit(':responseReady');
+
             }
         },
         'SessionEndedRequest': function () {
@@ -726,7 +701,7 @@ var stateHandlers = {
                 controller.welcome.call(this);
             } else if (!functions.userData[userId][deviceId].playbackFinished && functions.userData[userId][deviceId].MusicUrlList != undefined) {
 
-                if(functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]!=undefined) {
+                if (functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount] != undefined) {
                     this.handler.state = constants.states.RESUME_DECISION_MODE;
                     let message = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
                         ' Would you like to resume?';
@@ -737,7 +712,7 @@ var stateHandlers = {
                     this.response.cardRenderer(cardTitle, cradOutput, null);
                     this.response.speak(message).listen(reprompt);
                     this.emit(':responseReady');
-                }else{
+                } else {
                     controller.welcome.call(this);
                 }
             } else {
@@ -1203,9 +1178,9 @@ var stateHandlers = {
             } else {
 
                 let cardTitle = 'Please select collection first.';
-                let cardOutput = "No song id Playing now. Please select collection first.";
-                let speechOutput = "No song id Playing now. Please select collection first.";
-                let repromptText = "No song id Playing now. Please select collection first.";
+                let cardOutput = "No song id Playing now. What artist would you like to listen to? For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+                let speechOutput = "No song is Playing now. <break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+                let repromptText = "No song is Playing now. <break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?.";
 
                 this.response.cardRenderer(cardTitle, cardOutput, null);
                 this.response.speak(speechOutput).listen(repromptText);
@@ -1275,52 +1250,27 @@ var stateHandlers = {
             }
             // This will called while audio is playing and a user says "ask <invocation_name> for help"
             if (functions.userData[userId][deviceId].MusicUrlList.length >= 1) {
-                let response = {
-                    version: '1.0',
-                    response: {
-                        outputSpeech: {
-                            type: 'SSML',
-                            ssml: "<speak>You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".</speak>",
-                        },
-                        card: {
-                            type: 'Simple',
-                            title: "Song Title",
-                            content: "You are listening " + functions.userData[userId][deviceId].MusicUrlList[counter]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'],
-                        },
-                        reprompt: {
-                            outputSpeech: {
-                                type: 'SSML',
-                                ssml: "<speak>You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".</speak>",
-                            }
-                        },
-                        shouldEndSession: true,
 
-                    }
-                };
-                this.context.succeed(response);
+                let cardTitle = 'Song Title.';
+                let cardOutput = "You are listening " + functions.userData[userId][deviceId].MusicUrlList[counter]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
+                let speechOutput = "You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
+                let repromptText = "You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
+
+                this.response.cardRenderer(cardTitle, cardOutput, null);
+                this.response.speak(speechOutput).listen(repromptText);
+                this.emit(':responseReady');
+
             } else {
-                let response = {
-                    version: '1.0',
-                    response: {
-                        outputSpeech: {
-                            type: 'SSML',
-                            ssml: "<speak>No song id Playing now. Please select collection first.</speak>",
-                        },
-                        card: {
-                            type: 'Simple',
-                            title: "Please select collection first.",
-                            content: "No song id Playing now. Please select collection first.",
-                        },
-                        reprompt: {
-                            outputSpeech: {
-                                type: 'SSML',
-                                ssml: "<speak>No song id Playing now. Please select collection first.</speak>",
-                            }
-                        },
-                        shouldEndSession: false,
-                    }
-                };
-                this.context.succeed(response);
+
+                let cardTitle = 'Please select collection.';
+                let cardOutput = "What artist would you like to listen to? For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+                let speechOutput = "What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+                let repromptText = "What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?.";
+
+                this.response.cardRenderer(cardTitle, cardOutput, null);
+                this.response.speak(speechOutput).listen(repromptText);
+                this.emit(':responseReady');
+
             }
         },
         'SessionEndedRequest': function () {
@@ -1346,7 +1296,7 @@ var stateHandlers = {
             if (functions.userData[userId][deviceId] == undefined) {
                 controller.welcome.call(this);
             } else if (!functions.userData[userId][deviceId].playbackFinished && functions.userData[userId][deviceId].MusicUrlList != undefined) {
-                if(functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]!=undefined) {
+                if (functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount] != undefined) {
 
                     let message = 'Welcome back. You were listening to ' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] +
                         ' Would you like to resume?';
@@ -1358,7 +1308,7 @@ var stateHandlers = {
                     this.response.cardRenderer(cardTitle, cradOutput, null);
                     this.response.speak(message).listen(reprompt);
                     this.emit(':responseReady');
-                }else{
+                } else {
                     controller.welcome.call(this);
                 }
             } else {
@@ -1816,17 +1766,22 @@ var stateHandlers = {
                 let cardTitle = 'Song Title';
                 let cardOutput = "You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'];
                 let speechOutput = "You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
+
                 this.response.cardRenderer(cardTitle, cardOutput, null);
                 this.response.speak(speechOutput);
                 this.emit(':responseReady');
+
             } else {
+
                 let cardTitle = 'Please select collection first.';
-                let cardOutput = "No song id Playing now. Please select collection first.";
-                let speechOutput = "No song id Playing now. Please select collection first.";
-                let repromptText = "No song id Playing now. Please select collection first.";
+                let cardOutput = "No song is Playing now. What artist would you like to listen to? For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+                let speechOutput = "No song is Playing now. <break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+                let repromptText = "No song is Playing now. <break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?.";
+
                 this.response.cardRenderer(cardTitle, cardOutput, null);
                 this.response.speak(speechOutput).listen(repromptText);
                 this.emit(':responseReady');
+
             }
         },
         'AMAZON.NextIntent': function () {
@@ -1882,52 +1837,25 @@ var stateHandlers = {
             }
             // This will called while audio is playing and a user says "ask <invocation_name> for help"
             if (functions.userData[userId][deviceId].MusicUrlList.length >= 1) {
-                let response = {
-                    version: '1.0',
-                    response: {
-                        outputSpeech: {
-                            type: 'SSML',
-                            ssml: "<speak>You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".</speak>",
-                        },
-                        card: {
-                            type: 'Simple',
-                            title: "Song Title",
-                            content: "You are listening " + functions.userData[userId][deviceId].MusicUrlList[counter]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'],
-                        },
-                        reprompt: {
-                            outputSpeech: {
-                                type: 'SSML',
-                                ssml: "<speak>You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".</speak>",
-                            }
-                        },
-                        shouldEndSession: true,
+                let cardTitle = 'Song Title.';
+                let cardOutput = "You are listening " + functions.userData[userId][deviceId].MusicUrlList[counter]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
+                let speechOutput = "You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
+                let repromptText = "You are listening " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
 
-                    }
-                };
-                this.context.succeed(response);
+                this.response.cardRenderer(cardTitle, cardOutput, null);
+                this.response.speak(speechOutput).listen(repromptText);
+                this.emit(':responseReady');
+
             } else {
-                let response = {
-                    version: '1.0',
-                    response: {
-                        outputSpeech: {
-                            type: 'SSML',
-                            ssml: "<speak>No song id Playing now. Please select collection first.</speak>",
-                        },
-                        card: {
-                            type: 'Simple',
-                            title: "Please select collection first.",
-                            content: "No song id Playing now. Please select collection first.",
-                        },
-                        reprompt: {
-                            outputSpeech: {
-                                type: 'SSML',
-                                ssml: "<speak>No song id Playing now. Please select collection first.</speak>",
-                            }
-                        },
-                        shouldEndSession: false,
-                    }
-                };
-                this.context.succeed(response);
+                let cardTitle = 'Please select collection.';
+                let cardOutput = "What artist would you like to listen to? For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+                let speechOutput = "What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
+                let repromptText = "What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?.";
+
+                this.response.cardRenderer(cardTitle, cardOutput, null);
+                this.response.speak(speechOutput).listen(repromptText);
+                this.emit(':responseReady');
+
             }
         },
         'AMAZON.StopIntent': function () {

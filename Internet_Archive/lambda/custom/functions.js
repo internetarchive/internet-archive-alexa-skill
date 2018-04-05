@@ -168,7 +168,7 @@ var functions = function () {
                                                 }
                                             }
 
-                                            //New Https Request for mp3 tracks
+
                                             functions.userData[userId][deviceId].APIURLIDENTIFIER = constants.APIURLIdentifier + result['response']['docs'][0]['identifier'] + '/files';
                                             let optionsIdentifier = {
                                                 host: constants.host,
