@@ -4,8 +4,9 @@ var constants = require('./constants');
 var stateHandlers = require('./stateHandlers');
 var audioEventHandlers = require('./audioEventHandlers');
 var functions = require('./functions');
-//const dashbot = require('dashbot')(constants.DASHBOT_API_KEY).alexa;
-exports.handler = function (event, context, callback) {
+const dashbot = require('dashbot')(constants.DASHBOT_API_KEY).alexa;
+exports.handler = dashbot.handler( function (event, context, callback) {
+
     var alexa = Alexa.handler(event, context);
     alexa.appId = constants.appId;
     alexa.dynamoDBTableName = constants.dynamoDBTableName;
@@ -29,4 +30,4 @@ exports.handler = function (event, context, callback) {
     } else {
         alexa.execute();
     }
-};
+});
