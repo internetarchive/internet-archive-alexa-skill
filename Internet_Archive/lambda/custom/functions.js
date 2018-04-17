@@ -117,7 +117,7 @@ var functions = function () {
                                                     YearString = YearString + YearList[i] + '. ';
                                                 }
                                                 let cardTitle = 'Please Select Year.';
-                                                let repromptText = ' Waiting for your responce.';
+                                                let repromptText = ' Waiting for your response.';
                                                 let speechOutput = "Ok , Available years for City " + functions.userData[userId][deviceId].city + " are " + YearString + " Please Select year.";
                                                 let cardOutput = "Ok , Available years for City " + functions.userData[userId][deviceId].city + " are " + YearString + " Please Select year.";
                                                 tempObj.response.cardRenderer(cardTitle, cardOutput, null);
@@ -132,7 +132,7 @@ var functions = function () {
                                                     CityString = CityString + CityList[i] + '. ';
                                                 }
                                                 let cardTitle = 'Please Select City.';
-                                                let repromptText = ' Waiting for your responce.';
+                                                let repromptText = ' Waiting for your response.';
                                                 let speechOutput = "  Ok , Available cities for year " + functions.userData[userId][deviceId].year + " are " + CityString + ' Please Select city. ';
                                                 let cardOutput = "Ok , Available cities for year " + functions.userData[userId][deviceId].year + " are " + CityString + ' Please Select city.';
                                                 tempObj.response.cardRenderer(cardTitle, cardOutput, null);
@@ -159,12 +159,12 @@ var functions = function () {
                                                     "User-Agent": 'Alexa_Skill_Internet_Archive'
                                                 }
                                             };
-                                            https.get(optionsIdentifier, function (responce) {
+                                            https.get(optionsIdentifier, function (response) {
                                                 let bodyIdentifier = '';
-                                                responce.on('data', function (dataIdentifier) {
+                                                response.on('data', function (dataIdentifier) {
                                                     bodyIdentifier += dataIdentifier;
                                                 });
-                                                responce.on('end', function () {
+                                                response.on('end', function () {
                                                     if (constants.debug)
                                                         console.log(bodyIdentifier);
 
@@ -271,7 +271,7 @@ var functions = function () {
                                                 });
                                             }).on('error', function (e) {
                                                 let cardTitle = 'Unable to understand your request. ';
-                                                let repromptText = 'Waiting for your responce.Please Try again by select. City and Year. or <break time=".1s"/> random.';
+                                                let repromptText = 'Waiting for your response.Please Try again by select. City and Year. or <break time=".1s"/> random.';
                                                 let speechOutput = "Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.";
                                                 let cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
                                                 tempObj.response.cardRenderer(cardTitle, cardOutput, null);
@@ -290,13 +290,12 @@ var functions = function () {
                                             }
                                             if (functions.userData[userId][deviceId].IdentifierSongsCountTotal > 0) {
                                                 if (functions.userData[userId][deviceId].IdentifierSongsCountTotal == functions.userData[userId][deviceId].IdentifierSongsCount + 1) {
-
                                                     functions.userData[userId][deviceId].IdentifierCount++;
-
                                                 }
                                             }
-
+                                            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
                                             for (let i = 0; i < result['response']['docs'].length; i++) {
+                                                functions.userData[userId][deviceId].IdentifierSongsCountTotal = functions.userData[userId][deviceId].IdentifierSongsCountTotal+1;
                                                 functions.userData[userId][deviceId].MusicUrlList.push({
                                                     identifier: result['response']['docs'][i]['identifier'],
                                                     trackName: result['response']['docs'][i]['identifier'] + '_vbr.m3u',
@@ -309,25 +308,12 @@ var functions = function () {
                                             if (functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount] == undefined) {
                                                 functions.userData[userId][deviceId].IdentifierSongsCount = 0;
                                             }
-                                            if (functions.userData[userId][deviceId].PlayAudioByRandomYear == true || functions.userData[userId][deviceId].PlayAudioByRandomCity == true || functions.userData[userId][deviceId].PlayAudioByRandom == true) {
-
-                                                functions.userData[userId][deviceId].audioURL = 'https://archive.org/download/' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['identifier'] + '/' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['trackName'];
-                                                functions.userData[userId][deviceId].audioURLTitle = functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'];
-
-
-                                            }
-                                            else {
-                                                functions.userData[userId][deviceId].audioURL = 'https://archive.org/download/' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['identifier'] + '/' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['trackName'];
-                                                functions.userData[userId][deviceId].audioURLTitle = functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'];
-
-                                            }
-
+                                            functions.userData[userId][deviceId].audioURL = 'https://archive.org/download/' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['identifier'] + '/' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['trackName'];
+                                            functions.userData[userId][deviceId].audioURLTitle = functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'];
                                             if (intent.name == 'autoNext') {
                                                 let playBehavior = (tempObj.event.request.type == 'AudioPlayer.PlaybackNearlyFinished' || tempObj.event.request.type == 'AudioPlayer.PlaybackFailed') ? 'REPLACE_ENQUEUED' : 'REPLACE_ALL';
-
                                                 tempObj.response.audioPlayerPlay(playBehavior, functions.userData[userId][deviceId].audioURL, functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['identifier'] + functions.userData[userId][deviceId].counter, null, functions.userData[userId][deviceId].offsetInMilliseconds);
                                                 tempObj.emit(':responseReady');
-
                                             }
                                             else {
                                                 if (canThrowCard.call(tempObj)) {
@@ -370,13 +356,13 @@ var functions = function () {
                                                     "User-Agent": 'Alexa_Skill_Internet_Archive'
                                                 }
                                             };
-                                            https.get(optionsIdentifier, function (responce) {
+                                            https.get(optionsIdentifier, function (response) {
                                                 let bodyIdentifier = '';
-                                                responce.on('data', function (dataIdentifier) {
+                                                response.on('data', function (dataIdentifier) {
                                                     bodyIdentifier += dataIdentifier;
                                                 });
 
-                                                responce.on('end', function () {
+                                                response.on('end', function () {
                                                     if (constants.debug)
                                                         console.log(bodyIdentifier);
                                                     if (!isValidJson(bodyIdentifier)) {
@@ -475,7 +461,7 @@ var functions = function () {
                                                 });
                                             }).on('error', function (e) {
                                                 let cardTitle = 'Unable to understand your request.';
-                                                let repromptText = 'Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
+                                                let repromptText = 'Waiting for your response. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
                                                 let speechOutput = "Sorry , Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.";
                                                 let cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
 
@@ -512,13 +498,13 @@ var functions = function () {
                                                     "User-Agent": 'Alexa_Skill_Internet_Archive'
                                                 }
                                             };
-                                            https.get(optionsIdentifier, function (responce) {
+                                            https.get(optionsIdentifier, function (response) {
                                                 let bodyIdentifier = '';
-                                                responce.on('data', function (dataIdentifier) {
+                                                response.on('data', function (dataIdentifier) {
                                                     bodyIdentifier += dataIdentifier;
                                                 });
 
-                                                responce.on('end', function () {
+                                                response.on('end', function () {
                                                     if (constants.debug)
                                                         console.log(bodyIdentifier);
                                                     if (!isValidJson(bodyIdentifier)) {
@@ -629,7 +615,7 @@ var functions = function () {
                                                 });
                                             }).on('error', function (e) {
                                                 let cardTitle = 'Unable to understand your request.';
-                                                let repromptText = 'Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
+                                                let repromptText = 'Waiting for your response. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
                                                 let speechOutput = "Sorry , Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.";
                                                 let cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
                                                 tempObj.response.cardRenderer(cardTitle, cardOutput, null);
@@ -663,13 +649,13 @@ var functions = function () {
                                                     "User-Agent": 'Alexa_Skill_Internet_Archive'
                                                 }
                                             };
-                                            https.get(optionsIdentifier, function (responce) {
+                                            https.get(optionsIdentifier, function (response) {
                                                     let bodyIdentifier = '';
-                                                    responce.on('data', function (dataIdentifier) {
+                                                    response.on('data', function (dataIdentifier) {
                                                         bodyIdentifier += dataIdentifier;
                                                     });
 
-                                                    responce.on('end', function () {
+                                                    response.on('end', function () {
                                                         if (constants.debug)
                                                             console.log(bodyIdentifier);
                                                         if (!isValidJson(bodyIdentifier)) {
@@ -786,7 +772,7 @@ var functions = function () {
 
                                                     } else {
                                                         let cardTitle = 'Unable to understand your request.';
-                                                        let repromptText = 'Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
+                                                        let repromptText = 'Waiting for your response. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
                                                         let speechOutput = "Sorry , Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.";
                                                         let cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
 
@@ -834,7 +820,7 @@ var functions = function () {
                                 functions.userData[userId][deviceId].year = null;
                                 functions.userData[userId][deviceId].city = null;
                                 let cardTitle = 'Unable to understand your request.';
-                                let repromptText = 'Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
+                                let repromptText = 'Waiting for your response. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
                                 let speechOutput = "Sorry , Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.";
                                 let cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
 
@@ -855,7 +841,7 @@ var functions = function () {
                         tempObj.emit(':responseReady');
                     } else {
                         let cardTitle = 'Unable to understand your request.';
-                        let repromptText = 'Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
+                        let repromptText = 'Waiting for your response. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
                         let speechOutput = "Sorry, Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.";
                         let cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
 
@@ -981,7 +967,7 @@ var functions = function () {
                 })
                     .on('error', function (e) {
 
-                        let cardTitle = 'Waiting for your responce.';
+                        let cardTitle = 'Waiting for your response.';
                         let repromptText = "Unable to understand your request.  What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
                         let speechOutput = "Sorry , Unable to understand your request. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
                         let cardOutput = "Sorry, unable to understand your request.  What artist would you like to listen to?  For example, The Grateful Dead, The Phil Lesh and Friends or The Disco Biscuits?";
@@ -995,7 +981,7 @@ var functions = function () {
                     });
             } else {
                 let cardTitle = 'Please provide valid artist';
-                let repromptText = "Waiting for your responce.";
+                let repromptText = "Waiting for your response.";
                 let speechOutput = "Please provide a artist name.";
                 let cardOutput = "Please provide a ARTIST NAME.";
 
@@ -1011,7 +997,7 @@ var functions = function () {
             let deviceId = tempObj.event.context.System.device.deviceId;
 
             let cardTitle = 'Discover more';
-            let repromptText = "Waiting for your responce.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  Like , Disco Biscuits, Hot Buttered Rum, or Keller Williams.";
+            let repromptText = "Waiting for your response.<break time='.5s'/> What artist would you like to listen to? <break time='.5s'/>  Like , Disco Biscuits, Hot Buttered Rum, or Keller Williams.";
             let cardOutput = "We have more collection like Disco Biscuits, Hot Buttered Rum or Keller Williams.";
             let speechOutput = "We have more collection.<break time='.5s'/> Like , Disco Biscuits, Hot Buttered Rum, or Keller Williams.";
 
@@ -1037,7 +1023,7 @@ var functions = function () {
                         console.log(intent.name);
                     }
                     let cardTitle = 'Collection Seventy Eights Has Been Selected.';
-                    let repromptText = "Waiting for your responce.<break time='.1s'/> What genre of music would you like to listen to? Please select a topic like  Jazz <break time='.5s'/> Instrumental or <break time='.5s'/> Dance";
+                    let repromptText = "Waiting for your response.<break time='.1s'/> What genre of music would you like to listen to? Please select a topic like  Jazz <break time='.5s'/> Instrumental or <break time='.5s'/> Dance";
                     let speechOutput = "Seventy Eights - great choice!<break time='.1s'/> What genre of music would you like to listen to? Please select a topic like  Jazz <break time='.5s'/> Instrumental or <break time='.5s'/> Dance";
                     let cardOutput = "Seventy Eights - great choice! What genre of music would you like to listen to? Please select a topic like Jazz, Instrumental, or Dance.";
                     tempObj.response.cardRenderer(cardTitle, cardOutput, null);
@@ -1094,13 +1080,13 @@ var functions = function () {
                                             "User-Agent": 'Alexa_Skill_Internet_Archive'
                                         }
                                     };
-                                    https.get(optionsIdentifier, function (responce) {
+                                    https.get(optionsIdentifier, function (response) {
                                         var bodyIdentifier = '';
-                                        responce.on('data', function (dataIdentifier) {
+                                        response.on('data', function (dataIdentifier) {
                                             bodyIdentifier += dataIdentifier;
                                         });
 
-                                        responce.on('end', function () {
+                                        response.on('end', function () {
                                             if (constants.debug)
                                                 console.log(bodyIdentifier);
                                             if (!isValidJson(bodyIdentifier)) {
@@ -1211,7 +1197,7 @@ var functions = function () {
                                             tempObj.emit(':responseReady');
                                         } else {
                                             let cardTitle = 'Unable to understand your request. Please Try again.';
-                                            let repromptText = 'Waiting for your responce.';
+                                            let repromptText = 'Waiting for your response.';
                                             let speechOutput = "Sorry , Unable to understand your request. Please Try again.";
                                             let cardOutput = "Sorry, Unable to understand your request. Please Try again.";
                                             tempObj.response.cardRenderer(cardTitle, cardOutput, null);
@@ -1252,7 +1238,7 @@ var functions = function () {
                             tempObj.emit(':responseReady');
                         } else {
                             let cardTitle = 'Unable to understand your request. Please Try again.';
-                            let repromptText = 'Waiting for your responce.';
+                            let repromptText = 'Waiting for your response.';
                             let speechOutput = "Sorry , Unable to understand your request. Please Try again.";
                             let cardOutput = "Sorry, Unable to understand your request. Please Try again.";
                             tempObj.response.cardRenderer(cardTitle, cardOutput, null);
@@ -1271,7 +1257,7 @@ var functions = function () {
                     tempObj.emit(':responseReady');
                 } else {
                     let cardTitle = 'Unable to understand your request.';
-                    let repromptText = 'Waiting for your responce.';
+                    let repromptText = 'Waiting for your response.';
 
                     let speechOutput = "Sorry, Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.";
                     let cardOutput = "Sorry, Unable to understand your request. Please Try again. By saying City and Year or Random.";
@@ -1397,13 +1383,13 @@ var functions = function () {
                                     };
                                     if (constants.debug)
                                         console.log(optionsIdentifier);
-                                    https.get(optionsIdentifier, function (responce) {
+                                    https.get(optionsIdentifier, function (response) {
                                         let bodyIdentifier = '';
-                                        responce.on('data', function (dataIdentifier) {
+                                        response.on('data', function (dataIdentifier) {
                                             bodyIdentifier += dataIdentifier;
                                         });
 
-                                        responce.on('end', function () {
+                                        response.on('end', function () {
                                             if (constants.debug)
                                                 console.log(bodyIdentifier);
                                             if (!isValidJson(bodyIdentifier)) {
@@ -1504,7 +1490,7 @@ var functions = function () {
                                             tempObj.emit(':responseReady');
                                         } else {
                                             let cardTitle = 'Unable to understand your request. ';
-                                            let repromptText = 'Waiting for your responce.Please Try again by select. City and Year. or <break time=".1s"/> random.';
+                                            let repromptText = 'Waiting for your response.Please Try again by select. City and Year. or <break time=".1s"/> random.';
                                             let speechOutput = "Sorry , Unable to understand your request. Please Try again by select. City and Year. or <break time='.1s'/> random.";
                                             let cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
                                             tempObj.response.cardRenderer(cardTitle, cardOutput, null);
@@ -1548,7 +1534,7 @@ var functions = function () {
                         functions.userData[userId][deviceId].year = null;
                         functions.userData[userId][deviceId].city = null;
                         let cardTitle = 'Unable to understand your request.';
-                        let repromptText = 'Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
+                        let repromptText = 'Waiting for your response. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
                         let speechOutput = "Sorry , Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.";
                         let cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
 
@@ -1567,7 +1553,7 @@ var functions = function () {
                     tempObj.emit(':responseReady');
                 } else {
                     let cardTitle = 'Unable to understand your request.';
-                    let repromptText = 'Waiting for your responce. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
+                    let repromptText = 'Waiting for your response. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
                     let speechOutput = "Sorry, Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.";
                     let cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
                     tempObj.response.cardRenderer(cardTitle, cardOutput, null);
@@ -1585,8 +1571,8 @@ module.exports = functions;
 
 function titleOff() {
     /*
-     * To determine when can a responce speach out should be inserted in the response.
-     * In response to a PlaybackController Request (remote control events) we cannot issue a responce speach ,
+     * To determine when can a response speach out should be inserted in the response.
+     * In response to a PlaybackController Request (remote control events) we cannot issue a response speach ,
      * Thus adding restriction.
      */
     console.log('titleOff');
