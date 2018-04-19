@@ -616,10 +616,10 @@ var stateHandlers = {
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = {};
             }
+            this.attributes.TITLEOFF = true;
             if (functions.userData[userId][deviceId] == undefined) {
                 let message = "Title has been turned off. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                 let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                this.attributes.TITLEOFF = true;
                 this.response.speak(message).listen(repromptText);
                 this.emit(':responseReady');
             } else {
@@ -627,7 +627,6 @@ var stateHandlers = {
                     if (functions.userData[userId][deviceId].collection == null && functions.userData[userId][deviceId].SeventyEights == false) {
                         let message = "Title has been turned off. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                         let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                        this.attributes.TITLEOFF = true;
                         this.response.speak(message).listen(repromptText);
                         this.emit(':responseReady');
                     } else {
@@ -639,40 +638,33 @@ var stateHandlers = {
                                 this.emit(':responseReady');
                             } else {
                                 let message = 'Title has been turned on.';
-                                this.attributes.TITLEOFF = true;
                                 this.response.speak(message);
                                 this.emit(':responseReady');
                             }
-
                         }
                         else if (functions.userData[userId][deviceId].city != null && functions.userData[userId][deviceId].year != null) {
                             let message = 'Title has been turned off.';
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city == null && functions.userData[userId][deviceId].year != null) {
                             let message = "Title has been turned off. Now please select city for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " Year " + functions.userData[userId][deviceId].year;
                             let repromptText = "Waiting for your response. Now please select city for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " Year " + functions.userData[userId][deviceId].year;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city != null && functions.userData[userId][deviceId].year == null) {
                             let message = "Title has been turned off. Please select year for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " City " + functions.userData[userId][deviceId].city;
                             let repromptText = "Waiting for your response. Please select year for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " City " + functions.userData[userId][deviceId].city;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city == null && functions.userData[userId][deviceId].year == null) {
                             let message = "Title has been turned off. Please select city and year or random for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection;
                             let repromptText = "Waiting for your response. Please select city and year or random for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         }
                     }
                 } else {
                     let message = 'Title has been turned off.';
-                    this.attributes.TITLEOFF = true;
                     this.response.speak(message);
                     this.emit(':responseReady');
                 }
@@ -684,10 +676,10 @@ var stateHandlers = {
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = {};
             }
+            this.attributes.TITLEOFF = false;
             if (functions.userData[userId][deviceId] == undefined) {
                 let message = "a Title has been turned on. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                 let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                this.attributes.TITLEOFF = true;
                 this.response.speak(message).listen(repromptText);
                 this.emit(':responseReady');
             } else {
@@ -695,7 +687,6 @@ var stateHandlers = {
                     if (functions.userData[userId][deviceId].collection == null && functions.userData[userId][deviceId].SeventyEights == false) {
                         let message = "Title has been turned on. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                         let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                        this.attributes.TITLEOFF = true;
                         this.response.speak(message).listen(repromptText);
                         this.emit(':responseReady');
                     } else {
@@ -707,40 +698,33 @@ var stateHandlers = {
                                 this.emit(':responseReady');
                             } else {
                                 let message = 'Title has been turned on.';
-                                this.attributes.TITLEOFF = true;
                                 this.response.speak(message);
                                 this.emit(':responseReady');
                             }
-
                         }
                         else if (functions.userData[userId][deviceId].city != null && functions.userData[userId][deviceId].year != null) {
                             let message = 'Title has been turned off.';
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city == null && functions.userData[userId][deviceId].year != null) {
                             let message = "Title has been turned on. Now please select city for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " Year " + functions.userData[userId][deviceId].year;
                             let repromptText = "Waiting for your response. Now please select city for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " Year " + functions.userData[userId][deviceId].year;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city != null && functions.userData[userId][deviceId].year == null) {
                             let message = "Title has been turned on. Please select year for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " City " + functions.userData[userId][deviceId].city;
                             let repromptText = "Waiting for your response. Please select year for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " City " + functions.userData[userId][deviceId].city;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city == null && functions.userData[userId][deviceId].year == null) {
                             let message = "Title has been turned on. Please select city and year or random for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection;
                             let repromptText = "Waiting for your response. Please select city and year or random for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         }
                     }
                 } else {
                     let message = 'Title has been turned on.';
-                    this.attributes.TITLEOFF = true;
                     this.response.speak(message);
                     this.emit(':responseReady');
                 }
@@ -1453,10 +1437,10 @@ var stateHandlers = {
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = {};
             }
+            this.attributes.TITLEOFF = true;
             if (functions.userData[userId][deviceId] == undefined) {
                 let message = "Title has been turned off. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                 let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                this.attributes.TITLEOFF = true;
                 this.response.speak(message).listen(repromptText);
                 this.emit(':responseReady');
             } else {
@@ -1464,7 +1448,6 @@ var stateHandlers = {
                     if (functions.userData[userId][deviceId].collection == null && functions.userData[userId][deviceId].SeventyEights == false) {
                         let message = "Title has been turned off. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                         let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                        this.attributes.TITLEOFF = true;
                         this.response.speak(message).listen(repromptText);
                         this.emit(':responseReady');
                     } else {
@@ -1476,62 +1459,49 @@ var stateHandlers = {
                                 this.emit(':responseReady');
                             } else {
                                 let message = 'Title has been turned on.';
-                                this.attributes.TITLEOFF = true;
                                 this.response.speak(message);
                                 this.emit(':responseReady');
                             }
-
                         }
                         else if (functions.userData[userId][deviceId].city != null && functions.userData[userId][deviceId].year != null) {
                             let message = 'Title has been turned on.';
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city == null && functions.userData[userId][deviceId].year != null) {
                             let message = "Title has been turned off. Please select city for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " Year " + functions.userData[userId][deviceId].year;
                             let repromptText = "Waiting for your response. Now please select city for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " Year " + functions.userData[userId][deviceId].year;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city != null && functions.userData[userId][deviceId].year == null) {
                             let message = "Title has been turned off. Please select year for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " City " + functions.userData[userId][deviceId].city;
                             let repromptText = "Waiting for your response. Please select year for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " City " + functions.userData[userId][deviceId].city;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city == null && functions.userData[userId][deviceId].year == null) {
                             let message = "Title has been turned off. Please select city and year or random for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection;
                             let repromptText = "Waiting for your response. Please select city and year or random for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         }
                     }
                 }
                 else {
-
-
                     if (!functions.userData[userId][deviceId].playbackFinished && functions.userData[userId][deviceId].MusicUrlList != undefined) {
 
                         if (functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount] != undefined) {
                             this.handler.state = constants.states.RESUME_DECISION_MODE;
-                            let message = 'Title has been turned off. You were listening to ' + this.attributes[deviceId].audioURLTitle +
-                                ' Would you like to resume?';
-                            let reprompt = 'You can say yes to resume or no to play from the top.';
-
-                            this.response.speak(message).listen(reprompt);
+                            let message = 'Title has been turned off. You were listening to ' + this.attributes[deviceId].audioURLTitle;
+                            this.response.speak(message);
                             this.emit(':responseReady');
                         } else {
                             let message = "Title has been turned off. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                             let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         }
                     } else {
                         let message = "Title has been turned off. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                         let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                        this.attributes.TITLEOFF = true;
                         this.response.speak(message).listen(repromptText);
                         this.emit(':responseReady');
                     }
@@ -1544,10 +1514,10 @@ var stateHandlers = {
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = {};
             }
+            this.attributes.TITLEOFF = false;
             if (functions.userData[userId][deviceId] == undefined) {
                 let message = "Title has been turned on. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                 let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                this.attributes.TITLEOFF = true;
                 this.response.speak(message).listen(repromptText);
                 this.emit(':responseReady');
             } else {
@@ -1555,7 +1525,6 @@ var stateHandlers = {
                     if (functions.userData[userId][deviceId].collection == null && functions.userData[userId][deviceId].SeventyEights == false) {
                         let message = "Title has been turned on. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                         let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                        this.attributes.TITLEOFF = true;
                         this.response.speak(message).listen(repromptText);
                         this.emit(':responseReady');
                     } else {
@@ -1567,62 +1536,49 @@ var stateHandlers = {
                                 this.emit(':responseReady');
                             } else {
                                 let message = 'Title has been turned on.';
-                                this.attributes.TITLEOFF = true;
                                 this.response.speak(message);
                                 this.emit(':responseReady');
                             }
-
                         }
                         else if (functions.userData[userId][deviceId].city != null && functions.userData[userId][deviceId].year != null) {
                             let message = 'Title has been turned on.';
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city == null && functions.userData[userId][deviceId].year != null) {
                             let message = "Title has been turned on. Please select city for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " Year " + functions.userData[userId][deviceId].year;
                             let repromptText = "Waiting for your response. Now please select city for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " Year " + functions.userData[userId][deviceId].year;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city != null && functions.userData[userId][deviceId].year == null) {
                             let message = "Title has been turned on. Please select year for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " City " + functions.userData[userId][deviceId].city;
                             let repromptText = "Waiting for your response. Please select year for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " City " + functions.userData[userId][deviceId].city;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city == null && functions.userData[userId][deviceId].year == null) {
                             let message = "Title has been turned on. Please select city and year or random for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection;
                             let repromptText = "Waiting for your response. Please select city and year or random for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         }
                     }
                 }
                 else {
-
-
                     if (!functions.userData[userId][deviceId].playbackFinished && functions.userData[userId][deviceId].MusicUrlList != undefined) {
 
                         if (functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount] != undefined) {
                             this.handler.state = constants.states.RESUME_DECISION_MODE;
-                            let message = 'Title has been turned on. You were listening to ' + this.attributes[deviceId].audioURLTitle +
-                                ' Would you like to resume?';
-                            let reprompt = 'You can say yes to resume or no to play from the top.';
-
-                            this.response.speak(message).listen(reprompt);
+                            let message = 'Title has been turned on. You were listening to ' + this.attributes[deviceId].audioURLTitle;
+                            this.response.speak(message);
                             this.emit(':responseReady');
                         } else {
                             let message = "Title has been turned on. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                             let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         }
                     } else {
                         let message = "Title has been turned on. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                         let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                        this.attributes.TITLEOFF = true;
                         this.response.speak(message).listen(repromptText);
                         this.emit(':responseReady');
                     }
@@ -2359,10 +2315,10 @@ var stateHandlers = {
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = {};
             }
+            this.attributes.TITLEOFF = true;
             if (functions.userData[userId][deviceId] == undefined) {
                 let message = "Title has been turned off. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                 let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                this.attributes.TITLEOFF = true;
                 this.response.speak(message).listen(repromptText);
                 this.emit(':responseReady');
             } else {
@@ -2370,7 +2326,6 @@ var stateHandlers = {
                     if (functions.userData[userId][deviceId].collection == null && functions.userData[userId][deviceId].SeventyEights == false) {
                         let message = "Title has been turned off. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                         let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                        this.attributes.TITLEOFF = true;
                         this.response.speak(message).listen(repromptText);
                         this.emit(':responseReady');
                     } else {
@@ -2382,7 +2337,6 @@ var stateHandlers = {
                                 this.emit(':responseReady');
                             } else {
                                 let message = 'Title has been turned on.';
-                                this.attributes.TITLEOFF = true;
                                 this.response.speak(message);
                                 this.emit(':responseReady');
                             }
@@ -2390,54 +2344,43 @@ var stateHandlers = {
                         }
                         else if (functions.userData[userId][deviceId].city != null && functions.userData[userId][deviceId].year != null) {
                             let message = 'Title has been turned on.';
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city == null && functions.userData[userId][deviceId].year != null) {
                             let message = "Title has been turned off. Please select city for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " Year " + functions.userData[userId][deviceId].year;
                             let repromptText = "Waiting for your response. Now please select city for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " Year " + functions.userData[userId][deviceId].year;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city != null && functions.userData[userId][deviceId].year == null) {
                             let message = "Title has been turned off. Please select year for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " City " + functions.userData[userId][deviceId].city;
                             let repromptText = "Waiting for your response. Please select year for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " City " + functions.userData[userId][deviceId].city;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city == null && functions.userData[userId][deviceId].year == null) {
                             let message = "Title has been turned off. Please select city and year or random for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection;
                             let repromptText = "Waiting for your response. Please select city and year or random for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         }
                     }
                 }
                 else {
-
-
                     if (!functions.userData[userId][deviceId].playbackFinished && functions.userData[userId][deviceId].MusicUrlList != undefined) {
 
                         if (functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount] != undefined) {
                             this.handler.state = constants.states.RESUME_DECISION_MODE;
-                            let message = 'Title has been turned off. You were listening to ' + this.attributes[deviceId].audioURLTitle +
-                                ' Would you like to resume?';
-                            let reprompt = 'You can say yes to resume or no to play from the top.';
-
-                            this.response.speak(message).listen(reprompt);
+                            let message = 'Title has been turned off. You were listening to ' + this.attributes[deviceId].audioURLTitle;
+                            this.response.speak(message);
                             this.emit(':responseReady');
                         } else {
                             let message = "Title has been turned off. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                             let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         }
                     } else {
                         let message = "Title has been turned off. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                         let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                        this.attributes.TITLEOFF = true;
                         this.response.speak(message).listen(repromptText);
                         this.emit(':responseReady');
                     }
@@ -2450,10 +2393,10 @@ var stateHandlers = {
             if (functions.userData[userId] == undefined) {
                 functions.userData[userId] = {};
             }
+            this.attributes.TITLEOFF = false;
             if (functions.userData[userId][deviceId] == undefined) {
                 let message = "Title has been turned on. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                 let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                this.attributes.TITLEOFF = true;
                 this.response.speak(message).listen(repromptText);
                 this.emit(':responseReady');
             } else {
@@ -2461,7 +2404,6 @@ var stateHandlers = {
                     if (functions.userData[userId][deviceId].collection == null && functions.userData[userId][deviceId].SeventyEights == false) {
                         let message = "Title has been turned on. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                         let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                        this.attributes.TITLEOFF = true;
                         this.response.speak(message).listen(repromptText);
                         this.emit(':responseReady');
                     } else {
@@ -2473,62 +2415,49 @@ var stateHandlers = {
                                 this.emit(':responseReady');
                             } else {
                                 let message = 'Title has been turned on.';
-                                this.attributes.TITLEOFF = true;
                                 this.response.speak(message);
                                 this.emit(':responseReady');
                             }
-
                         }
                         else if (functions.userData[userId][deviceId].city != null && functions.userData[userId][deviceId].year != null) {
                             let message = 'Title has been turned on.';
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city == null && functions.userData[userId][deviceId].year != null) {
                             let message = "Title has been turned on. Please select city for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " Year " + functions.userData[userId][deviceId].year;
                             let repromptText = "Waiting for your response. Now please select city for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " Year " + functions.userData[userId][deviceId].year;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city != null && functions.userData[userId][deviceId].year == null) {
                             let message = "Title has been turned on. Please select year for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " City " + functions.userData[userId][deviceId].city;
                             let repromptText = "Waiting for your response. Please select year for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection + " City " + functions.userData[userId][deviceId].city;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         } else if (functions.userData[userId][deviceId].city == null && functions.userData[userId][deviceId].year == null) {
                             let message = "Title has been turned on. Please select city and year or random for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection;
                             let repromptText = "Waiting for your response. Please select city and year or random for  <break time='.5s'/>" + functions.userData[userId][deviceId].collection;
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         }
                     }
                 }
                 else {
-
-
                     if (!functions.userData[userId][deviceId].playbackFinished && functions.userData[userId][deviceId].MusicUrlList != undefined) {
 
                         if (functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount] != undefined) {
                             this.handler.state = constants.states.RESUME_DECISION_MODE;
-                            let message = 'Title has been turned on. You were listening to ' + this.attributes[deviceId].audioURLTitle +
-                                ' Would you like to resume?';
-                            let reprompt = 'You can say yes to resume or no to play from the top.';
-
-                            this.response.speak(message).listen(reprompt);
+                            let message = 'Title has been turned on. You were listening to ' + this.attributes[deviceId].audioURLTitle ;
+                            this.response.speak(message);
                             this.emit(':responseReady');
                         } else {
                             let message = "Title has been turned on. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                             let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                            this.attributes.TITLEOFF = true;
                             this.response.speak(message).listen(repromptText);
                             this.emit(':responseReady');
                         }
                     } else {
                         let message = "Title has been turned on. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
                         let repromptText = "Waiting for your response. What artist would you like to listen to? <break time='.5s'/>  For example, The Grateful Dead, The Phil Lesh and Friends, The Disco Biscuits or 78s?";
-                        this.attributes.TITLEOFF = true;
                         this.response.speak(message).listen(repromptText);
                         this.emit(':responseReady');
                     }
