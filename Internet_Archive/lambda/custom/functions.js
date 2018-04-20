@@ -293,46 +293,122 @@ var functions = function () {
                                                     functions.userData[userId][deviceId].IdentifierCount++;
                                                 }
                                             }
-                                            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
-                                            for (let i = 0; i < result['response']['docs'].length; i++) {
-                                                functions.userData[userId][deviceId].IdentifierSongsCountTotal = functions.userData[userId][deviceId].IdentifierSongsCountTotal+1;
-                                                functions.userData[userId][deviceId].MusicUrlList.push({
-                                                    identifier: result['response']['docs'][i]['identifier'],
-                                                    trackName: result['response']['docs'][i]['identifier'] + '_vbr.m3u',
-                                                    title: result['response']['docs'][i]['title'],
-                                                    coverage: (result['response']['docs'][i]['coverage']) ? result['response']['docs'][i]['coverage'] : 'Coverage Not mentioned',
-                                                    year: (result['response']['docs'][i]['year']) ? result['response']['docs'][i]['year'] : 'Year Not mentioned',
+
+                                            functions.userData[userId][deviceId].APIURLIDENTIFIER = constants.APIURLIdentifier + result['response']['docs'][0]['identifier'] + '/files';
+                                            let optionsIdentifier = {
+                                                host: constants.host,
+                                                path: functions.userData[userId][deviceId].APIURLIDENTIFIER,
+                                                method: 'GET',
+                                                headers: {
+                                                    "User-Agent": 'Alexa_Skill_Internet_Archive'
+                                                }
+                                            };
+                                            https.get(optionsIdentifier, function (response) {
+                                                let bodyIdentifier = '';
+                                                response.on('data', function (dataIdentifier) {
+                                                    bodyIdentifier += dataIdentifier;
                                                 });
-                                            }
 
-                                            if (functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount] == undefined) {
-                                                functions.userData[userId][deviceId].IdentifierSongsCount = 0;
-                                            }
-                                            functions.userData[userId][deviceId].audioURL = 'https://archive.org/download/' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['identifier'] + '/' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['trackName'];
-                                            functions.userData[userId][deviceId].audioURLTitle = functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'];
-                                            if (intent.name == 'autoNext') {
-                                                let playBehavior = (tempObj.event.request.type == 'AudioPlayer.PlaybackNearlyFinished' || tempObj.event.request.type == 'AudioPlayer.PlaybackFailed') ? 'REPLACE_ENQUEUED' : 'REPLACE_ALL';
-                                                tempObj.response.audioPlayerPlay(playBehavior, functions.userData[userId][deviceId].audioURL, functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['identifier'] + functions.userData[userId][deviceId].counter, null, functions.userData[userId][deviceId].offsetInMilliseconds);
-                                                tempObj.emit(':responseReady');
-                                            }
-                                            else {
-                                                if (canThrowCard.call(tempObj)) {
-                                                    let cardTitle = "Playing track number - " + track;
-                                                    let cardContent = "Playing track - " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
-                                                    tempObj.response.cardRenderer(cardTitle, cardContent, null);
-                                                }
-                                                let playBehavior = "REPLACE_ALL";
-                                                if (titleOff.call(tempObj)) {
-                                                    let message = "Playing track - " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
-                                                    tempObj.response.speak(message).audioPlayerPlay(playBehavior, functions.userData[userId][deviceId].audioURL, functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['identifier'] + functions.userData[userId][deviceId].counter, null, functions.userData[userId][deviceId].offsetInMilliseconds);
-                                                    tempObj.emit(':responseReady');
-                                                } else {
-                                                    tempObj.response.audioPlayerPlay(playBehavior, functions.userData[userId][deviceId].audioURL, functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['identifier'] + functions.userData[userId][deviceId].counter, null, functions.userData[userId][deviceId].offsetInMilliseconds);
-                                                    tempObj.emit(':responseReady');
-                                                }
+                                                response.on('end', function () {
+                                                    if (constants.debug)
+                                                        console.log(bodyIdentifier);
+                                                    if (!isValidJson(bodyIdentifier)) {
+                                                        functions.userData[userId][deviceId].page++;
+                                                        functions.getAudioPlayList.call(tempObj);
+                                                    } else if (JSON.parse(bodyIdentifier)['result'] == undefined) {
+                                                        functions.userData[userId][deviceId].page++;
+                                                        functions.getAudioPlayList.call(tempObj);
+                                                    } else {
+                                                        let resultIdentifier = JSON.parse(bodyIdentifier);
+                                                        if (resultIdentifier != null && resultIdentifier['result'].length > 0) {
+                                                            functions.userData[userId][deviceId].IdentifierSongsCountTotal = 0;
+                                                            let lastsongsize = '';
+                                                            for (let i = 0; i < resultIdentifier['result'].length; i++) {
+                                                                if (( resultIdentifier['result'][i]['format'] == 'MP3' || resultIdentifier['result'][i]['format'] == 'VBR MP3' ) && lastsongsize != resultIdentifier['result'][i]['length']) {
+                                                                    lastsongsize = resultIdentifier['result'][i]['length'];
+                                                                    if (resultIdentifier['result'][i]['title'] == undefined) {
+                                                                        functions.userData[userId][deviceId].IdentifierSongsCountTotal = functions.userData[userId][deviceId].IdentifierSongsCountTotal + 1;
+                                                                        functions.userData[userId][deviceId].MusicUrlList.push({
+                                                                            identifier: result['response']['docs'][0]['identifier'],
+                                                                            trackName: resultIdentifier['result'][i]['name'],
+                                                                            title: 'Track Number ' + functions.userData[userId][deviceId].IdentifierSongsCountTotal,
+                                                                            coverage: (result['response']['docs'][0]['coverage']) ? result['response']['docs'][0]['coverage'] : 'Coverage Not mentioned',
+                                                                            year: (result['response']['docs'][0]['year']) ? result['response']['docs'][0]['year'] : 'Year Not mentioned',
+                                                                        });
+                                                                    }
+                                                                    else {
+                                                                        functions.userData[userId][deviceId].IdentifierSongsCountTotal = functions.userData[userId][deviceId].IdentifierSongsCountTotal + 1;
+                                                                        resultIdentifier['result'][i]['title'] = _.replace(resultIdentifier['result'][i]['title'], /[^a-zA-Z0-9 ]/g, "");
 
+                                                                        functions.userData[userId][deviceId].MusicUrlList.push({
+                                                                            identifier: result['response']['docs'][0]['identifier'],
+                                                                            trackName: resultIdentifier['result'][i]['name'],
+                                                                            title: resultIdentifier['result'][i]['title'],
+                                                                            coverage: (result['response']['docs'][0]['coverage']) ? result['response']['docs'][0]['coverage'] : 'Coverage Not mentioned',
+                                                                            year: (result['response']['docs'][0]['year']) ? result['response']['docs'][0]['year'] : 'Year Not mentioned',
+                                                                        });
+                                                                    }
 
-                                            }
+                                                                }
+                                                            }
+                                                            if (functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount] == undefined) {
+                                                                functions.userData[userId][deviceId].IdentifierSongsCount = 0;
+                                                            }
+                                                            if (functions.userData[userId][deviceId].MusicUrlList.length == 0) {
+                                                                functions.userData[userId][deviceId].page++;
+                                                                functions.getAudioPlayList.call(tempObj);
+                                                            } else {
+                                                                functions.userData[userId][deviceId].audioURL = 'https://archive.org/download/' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['identifier'] + '/' + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['trackName'];
+                                                                functions.userData[userId][deviceId].audioURLTitle = functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'];
+                                                                if (intent.name == 'autoNext') {
+                                                                    let playBehavior = (tempObj.event.request.type == 'AudioPlayer.PlaybackNearlyFinished' || tempObj.event.request.type == 'AudioPlayer.PlaybackFailed') ? 'REPLACE_ENQUEUED' : 'REPLACE_ALL';
+
+                                                                    tempObj.response.audioPlayerPlay(playBehavior, functions.userData[userId][deviceId].audioURL, functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['identifier'] + functions.userData[userId][deviceId].counter, null, functions.userData[userId][deviceId].offsetInMilliseconds);
+                                                                    tempObj.emit(':responseReady');
+                                                                } else {
+                                                                    if (canThrowCard.call(tempObj)) {
+                                                                        let cardTitle = "Playing track number - " + track;
+                                                                        let cardContent = "Playing track - " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
+                                                                        tempObj.response.cardRenderer(cardTitle, cardContent, null);
+                                                                    }
+                                                                    let playBehavior = "REPLACE_ALL";
+                                                                    if (titleOff.call(tempObj)) {
+                                                                        let message = "Playing track - " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['title'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['coverage'] + ", " + functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['year'] + ".";
+                                                                        tempObj.response.speak(message).audioPlayerPlay(playBehavior, functions.userData[userId][deviceId].audioURL, functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['identifier'] + functions.userData[userId][deviceId].counter, null, functions.userData[userId][deviceId].offsetInMilliseconds);
+                                                                        tempObj.emit(':responseReady');
+                                                                    } else {
+                                                                        tempObj.response.audioPlayerPlay(playBehavior, functions.userData[userId][deviceId].audioURL, functions.userData[userId][deviceId].MusicUrlList[functions.userData[userId][deviceId].IdentifierSongsCount]['identifier'] + functions.userData[userId][deviceId].counter, null, functions.userData[userId][deviceId].offsetInMilliseconds);
+                                                                        tempObj.emit(':responseReady');
+                                                                    }
+                                                                }
+
+                                                            }
+                                                        }
+                                                        else {
+                                                            //let cardTitle = 'No Songs Found';
+                                                            //let repromptText = 'No songs found. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
+                                                            //let speechOutput = "Sorry , No songs found. Please Try again by saying. City and Year. or <break time='.1s'/> random.";
+                                                            //let cardOutput = "Sorry, No songs found. Please Try again by saying City and Year or Random.";
+                                                            //
+                                                            //tempObj.response.cardRenderer(cardTitle, cardOutput, null);
+                                                            //tempObj.response.speak(speechOutput).listen(repromptText);
+                                                            //tempObj.emit(':responseReady');
+
+                                                        }
+                                                    }
+
+                                                });
+                                            }).on('error', function (e) {
+                                                //let cardTitle = 'Unable to understand your request.';
+                                                //let repromptText = 'Waiting for your response. Please Try again by saying. City and Year. or <break time=".1s"/> random.';
+                                                //let speechOutput = "Sorry , Unable to understand your request. Please Try again by saying. City and Year. or <break time='.1s'/> random.";
+                                                //let cardOutput = "Sorry, Unable to understand your request. Please Try again by saying City and Year or Random.";
+                                                //
+                                                //tempObj.response.cardRenderer(cardTitle, cardOutput, null);
+                                                //tempObj.response.speak(speechOutput).listen(repromptText);
+                                                //tempObj.emit(':responseReady');
+
+                                            });
 
                                         }
                                         else if (intent.name == 'PlayAudioByRandomYear' || functions.userData[userId][deviceId].PlayAudioByRandomYear) {
