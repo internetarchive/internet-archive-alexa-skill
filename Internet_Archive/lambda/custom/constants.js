@@ -18,5 +18,6 @@ module.exports = Object.freeze({
     podcastCityAPIURL: "/advancedsearch.php?q=collection:",
     podcastAPIURLNEW: "/advancedsearch.php?q=",
     SeventyEightsAPIURL: "/advancedsearch.php?q=collection:(georgeblood)+AND+subject:",
-    APIURLIdentifier: "/metadata/"
+    APIURLIdentifier: "/metadata/",
+    DASHBOT_API_KEY: "GaYoJFgXfA3OvRCtTdwO3DTJKW45wJE9BqskMfCa"
 });
