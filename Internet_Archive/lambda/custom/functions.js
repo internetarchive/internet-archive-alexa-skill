@@ -1,7 +1,9 @@
 'use strict';
+
+var _ = require('lodash');
 var constants = require('./constants');
 var https = require('https');
-var _ = require('lodash');
+
 var functions = function () {
     return {
         userData: {},
